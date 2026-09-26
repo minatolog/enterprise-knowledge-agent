@@ -19,7 +19,7 @@ response = client.responses.create(
         "如果不确定，就明确说不知道，不要编造。"
     ),
 
-    input="请用一句话解释什么是 RAG。"
+    input="解释一下什么是agent"
 )
 
 print(response.output_text)
