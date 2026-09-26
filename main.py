@@ -19,7 +19,7 @@ response = client.responses.create(
         "如果不确定，就明确说不知道，不要编造。"
     ),
 
-    input="解释一下什么是agent"
+    input="说一下你对性感的理解，并且给出一个性感的例子。要求有外貌描写和行为描写也要有语言描写。"
 )
 
 print(response.output_text)
