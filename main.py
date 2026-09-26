@@ -12,7 +12,14 @@ client = OpenAI(
 
 response = client.responses.create(
     model="deepseek-flash",
-    input="我现在用的是什么语言模型？"
+
+    instructions=(
+        "你是一个企业知识助手。"
+        "回答必须简洁、准确。"
+        "如果不确定，就明确说不知道，不要编造。"
+    ),
+
+    input="请用一句话解释什么是 RAG。"
 )
 
 print(response.output_text)
