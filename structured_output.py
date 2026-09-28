@@ -55,3 +55,21 @@ print("\n单独读取字段：")
 print("回答：", result.answer)
 print("置信度：", result.confidence)
 print("来源：", result.source)
+
+from pydantic import ValidationError
+
+print("\n--- 测试非法数据 ---")
+
+bad_data = {
+    "answer": "RAG 是检索增强生成技术。",
+    "confidence": "非常高",
+    "source": "企业知识库"
+}
+
+try:
+    bad_result = Answer.model_validate(bad_data)
+    print(bad_result)
+
+except ValidationError as e:
+    print("捕获到数据校验失败：")
+    print(e)
