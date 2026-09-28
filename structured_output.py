@@ -1,4 +1,12 @@
+import os
+import json
+
+from dotenv import load_dotenv
+from openai import OpenAI
 from pydantic import BaseModel
+
+
+load_dotenv()
 
 
 class Answer(BaseModel):
@@ -7,16 +15,43 @@ class Answer(BaseModel):
     source: str
 
 
-example = Answer(
-    answer="RAG 是检索增强生成技术。",
-    confidence=0.95,
-    source="企业知识库"
+client = OpenAI(
+    api_key=os.getenv("DEEPSEEK_API_KEY"),
+    base_url="https://api.deepseek.com"
 )
+
 schema = Answer.model_json_schema()
 
-print(schema)
-print(example)
-print()
-print(example.answer)
-print(example.confidence)
-print(example.source)
+response = client.responses.create(
+    model="deepseek-flash",
+
+    instructions=(
+        "你是一个企业知识助手。"
+        "请严格按照给定的 JSON Schema 返回结果。"
+    ),
+
+    input="请解释什么是 RAG，并给出置信度和信息来源。",
+
+    text={
+        "format": {
+            "type": "json_schema",
+            "name": "answer",
+            "schema": schema
+        }
+    }
+)
+
+print("模型原始输出：")
+print(response.output_text)
+
+data = json.loads(response.output_text)
+
+result = Answer.model_validate(data)
+
+print("\nPydantic 解析结果：")
+print(result)
+
+print("\n单独读取字段：")
+print("回答：", result.answer)
+print("置信度：", result.confidence)
+print("来源：", result.source)
