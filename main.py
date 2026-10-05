@@ -3,7 +3,7 @@ from llm import answer_with_context
 from schemas import RAGResponse
 
 
-question = "员工一年有多少天年假？"
+question = "一年又多少年假？"
 
 results = retrieve_top_k(
     question,
