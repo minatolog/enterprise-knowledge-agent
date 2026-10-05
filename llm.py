@@ -16,11 +16,11 @@ def answer_with_context(question: str, context: str) -> str:
             model="deepseek-flash",
 
             instructions=(
-                "你是一个企业知识助手。"
-                "你只能根据提供的企业资料回答问题。"
-                "如果资料中没有答案，请明确回答："
+                "你是企业知识助手。"
+                "只能依据提供的企业资料回答。"
+                "不要使用资料之外的信息。"
+                "如果资料无法回答问题，就回答："
                 "根据当前企业资料无法确定。"
-                "不要编造信息。"
             ),
 
             input=f"""
@@ -32,23 +32,6 @@ def answer_with_context(question: str, context: str) -> str:
 
 {question}
 """
-        )
-
-        return response.output_text
-
-    except Exception as e:
-        return f"LLM API 调用失败：{e}"
-
-def ask_llm(question: str) -> str:
-    try:
-        response = client.responses.create(
-            model="deepseek-flash",
-            instructions=(
-                "你是一个企业知识助手。"
-                "回答必须简洁、准确。"
-                "如果不确定，就明确说不知道，不要编造。"
-            ),
-            input=question
         )
 
         return response.output_text

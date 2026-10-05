@@ -2,7 +2,7 @@ from retrieval import retrieve_top_k
 from llm import answer_with_context
 
 
-question = "年假应该怎么申请，没用完怎么办？"
+question = "想打老板怎么办？"
 
 results = retrieve_top_k(question, k=3)
 
