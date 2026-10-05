@@ -12,17 +12,26 @@ document = load_document("data/employee_policy.md")
 
 
 # 3. 把文档切成多个 Chunk
-chunks = split_by_markdown_heading(document)
+chunks = split_by_markdown_heading(
+    document,
+    source="employee_policy.md"
+)
 
 
-# 4. 把每个 Chunk 转换成向量
+# Chunk 是包含正文和来源的字典；Embedding 模型只需要正文字符串。
+chunk_texts = [
+    chunk["text"]
+    for chunk in chunks
+]
+
 chunk_embeddings = model.encode(
-    chunks,
+    chunk_texts,
     convert_to_tensor=True
 )
 
 
 def retrieve_top_k(question: str, k: int = 3):
+    # 问题和文档都用同一个模型转换为向量，才能比较相似度。
     question_embedding = model.encode(
         question,
         convert_to_tensor=True
@@ -40,28 +49,38 @@ def retrieve_top_k(question: str, k: int = 3):
 
     results = []
 
+    # 每个分数都对应一个 Chunk；保留正文、来源、章节及分数。
     for score, index in zip(
         top_results.values,
         top_results.indices
     ):
+        chunk = chunks[index.item()]
         results.append(
             {
-                "chunk": chunks[index.item()],
+                "text": chunk["text"],
+                "source": chunk["source"],
+                "section": chunk["section"],
                 "score": score.item()
             }
         )
 
-    return results#改成topk搜索了
+    return results
 
 if __name__ == "__main__":
-    question = "年假应该怎么申请，没用完怎么办？"
 
-    results = retrieve_top_k(question, k=3)
+    question = "员工一年有多少天年假？"
 
-    print("用户问题：")
-    print(question)
+    results = retrieve_top_k(
+        question,
+        k=3
+    )
 
     for i, result in enumerate(results, start=1):
+
         print(f"\n--- Top {i} ---")
-        print(f"相似度：{result['score']:.4f}")
-        print(result["chunk"])
+
+        print("来源：", result["source"])
+        print("章节：", result["section"])
+        print("相似度：", result["score"])
+        print("内容：")
+        print(result["text"])

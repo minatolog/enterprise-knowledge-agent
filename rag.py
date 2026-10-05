@@ -8,44 +8,61 @@ def load_document(file_path: str) -> str:
         return file.read()
 
 
-def split_by_markdown_heading(text: str) -> list[str]:
+def split_by_markdown_heading(
+    text: str,
+    source: str
+) -> list[dict]:
+    # 每个 Chunk 是一个字典：正文 text、文件来源 source、章节 section。
     chunks = []
-    current_chunk = []
+
+    current_section = None
+    current_content = []
 
     for line in text.splitlines():
-        # 遇到新的二级标题时，先保存前一个 Chunk
+
         if line.startswith("## "):
-            if current_chunk:
-                chunk = "\n".join(current_chunk).strip()
 
-                if chunk:
-                    chunks.append(chunk)
+            # 保存前一个 section
+            if current_section is not None:
+                chunks.append(
+                    {
+                        "text": "\n".join(current_content).strip(),
+                        "source": source,
+                        "section": current_section
+                    }
+                )
 
-            # 新标题作为新 Chunk 的开头
-            current_chunk = [line]
+            # 去掉 Markdown 标题标记，记录章节名，并开始收集新章节正文。
+            current_section = line.replace("## ", "").strip()
+            current_content = []
 
         else:
-            # 只有已经进入某个二级标题后，才继续加入内容
-            if current_chunk:
-                current_chunk.append(line)
+            if current_section is not None:
+                current_content.append(line)
 
-    # 最后一个 Chunk 不会再遇到下一个标题，所以手动保存
-    if current_chunk:
-        chunk = "\n".join(current_chunk).strip()
-
-        if chunk:
-            chunks.append(chunk)
+    # 保存最后一个 section
+    if current_section is not None:
+        chunks.append(
+            {
+                "text": "\n".join(current_content).strip(),
+                "source": source,
+                "section": current_section
+            }
+        )
 
     return chunks
 
 
 if __name__ == "__main__":
-    document = load_document("data/employee_policy.md")
 
-    chunks = split_by_markdown_heading(document)
+    file_path = "data/employee_policy.md"
 
-    print(f"总共切成 {len(chunks)} 个 Chunk")
+    document = load_document(file_path)
 
-    for index, chunk in enumerate(chunks):
-        print(f"\n--- Chunk {index + 1} ---")
+    chunks = split_by_markdown_heading(
+        document,
+        source="employee_policy.md"
+    )
+
+    for chunk in chunks:
         print(chunk)
