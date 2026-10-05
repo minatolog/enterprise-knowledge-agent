@@ -6,8 +6,6 @@ from rag import load_document, split_by_markdown_heading
 # 1. 加载中文 Embedding 模型
 model = SentenceTransformer("BAAI/bge-small-zh-v1.5")
 
-
-# 2. 读取企业文档
 document = load_document("data/employee_policy.md")
 
 
@@ -22,33 +20,29 @@ chunk_embeddings = model.encode(
 )
 
 
-# 5. 用户问题
-question = "员工一年有多少天年假？"
+def retrieve_best_chunk(question: str) -> tuple[str, float]:
+    question_embedding = model.encode(
+        question,
+        convert_to_tensor=True
+    )
+
+    scores = util.cos_sim(
+        question_embedding,
+        chunk_embeddings
+    )[0]
+
+    best_index = scores.argmax().item()
+
+    return chunks[best_index], scores[best_index].item()
 
 
-# 6. 把问题也转换成向量
-question_embedding = model.encode(
-    question,
-    convert_to_tensor=True
-)
+if __name__ == "__main__":
+    question = "员工一年有多少天年假？"
 
+    chunk, score = retrieve_best_chunk(question)
 
-# 7. 计算问题和所有 Chunk 的余弦相似度
-scores = util.cos_sim(
-    question_embedding,
-    chunk_embeddings
-)[0]
+    print("最相关的 Chunk：")
+    print(chunk)
 
-
-# 8. 找到相似度最高的 Chunk
-best_index = scores.argmax().item()
-
-
-print("用户问题：")
-print(question)
-
-print("\n最相关的 Chunk：")
-print(chunks[best_index])
-
-print("\n相似度：")
-print(scores[best_index].item())
+    print("\n相似度：")
+    print(score)
