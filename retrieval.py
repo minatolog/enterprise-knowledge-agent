@@ -1,34 +1,23 @@
 from sentence_transformers import SentenceTransformer, util
 
-from rag import load_document, split_by_markdown_heading
+from rag import build_chunks
 
 
-# 1. 加载中文 Embedding 模型
 model = SentenceTransformer("BAAI/bge-small-zh-v1.5")
 
-
-# 2. 读取企业文档
-document = load_document("data/employee_policy.md")
+chunks = build_chunks("data")
 
 
-# 3. 把文档切成多个 Chunk
-chunks = split_by_markdown_heading(
-    document,
-    source="employee_policy.md"
-)
-
-
-# Chunk 是包含正文和来源的字典；Embedding 模型只需要正文字符串。
 chunk_texts = [
-    chunk["text"]
+    f'{chunk["section"]}\n{chunk["text"]}'
     for chunk in chunks
 ]
+
 
 chunk_embeddings = model.encode(
     chunk_texts,
     convert_to_tensor=True
 )
-
 
 def retrieve_top_k(question: str, k: int = 3):
     # 问题和文档都用同一个模型转换为向量，才能比较相似度。
