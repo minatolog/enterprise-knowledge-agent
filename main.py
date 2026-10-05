@@ -2,7 +2,7 @@ from retrieval import retrieve_best_chunk
 from llm import answer_with_context
 
 
-question = "员工一年有多少天年假？"
+question = "我可以远程办公几天？"
 
 context, score = retrieve_best_chunk(question)
 
