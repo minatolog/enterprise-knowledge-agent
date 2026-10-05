@@ -1,35 +1,56 @@
 from retrieval import retrieve_top_k
 from llm import answer_with_context
+from schemas import RAGResponse
 
 
-question = "想打老板怎么办？"
+question = "员工一年有多少天年假？"
 
-results = retrieve_top_k(question, k=3)
+results = retrieve_top_k(
+    question,
+    k=3
+)
 
+
+# 拼接给 LLM 的上下文
 contexts = []
 
 for result in results:
-    # 检索结果还包含来源和章节；发送给模型的是正文文字。
-    contexts.append(result["text"])
+    contexts.append(
+        f"""
+来源：{result["source"]}
+章节：{result["section"]}
 
-context = "\n\n".join(contexts)
+{result["text"]}
+"""
+    )
 
+context = "\n".join(contexts)
+
+
+# 调用 LLM
 answer = answer_with_context(
     question=question,
     context=context
 )
 
 
-print("用户问题：")
-print(question)
+# 来源由程序生成，而不是让 LLM 猜
+sources = [
+    f'{result["source"]} > {result["section"]}'
+    for result in results
+]
 
-print("\n检索资料：")
 
-for i, result in enumerate(results, start=1):
-    print(f"\n--- Chunk {i} ---")
-    print(f"相似度：{result['score']:.4f}")
-    print(f"来源：{result['source']}，章节：{result['section']}")
-    print(result["text"])
+# 最高检索相似度
+retrieval_score = results[0]["score"]
 
-print("\nAI 回答：")
-print(answer)
+
+# Pydantic 结构化结果
+rag_response = RAGResponse(
+    answer=answer,
+    sources=sources,
+    retrieval_score=retrieval_score
+)
+
+
+print(rag_response.model_dump_json(indent=2))
