@@ -26,6 +26,26 @@ for result in results:
 """
     )
 
+
+MAX_DISTANCE = 0.9
+
+if not results or results[0]["distance"] > MAX_DISTANCE:
+    response = RAGResponse(
+        answer="根据当前企业知识库无法回答该问题。",
+        sources=[],
+        retrieval_distance=(
+            results[0]["distance"]
+            if results
+            else 999.0
+        )
+    )
+
+    print("\n最终结果：")
+    print(response.model_dump_json(indent=2))
+
+    exit()
+
+
 context = "\n\n".join(contexts)
 
 

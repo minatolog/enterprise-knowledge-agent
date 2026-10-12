@@ -81,3 +81,18 @@ if __name__ == "__main__":
         print("距离：", result["distance"])
         print("内容：")
         print(result["text"])
+
+    test_questions = [
+        "员工一年有多少天年假？",
+        "国内出差酒店最多报销多少钱？",
+        "公司电脑可以随便安装软件吗？",
+        "公司老板今天午饭吃了什么？",
+        "今年公司股票会涨多少？"
+    ]
+
+    for question in test_questions:
+        results = retrieve_top_k(question, k=1)
+
+        print("\n问题：", question)
+        print("Top 1：", results[0]["source"], ">", results[0]["section"])
+        print("Distance：", results[0]["distance"])
