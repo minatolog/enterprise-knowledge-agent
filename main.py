@@ -3,15 +3,17 @@ from llm import answer_with_context
 from schemas import RAGResponse
 
 
-question = "一年又多少年假？"
+question = input("请输入你的问题：").strip()
 
+
+# 1. 从 Chroma 检索最相关的资料
 results = retrieve_top_k(
     question,
     k=3
 )
 
 
-# 拼接给 LLM 的上下文
+# 2. 把检索结果整理成 LLM Context
 contexts = []
 
 for result in results:
@@ -24,33 +26,42 @@ for result in results:
 """
     )
 
-context = "\n".join(contexts)
+context = "\n\n".join(contexts)
 
 
-# 调用 LLM
+# 3. 让 DeepSeek 根据检索资料回答
 answer = answer_with_context(
     question=question,
     context=context
 )
 
 
-# 来源由程序生成，而不是让 LLM 猜
-sources = [
-    f'{result["source"]} > {result["section"]}'
-    for result in results
-]
+# 4. 来源由程序生成，不让 LLM 自己编
+sources = []
+
+for result in results:
+    source = f'{result["source"]} > {result["section"]}'
+
+    if source not in sources:
+        sources.append(source)
 
 
-# 最高检索相似度
-retrieval_score = results[0]["score"]
+# 5. Top-1 的向量距离
+retrieval_distance = results[0]["distance"]
 
 
-# Pydantic 结构化结果
-rag_response = RAGResponse(
+# 6. Pydantic 生成最终结构化结果
+response = RAGResponse(
     answer=answer,
     sources=sources,
-    retrieval_score=retrieval_score
+    retrieval_distance=retrieval_distance
 )
 
 
-print(rag_response.model_dump_json(indent=2))
+# 7. 输出 JSON
+print("\n最终结果：")
+print(
+    response.model_dump_json(
+        indent=2
+    )
+)

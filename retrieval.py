@@ -1,75 +1,83 @@
-from sentence_transformers import SentenceTransformer, util
+import chromadb
 
-from rag import build_chunks
-
-
-model = SentenceTransformer("BAAI/bge-small-zh-v1.5")
-
-chunks = build_chunks("data")
+from sentence_transformers import SentenceTransformer
 
 
-chunk_texts = [
-    f'{chunk["section"]}\n{chunk["text"]}'
-    for chunk in chunks
-]
+DB_PATH = "chroma_db"
+COLLECTION_NAME = "enterprise_knowledge"
 
-
-chunk_embeddings = model.encode(
-    chunk_texts,
-    convert_to_tensor=True
+# 查询时仍然要用同一个 Embedding 模型
+model = SentenceTransformer(
+    "BAAI/bge-small-zh-v1.5"
 )
 
-def retrieve_top_k(question: str, k: int = 3):
-    # 问题和文档都用同一个模型转换为向量，才能比较相似度。
+# 直接打开已经存在的向量数据库
+client = chromadb.PersistentClient(
+    path=DB_PATH
+)
+
+collection = client.get_collection(
+    name=COLLECTION_NAME
+)
+
+
+def retrieve_top_k(question: str, k: int = 3) -> list[dict]:
+
+    # 只对“用户问题”做 Embedding
     question_embedding = model.encode(
         question,
-        convert_to_tensor=True
+        normalize_embeddings=True
+    ).tolist()
+
+    # 直接从 Chroma 搜索
+    result = collection.query(
+        query_embeddings=[question_embedding],
+        n_results=k,
+        include=[
+            "documents",
+            "metadatas",
+            "distances"
+        ]
     )
-
-    scores = util.cos_sim(
-        question_embedding,
-        chunk_embeddings
-    )[0]
-
-    # 防止 k 大于实际 Chunk 数量
-    k = min(k, len(chunks))
-
-    top_results = scores.topk(k)
 
     results = []
 
-    # 每个分数都对应一个 Chunk；保留正文、来源、章节及分数。
-    for score, index in zip(
-        top_results.values,
-        top_results.indices
+    for document, metadata, distance in zip(
+        result["documents"][0],
+        result["metadatas"][0],
+        result["distances"][0]
     ):
-        chunk = chunks[index.item()]
         results.append(
             {
-                "text": chunk["text"],
-                "source": chunk["source"],
-                "section": chunk["section"],
-                "score": score.item()
+                "text": document,
+                "source": metadata["source"],
+                "section": metadata["section"],
+                "distance": distance
             }
         )
 
     return results
 
+
 if __name__ == "__main__":
 
-    question = "员工一年有多少天年假？"
+    question = "国内出差酒店最多可以报多少钱？"
 
     results = retrieve_top_k(
         question,
         k=3
     )
 
-    for i, result in enumerate(results, start=1):
+    print("用户问题：")
+    print(question)
 
-        print(f"\n--- Top {i} ---")
-
+    for index, result in enumerate(
+        results,
+        start=1
+    ):
+        print(f"\n--- Top {index} ---")
         print("来源：", result["source"])
         print("章节：", result["section"])
-        print("相似度：", result["score"])
+        print("距离：", result["distance"])
         print("内容：")
         print(result["text"])
