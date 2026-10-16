@@ -180,3 +180,4 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 chroma_db/
+.index_state/
