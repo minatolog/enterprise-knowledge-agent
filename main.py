@@ -1,128 +1,93 @@
-from retrieval import retrieve_top_k
+
+from hybrid_retrieval import retrieve_with_reranker
 from llm import answer_with_context
 from schemas import RAGResponse
 
 
-# 检索距离阈值
-# distance 越小代表越相关
-MAX_DISTANCE = 0.9
-
-# 每次最多检索几个 Chunk
 TOP_K = 3
+CANDIDATE_K = 5
 
 
 def main():
-
-    # 1. 获取用户问题
     question = input("请输入你的问题：").strip()
 
     if not question:
         print("问题不能为空。")
         return
 
+    print("\n正在执行 Hybrid Search + Reranker...")
 
-    # 2. 从 Chroma 向量数据库检索 Top-K
-    results = retrieve_top_k(
-        question,
-        k=TOP_K
-    )
-
-
-    # 3. 如果没有检索结果，直接拒答
-    if not results:
-        response = RAGResponse(
-            answer="根据当前企业知识库无法回答该问题。",
-            sources=[],
-            retrieval_distance=999.0
+    try:
+        # 1. 混合检索 + Cross-Encoder 重排序
+        results = retrieve_with_reranker(
+            question=question,
+            k=TOP_K,
+            candidate_k=CANDIDATE_K
         )
 
-        print("\n最终结果：")
+        if not results:
+            response = RAGResponse(
+                answer="根据当前企业知识库无法回答该问题。",
+                sources=[],
+                rerank_score=None
+            )
+            print(response.model_dump_json(indent=2))
+            return
+
+        # 2. 打印检索结果，方便调试
+        print("\n========== Retrieval Results ==========")
+
+        for rank, result in enumerate(results, start=1):
+            print(
+                f'{rank}. {result["source"]} > '
+                f'{result["section"]} | '
+                f'Rerank={result["rerank_score"]:.4f}'
+            )
+
+        # 3. 整理上下文，并分配引用编号
+        contexts = []
+        sources = []
+
+        for index, result in enumerate(results, start=1):
+            source = (
+                f'{result["source"]} > '
+                f'{result["section"]}'
+            )
+
+            if source not in sources:
+                sources.append(source)
+
+            contexts.append(
+                f"[资料 {index}]\n"
+                f"来源：{source}\n"
+                f"内容：{result['text']}"
+            )
+
+        context = "\n\n".join(contexts)
+
+        # 4. 调用 DeepSeek
+        print("\n正在生成答案...")
+
+        answer = answer_with_context(
+            question=question,
+            context=context
+        )
+
+        if answer.startswith("LLM API 调用失败："):
+            raise RuntimeError(answer)
+
+        # 5. Pydantic 结构化结果
+        response = RAGResponse(
+            answer=answer,
+            sources=sources,
+            rerank_score=results[0]["rerank_score"]
+        )
+
+        print("\n========== 最终结果 ==========")
         print(response.model_dump_json(indent=2))
 
-        return
-
-
-    # 4. 检查最相关 Chunk 是否足够相关
-    if results[0]["distance"] > MAX_DISTANCE:
-
-        response = RAGResponse(
-            answer="根据当前企业知识库无法回答该问题。",
-            sources=[],
-            retrieval_distance=results[0]["distance"]
-        )
-
-        print("\n最终结果：")
-        print(response.model_dump_json(indent=2))
-
-        return
-
-
-    # 5. 过滤掉 Top-K 中不相关的 Chunk
-    relevant_results = [
-        result
-        for result in results
-        if result["distance"] <= MAX_DISTANCE
-    ]
-
-
-    # 6. 构造提供给 LLM 的 Context
-    contexts = []
-
-    for result in relevant_results:
-        contexts.append(
-            f"""
-来源：{result["source"]}
-章节：{result["section"]}
-
-{result["text"]}
-"""
-        )
-
-    context = "\n\n".join(contexts)
-
-
-    # 7. 调用 DeepSeek
-    answer = answer_with_context(
-        question=question,
-        context=context
-    )
-
-
-    # 8. 整理来源
-    sources = []
-
-    for result in relevant_results:
-
-        source = (
-            f'{result["source"]} > '
-            f'{result["section"]}'
-        )
-
-        # 防止重复来源
-        if source not in sources:
-            sources.append(source)
-
-
-    # 9. 使用最相关结果的 distance
-    retrieval_distance = relevant_results[0]["distance"]
-
-
-    # 10. 使用 Pydantic 生成结构化结果
-    response = RAGResponse(
-        answer=answer,
-        sources=sources,
-        retrieval_distance=retrieval_distance
-    )
-
-
-    # 11. 输出最终 JSON
-    print("\n最终结果：")
-
-    print(
-        response.model_dump_json(
-            indent=2
-        )
-    )
+    except Exception as e:
+        print(f"\n程序运行失败：{type(e).__name__}: {e}")
 
 
 if __name__ == "__main__":
