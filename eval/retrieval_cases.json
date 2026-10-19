@@ -1,0 +1,38 @@
+
+[
+  {
+    "question": "员工一年有多少天年假？",
+    "expected_source": "employee_policy.md",
+    "expected_section": "年假制度"
+  },
+  {
+    "question": "年假没用完可以留到明年吗？",
+    "expected_source": "employee_policy.md",
+    "expected_section": "年假制度"
+  },
+  {
+    "question": "国内出差酒店最多能报多少钱？",
+    "expected_source": "travel_policy.md",
+    "expected_section": "住宿标准"
+  },
+  {
+    "question": "员工可以随便安装不明来源的软件吗？",
+    "expected_source": "it_policy.md",
+    "expected_section": "软件安装"
+  },
+  {
+    "question": "连续输错多少次密码会被锁定？",
+    "expected_source": "security_policy.txt",
+    "expected_section": "chunk-1"
+  },
+  {
+    "question": "输错十次密码之后账号会怎么样？",
+    "expected_source": "security_policy.txt",
+    "expected_section": "chunk-1"
+  },
+  {
+    "question": "公司老板今天午饭吃什么？",
+    "expected_source": null,
+    "expected_section": null
+  }
+]
