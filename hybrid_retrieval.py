@@ -1,6 +1,6 @@
 
 from collections import defaultdict
-
+from sentence_transformers import CrossEncoder
 import jieba
 from rank_bm25 import BM25Okapi
 
@@ -26,6 +26,9 @@ tokenized_corpus = [
 # 创建 BM25 检索器
 bm25 = BM25Okapi(tokenized_corpus)
 
+reranker = CrossEncoder(
+    "BAAI/bge-reranker-base"
+)
 
 def retrieve_bm25(question: str, k: int = 5):
     tokens = list(jieba.cut(question))
@@ -53,6 +56,7 @@ def retrieve_bm25(question: str, k: int = 5):
         })
 
     return results
+
 
 
 def retrieve_hybrid(question: str, k: int = 3):
@@ -124,3 +128,73 @@ if __name__ == "__main__":
                 f'{result["section"]} | '
                 f'RRF={result["rrf_score"]:.4f}'
             )
+
+def retrieve_with_reranker(
+    question: str,
+    k: int = 3,
+    candidate_k: int = 5
+) -> list[dict]:
+
+    # 1. Hybrid Search 召回候选文档
+    candidates = retrieve_hybrid(
+        question,
+        k=candidate_k
+    )
+
+    if not candidates:
+        return []
+
+    # 2. 构建 Cross-Encoder 输入
+    pairs = [
+        (question, item["text"])
+        for item in candidates
+    ]
+
+    # 3. 对问题和候选文档进行相关性打分
+    scores = reranker.predict(pairs)
+
+    # 4. 写入重排序分数
+    for item, score in zip(candidates, scores):
+        item["rerank_score"] = float(score)
+
+    # 5. 根据 Cross-Encoder 分数重新排序
+    ranked = sorted(
+        candidates,
+        key=lambda item: item["rerank_score"],
+        reverse=True
+    )
+
+    return ranked[:k]
+
+if __name__ == "__main__":
+
+    question = "输错十次密码之后账号会怎么样？"
+
+    print("\n=== Hybrid Search ===")
+
+    hybrid_results = retrieve_hybrid(
+        question,
+        k=5
+    )
+
+    for i, result in enumerate(hybrid_results, 1):
+        print(
+            f'{i}. {result["source"]} > '
+            f'{result["section"]} | '
+            f'RRF={result["rrf_score"]:.4f}'
+        )
+
+    print("\n=== Hybrid + Reranker ===")
+
+    reranked_results = retrieve_with_reranker(
+        question,
+        k=3,
+        candidate_k=5
+    )
+
+    for i, result in enumerate(reranked_results, 1):
+        print(
+            f'{i}. {result["source"]} > '
+            f'{result["section"]} | '
+            f'Rerank={result["rerank_score"]:.4f}'
+        )
