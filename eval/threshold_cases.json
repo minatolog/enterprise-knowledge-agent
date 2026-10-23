@@ -1,0 +1,51 @@
+
+[
+  {
+    "question": "员工一年有多少天年假？",
+    "answerable": true
+  },
+  {
+    "question": "年假没用完可以结转吗？",
+    "answerable": true
+  },
+  {
+    "question": "国内出差酒店最高报销多少元？",
+    "answerable": true
+  },
+  {
+    "question": "公司电脑可以随意安装软件吗？",
+    "answerable": true
+  },
+  {
+    "question": "输错十次密码之后账号会怎么样？",
+    "answerable": true
+  },
+  {
+    "question": "连续输错多少次密码会被锁定？",
+    "answerable": true
+  },
+  {
+    "question": "公司老板今天午饭吃了什么？",
+    "answerable": false
+  },
+  {
+    "question": "公司明年的股票价格是多少？",
+    "answerable": false
+  },
+  {
+    "question": "公司员工的平均工资是多少？",
+    "answerable": false
+  },
+  {
+    "question": "输错密码会被永久封号吗？",
+    "answerable": false
+  },
+  {
+    "question": "忘记密码后应该如何重置密码？",
+    "answerable": false
+  },
+  {
+    "question": "公司是否允许员工携带宠物上班？",
+    "answerable": false
+  }
+]

@@ -1,0 +1,74 @@
+[
+  {
+    "question": "员工一年有多少天年假？",
+    "answerable": true,
+    "score": 0.9989904761314392,
+    "top_source": "employee_policy.md"
+  },
+  {
+    "question": "年假没用完可以结转吗？",
+    "answerable": true,
+    "score": 0.9978047013282776,
+    "top_source": "employee_policy.md"
+  },
+  {
+    "question": "国内出差酒店最高报销多少元？",
+    "answerable": true,
+    "score": 0.9943529367446899,
+    "top_source": "travel_policy.md"
+  },
+  {
+    "question": "公司电脑可以随意安装软件吗？",
+    "answerable": true,
+    "score": 0.9406173229217529,
+    "top_source": "it_policy.md"
+  },
+  {
+    "question": "输错十次密码之后账号会怎么样？",
+    "answerable": true,
+    "score": 0.9841414093971252,
+    "top_source": "security_policy.txt"
+  },
+  {
+    "question": "连续输错多少次密码会被锁定？",
+    "answerable": true,
+    "score": 0.9976993203163147,
+    "top_source": "security_policy.txt"
+  },
+  {
+    "question": "公司老板今天午饭吃了什么？",
+    "answerable": false,
+    "score": 3.8783662603236735e-05,
+    "top_source": "it_policy.md"
+  },
+  {
+    "question": "公司明年的股票价格是多少？",
+    "answerable": false,
+    "score": 0.0004806917568203062,
+    "top_source": "employee_policy.md"
+  },
+  {
+    "question": "公司员工的平均工资是多少？",
+    "answerable": false,
+    "score": 0.02851763181388378,
+    "top_source": "employee_policy.md"
+  },
+  {
+    "question": "输错密码会被永久封号吗？",
+    "answerable": false,
+    "score": 0.9004178643226624,
+    "top_source": "security_policy.txt"
+  },
+  {
+    "question": "忘记密码后应该如何重置密码？",
+    "answerable": false,
+    "score": 0.09442602843046188,
+    "top_source": "security_policy.txt"
+  },
+  {
+    "question": "公司是否允许员工携带宠物上班？",
+    "answerable": false,
+    "score": 0.01223056111484766,
+    "top_source": "it_policy.md"
+  }
+]
