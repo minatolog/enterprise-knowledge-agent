@@ -1,0 +1,4108 @@
+{
+  "audit_date": "2026-10-24",
+  "method": {
+    "parser": "pypdf via ingestion.load_document",
+    "chinese_ratio_denominator": "non-whitespace extracted characters",
+    "warning_policy": "heuristic risk indicators; not proof of corruption or correct reading order"
+  },
+  "overall": {
+    "file_count": 9,
+    "total_pages": 397,
+    "successfully_read_pages": 397,
+    "empty_text_pages": 1,
+    "suspicious_page_count": 141,
+    "suspicious_garbled_pages": 55,
+    "possibly_incomplete_pages": 13,
+    "total_char_count": 337810,
+    "total_chinese_char_count": 238502,
+    "page_read_errors": 0
+  },
+  "files": [
+    {
+      "file_name": "employee_compliance.pdf",
+      "relative_path": "data/cnooc/compliance/employee_compliance.pdf",
+      "document_title": "机构及员工合规手册",
+      "file_size_bytes": 488124,
+      "sha256": "8c3a344d5185f4b51c19fc7e44451a1e50d8381efb8b56f4e270f2e73eeaa05e",
+      "page_count": 27,
+      "successfully_read_pages": 27,
+      "total_char_count": 18136,
+      "total_chinese_char_count": 11473,
+      "empty_text_pages": [],
+      "suspicious_garbled_pages": [],
+      "possibly_incomplete_pages": [
+        1,
+        3,
+        15,
+        25
+      ],
+      "possible_table_pages": [
+        3,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "page_errors": [],
+      "pages": [
+        {
+          "page_number": 1,
+          "char_count": 30,
+          "chinese_char_count": 28,
+          "chinese_ratio": 1.0,
+          "is_empty": false,
+          "warnings": [
+            "very_little_text"
+          ]
+        },
+        {
+          "page_number": 2,
+          "char_count": 386,
+          "chinese_char_count": 343,
+          "chinese_ratio": 0.9171,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 3,
+          "char_count": 4468,
+          "chinese_char_count": 215,
+          "chinese_ratio": 0.0493,
+          "is_empty": false,
+          "warnings": [
+            "low_chinese_ratio_review",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 4,
+          "char_count": 724,
+          "chinese_char_count": 606,
+          "chinese_ratio": 0.867,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 5,
+          "char_count": 737,
+          "chinese_char_count": 590,
+          "chinese_ratio": 0.8429,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 6,
+          "char_count": 803,
+          "chinese_char_count": 611,
+          "chinese_ratio": 0.8071,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 7,
+          "char_count": 927,
+          "chinese_char_count": 770,
+          "chinese_ratio": 0.8691,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 8,
+          "char_count": 983,
+          "chinese_char_count": 820,
+          "chinese_ratio": 0.8696,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 9,
+          "char_count": 961,
+          "chinese_char_count": 793,
+          "chinese_ratio": 0.861,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 10,
+          "char_count": 991,
+          "chinese_char_count": 805,
+          "chinese_ratio": 0.8483,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 11,
+          "char_count": 900,
+          "chinese_char_count": 716,
+          "chinese_ratio": 0.8345,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 12,
+          "char_count": 882,
+          "chinese_char_count": 686,
+          "chinese_ratio": 0.8196,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 13,
+          "char_count": 646,
+          "chinese_char_count": 523,
+          "chinese_ratio": 0.8546,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 14,
+          "char_count": 278,
+          "chinese_char_count": 201,
+          "chinese_ratio": 0.7761,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 15,
+          "char_count": 34,
+          "chinese_char_count": 27,
+          "chinese_ratio": 0.871,
+          "is_empty": false,
+          "warnings": [
+            "very_little_text"
+          ]
+        },
+        {
+          "page_number": 16,
+          "char_count": 529,
+          "chinese_char_count": 473,
+          "chinese_ratio": 0.9275,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 17,
+          "char_count": 497,
+          "chinese_char_count": 435,
+          "chinese_ratio": 0.9158,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 18,
+          "char_count": 521,
+          "chinese_char_count": 462,
+          "chinese_ratio": 0.9296,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 19,
+          "char_count": 557,
+          "chinese_char_count": 497,
+          "chinese_ratio": 0.9272,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 20,
+          "char_count": 452,
+          "chinese_char_count": 396,
+          "chinese_ratio": 0.9167,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 21,
+          "char_count": 462,
+          "chinese_char_count": 410,
+          "chinese_ratio": 0.9297,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 22,
+          "char_count": 431,
+          "chinese_char_count": 371,
+          "chinese_ratio": 0.9138,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 23,
+          "char_count": 451,
+          "chinese_char_count": 400,
+          "chinese_ratio": 0.9238,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 24,
+          "char_count": 42,
+          "chinese_char_count": 34,
+          "chinese_ratio": 0.85,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 25,
+          "char_count": 41,
+          "chinese_char_count": 30,
+          "chinese_ratio": 0.8108,
+          "is_empty": false,
+          "warnings": [
+            "very_little_text"
+          ]
+        },
+        {
+          "page_number": 26,
+          "char_count": 171,
+          "chinese_char_count": 104,
+          "chinese_ratio": 0.6797,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 27,
+          "char_count": 232,
+          "chinese_char_count": 127,
+          "chinese_ratio": 0.6225,
+          "is_empty": false,
+          "warnings": []
+        }
+      ],
+      "sampled_pages": [
+        {
+          "page_number": 1,
+          "excerpt": "机构及员工合规手册 中国海洋石油有限公司 机构及员工合规手册"
+        },
+        {
+          "page_number": 3,
+          "excerpt": "机构及员工合规手册 目 录 1.0 目的 ......................................................................................................................."
+        },
+        {
+          "page_number": 5,
+          "excerpt": "机构及员工合规手册 2 4.0指导原则 4.1 遵守法律法规和公司制度原则 员工必须遵守适用法律法规、行业规范和公司制度，了解、熟悉与其职责相匹配的作 业所在地的行业标准、习惯做法以及商业惯例。本《手册》的内容与适用的法律法规、国 际条约或监管要求存在差异时，应以适用的法律法规、"
+        },
+        {
+          "page_number": 6,
+          "excerpt": "机构及员工合规手册 3 5.2 合规培训 5.2.1 公司应根据本单位合规管理工作情况，制定培训计划并组织实施对员工的合规培训 和考核。 5.2.2 公司应组织员工在入职时签订《合规承诺书》，并提醒员工按照《合规承诺书》的 要求严格遵守《手册》、《道德行为准则》及公司的相关规定。"
+        },
+        {
+          "page_number": 7,
+          "excerpt": "机构及员工合规手册 4 5.4.4 员工应尊重工作所在地的社区和原住民，建立和发展互利的长期关系，尊重他们受 当地法律法规保护的权益。 5.5 避免利益冲突与内幕交易 5.5.1 员工必须正确处理个人利益与公司利益的关系，避免个人利益与公司利益产生冲突， 不得利用职务便利、职权影"
+        },
+        {
+          "page_number": 8,
+          "excerpt": "机构及员工合规手册 5 公司或第三方公司的股票或证券。 5.6 反贪腐舞弊与反洗钱 5.6.1 公司在任何时候都必须遵守对其适用的反腐败法、反洗钱法和《联合国反腐败公 约》。不得进行直接或间接的商业贿赂，既禁止为不正当获取商业机会和利益给予第三方、 商业伙伴、和政府官员好处，也禁"
+        },
+        {
+          "page_number": 9,
+          "excerpt": "机构及员工合规手册 6 5.7 公司资产使用与保护 5.7.1 员工必须遵守资产管理相关制度，正确有效使用资产，不得盗窃公司资产，避免公 司资产的浪费、损失、损坏；保护公司资产安全，防止被盗和侵权；未经公司批准和授权， 员工不得擅自销售、转让或以其他方式处置资产。员工发现滥用或侵"
+        },
+        {
+          "page_number": 10,
+          "excerpt": "机构及员工合规手册 7 境安全评估管理的法律法规进行评估及获取必要的同意或履行必要的审批程序。 5.8.3 员工入职时须签署保密协议；在未获得公司批准的情况下，不得披露、宣布、发布 和使用交易机密或其他机密信息。如发生泄密事件或发现隐患，应合理制止并向上报。 5.8.4 因业务需"
+        },
+        {
+          "page_number": 11,
+          "excerpt": "机构及员工合规手册 8 5.9.3 公司应当依法纳税，积极履行代扣代缴税款的义务，如实向税务机关反映本单位的 生产经营情况和执行财务制度的情况，按有关规定提供相应的报表和资料，不得瞒报、漏 报、误报，不得偷税漏税。 5.9.4 遵守开展业务驻在国（地区）某些特定的报告和披露要求，"
+        },
+        {
+          "page_number": 12,
+          "excerpt": "机构及员工合规手册 9 够对其他经营者施加决定性影响，达到经营者集中申报标准的，应当依法向反垄断执法机 构进行申报。如有任何疑问，可以事先与有关部门进行商谈，征求其意见。 5.11 贸易合规 5.11.1 公司重视出口管制和贸易制裁，避免可能导致额外成本、延误、丧失进出口权、 名"
+        },
+        {
+          "page_number": 14,
+          "excerpt": "机构及员工合规手册 11 9.1 在《手册》执行过程中，公司会根据外部监管环境变化和内部管理需求，对《手册》 进行更新完善并及时发布最新版本。 9.2 各分子公司如需建立和完善本层级的合规管理办法或实施细则，应当依据所在国相关 法律法规、本《手册》以及公司相关规定实施。 9.3 "
+        },
+        {
+          "page_number": 27,
+          "excerpt": "机构及员工合规手册 24 注册办公室 香港花园道 1 号中银大厦 65 层 电话：（852）2213 2500 传真：（852）2525 9322 北京办公室 中国北京市东城区朝阳门北大街 25 号 编码：100010 公司网址：www.cnoocltd.com @ 中国海洋石油"
+        }
+      ]
+    },
+    {
+      "file_name": "director_ethics_2026.pdf",
+      "relative_path": "data/cnooc/compliance/director_ethics_2026.pdf",
+      "document_title": "董事及高级管理人员道德守则",
+      "file_size_bytes": 220503,
+      "sha256": "3dad4d058f08928b28dea37d921f310904b98ba6513da4b63ff65736332dd684",
+      "page_count": 16,
+      "successfully_read_pages": 16,
+      "total_char_count": 12849,
+      "total_chinese_char_count": 10905,
+      "empty_text_pages": [],
+      "suspicious_garbled_pages": [],
+      "possibly_incomplete_pages": [],
+      "possible_table_pages": [
+        14
+      ],
+      "page_errors": [],
+      "pages": [
+        {
+          "page_number": 1,
+          "char_count": 54,
+          "chinese_char_count": 49,
+          "chinese_ratio": 0.9608,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 2,
+          "char_count": 1023,
+          "chinese_char_count": 880,
+          "chinese_ratio": 0.888,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 3,
+          "char_count": 1078,
+          "chinese_char_count": 897,
+          "chinese_ratio": 0.865,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 4,
+          "char_count": 1102,
+          "chinese_char_count": 986,
+          "chinese_ratio": 0.9224,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 5,
+          "char_count": 845,
+          "chinese_char_count": 741,
+          "chinese_ratio": 0.9126,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 6,
+          "char_count": 965,
+          "chinese_char_count": 819,
+          "chinese_ratio": 0.8902,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 7,
+          "char_count": 941,
+          "chinese_char_count": 815,
+          "chinese_ratio": 0.8986,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 8,
+          "char_count": 926,
+          "chinese_char_count": 815,
+          "chinese_ratio": 0.9086,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 9,
+          "char_count": 923,
+          "chinese_char_count": 813,
+          "chinese_ratio": 0.9135,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 10,
+          "char_count": 414,
+          "chinese_char_count": 357,
+          "chinese_ratio": 0.897,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 11,
+          "char_count": 572,
+          "chinese_char_count": 427,
+          "chinese_ratio": 0.7893,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 12,
+          "char_count": 842,
+          "chinese_char_count": 690,
+          "chinese_ratio": 0.8561,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 13,
+          "char_count": 761,
+          "chinese_char_count": 640,
+          "chinese_ratio": 0.8719,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 14,
+          "char_count": 774,
+          "chinese_char_count": 610,
+          "chinese_ratio": 0.8356,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 15,
+          "char_count": 861,
+          "chinese_char_count": 724,
+          "chinese_ratio": 0.884,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 16,
+          "char_count": 768,
+          "chinese_char_count": 642,
+          "chinese_ratio": 0.8759,
+          "is_empty": false,
+          "warnings": []
+        }
+      ],
+      "sampled_pages": [
+        {
+          "page_number": 1,
+          "excerpt": "中国海洋石油有限公司 （根据香港法律设立并承担有限责任） 董事及高级管理人员道德守则 二零二六年八月二十六日"
+        },
+        {
+          "page_number": 8,
+          "excerpt": "7 商业决定必须为本公司的最大利益而做出，而非个人利益或收益。因此，根据本公 司政策，所有董事及高级管理人员必须避免任何实际的或被认为是利益冲突的情况， 申报和管理利益冲突。当员工的个人利益与公司的利益发生抵触或以任何方式发生 冲突（或甚至表面上抵触或冲突），则构成“利益冲突”。"
+        },
+        {
+          "page_number": 14,
+          "excerpt": "13 A. 绝对禁止 1. 无论何时，董事如管有与其所属发行人证券有关的内幕消息，或尚未办妥《标准 守则》B.8 项所载进行交易的所需手续，均不得买卖其所属发行人的任何证券。 2. 如董事以其作为另一发行人董事的身份管有与发行人证券有关的内幕消息， 均不得买卖任何该等证券。 3."
+        },
+        {
+          "page_number": 16,
+          "excerpt": "15 13. 公司的董事须以董事会及个人身份，尽量确保其公司的任何雇员、或附属公 司的任何董事或雇员，不会利用他们因在该公司或该附属公司的职务或工作而可 能管有与任何发行人证券有关的内幕消息，在《标准守则》禁止董事买卖证券之 期间买卖该等证券。 C. 特殊情况 14. 若董事拟在"
+        }
+      ]
+    },
+    {
+      "file_name": "articles_2025.pdf",
+      "relative_path": "data/cnooc/governance/articles_2025.pdf",
+      "document_title": "组织章程细则",
+      "file_size_bytes": 479027,
+      "sha256": "aaa7b11f1a9a2b2f8bfc670819c67482abdd20b6b117760dd8009b545e68bbd9",
+      "page_count": 43,
+      "successfully_read_pages": 43,
+      "total_char_count": 47586,
+      "total_chinese_char_count": 35413,
+      "empty_text_pages": [],
+      "suspicious_garbled_pages": [],
+      "possibly_incomplete_pages": [
+        2,
+        3
+      ],
+      "possible_table_pages": [
+        2,
+        3
+      ],
+      "page_errors": [],
+      "pages": [
+        {
+          "page_number": 1,
+          "char_count": 101,
+          "chinese_char_count": 58,
+          "chinese_ratio": 0.9508,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 2,
+          "char_count": 2919,
+          "chinese_char_count": 115,
+          "chinese_ratio": 0.0403,
+          "is_empty": false,
+          "warnings": [
+            "low_chinese_ratio_review",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 3,
+          "char_count": 2780,
+          "chinese_char_count": 102,
+          "chinese_ratio": 0.0374,
+          "is_empty": false,
+          "warnings": [
+            "low_chinese_ratio_review",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 4,
+          "char_count": 687,
+          "chinese_char_count": 435,
+          "chinese_ratio": 0.7539,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 5,
+          "char_count": 847,
+          "chinese_char_count": 671,
+          "chinese_ratio": 0.8581,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 6,
+          "char_count": 829,
+          "chinese_char_count": 679,
+          "chinese_ratio": 0.8887,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 7,
+          "char_count": 947,
+          "chinese_char_count": 797,
+          "chinese_ratio": 0.9026,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 8,
+          "char_count": 1125,
+          "chinese_char_count": 983,
+          "chinese_ratio": 0.9153,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 9,
+          "char_count": 1151,
+          "chinese_char_count": 994,
+          "chinese_ratio": 0.9111,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 10,
+          "char_count": 1207,
+          "chinese_char_count": 1049,
+          "chinese_ratio": 0.913,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 11,
+          "char_count": 1199,
+          "chinese_char_count": 1063,
+          "chinese_ratio": 0.9268,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 12,
+          "char_count": 1022,
+          "chinese_char_count": 863,
+          "chinese_ratio": 0.9027,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 13,
+          "char_count": 1168,
+          "chinese_char_count": 1019,
+          "chinese_ratio": 0.9205,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 14,
+          "char_count": 1001,
+          "chinese_char_count": 842,
+          "chinese_ratio": 0.9005,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 15,
+          "char_count": 919,
+          "chinese_char_count": 742,
+          "chinese_ratio": 0.8781,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 16,
+          "char_count": 1093,
+          "chinese_char_count": 926,
+          "chinese_ratio": 0.9061,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 17,
+          "char_count": 1029,
+          "chinese_char_count": 889,
+          "chinese_ratio": 0.9127,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 18,
+          "char_count": 1035,
+          "chinese_char_count": 863,
+          "chinese_ratio": 0.8915,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 19,
+          "char_count": 1086,
+          "chinese_char_count": 924,
+          "chinese_ratio": 0.905,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 20,
+          "char_count": 1325,
+          "chinese_char_count": 1172,
+          "chinese_ratio": 0.925,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 21,
+          "char_count": 1040,
+          "chinese_char_count": 889,
+          "chinese_ratio": 0.9062,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 22,
+          "char_count": 1039,
+          "chinese_char_count": 851,
+          "chinese_ratio": 0.8828,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 23,
+          "char_count": 1178,
+          "chinese_char_count": 1023,
+          "chinese_ratio": 0.9118,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 24,
+          "char_count": 1110,
+          "chinese_char_count": 941,
+          "chinese_ratio": 0.8979,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 25,
+          "char_count": 957,
+          "chinese_char_count": 799,
+          "chinese_ratio": 0.8917,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 26,
+          "char_count": 1164,
+          "chinese_char_count": 1031,
+          "chinese_ratio": 0.9322,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 27,
+          "char_count": 1328,
+          "chinese_char_count": 1175,
+          "chinese_ratio": 0.9216,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 28,
+          "char_count": 1160,
+          "chinese_char_count": 1021,
+          "chinese_ratio": 0.9231,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 29,
+          "char_count": 1057,
+          "chinese_char_count": 908,
+          "chinese_ratio": 0.9098,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 30,
+          "char_count": 1097,
+          "chinese_char_count": 959,
+          "chinese_ratio": 0.9195,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 31,
+          "char_count": 990,
+          "chinese_char_count": 826,
+          "chinese_ratio": 0.8949,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 32,
+          "char_count": 890,
+          "chinese_char_count": 735,
+          "chinese_ratio": 0.8942,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 33,
+          "char_count": 1034,
+          "chinese_char_count": 859,
+          "chinese_ratio": 0.8929,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 34,
+          "char_count": 1221,
+          "chinese_char_count": 1053,
+          "chinese_ratio": 0.9141,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 35,
+          "char_count": 1184,
+          "chinese_char_count": 1045,
+          "chinese_ratio": 0.924,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 36,
+          "char_count": 1064,
+          "chinese_char_count": 917,
+          "chinese_ratio": 0.9133,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 37,
+          "char_count": 1006,
+          "chinese_char_count": 824,
+          "chinese_ratio": 0.8803,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 38,
+          "char_count": 1039,
+          "chinese_char_count": 874,
+          "chinese_ratio": 0.8955,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 39,
+          "char_count": 1134,
+          "chinese_char_count": 976,
+          "chinese_ratio": 0.9088,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 40,
+          "char_count": 1035,
+          "chinese_char_count": 860,
+          "chinese_ratio": 0.883,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 41,
+          "char_count": 1064,
+          "chinese_char_count": 891,
+          "chinese_ratio": 0.8964,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 42,
+          "char_count": 750,
+          "chinese_char_count": 654,
+          "chinese_ratio": 0.9173,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 43,
+          "char_count": 575,
+          "chinese_char_count": 116,
+          "chinese_ratio": 0.2886,
+          "is_empty": false,
+          "warnings": []
+        }
+      ],
+      "sampled_pages": [
+        {
+          "page_number": 1,
+          "excerpt": "本組織章程細則中文譯本只供參考，本組織章程細則中文譯本與英文版本的內容如 有任何差異或不一致，應以英文版本為準。 組織章程細則"
+        },
+        {
+          "page_number": 2,
+          "excerpt": "目 錄 頁碼 表 A 等所載的規例不適用 .............................................................................................1 釋義......................"
+        },
+        {
+          "page_number": 3,
+          "excerpt": "董事................................................................................................................................18 董事酬金..."
+        },
+        {
+          "page_number": 22,
+          "excerpt": "19 決定權（不超過本章程細則下董事會被賦予或可行使的權力），以及委任的 期限和規模的條件，均照董事會認為合適者而定；任何該等授權書或作爲契 據簽訂的其他文書均應包含董事會認為適合保障及方便與授權人進行交易的 人以及可授權任何此等授權人將歸於他的所有或任何權力、許可權及酌情決 定"
+        },
+        {
+          "page_number": 43,
+          "excerpt": "下表載列本公司各初始認購人於一九九九年八月十一日認購之初始股份數目及初始 股本總額。 初始認購人名稱、地址及描述 初始認購人初始認購股份 數目 Overseas Oil & Gas Corporation, Ltd. Bermuda Commercial Bank Buildin"
+        }
+      ]
+    },
+    {
+      "file_name": "nomination_committee_2025.pdf",
+      "relative_path": "data/cnooc/governance/nomination_committee_2025.pdf",
+      "document_title": "提名委员会章程",
+      "file_size_bytes": 210128,
+      "sha256": "87771080f15719a579b450a00ff29d71b3ac902974288adc0b05368d304c2241",
+      "page_count": 3,
+      "successfully_read_pages": 3,
+      "total_char_count": 2052,
+      "total_chinese_char_count": 1621,
+      "empty_text_pages": [],
+      "suspicious_garbled_pages": [],
+      "possibly_incomplete_pages": [],
+      "possible_table_pages": [
+        2,
+        3
+      ],
+      "page_errors": [],
+      "pages": [
+        {
+          "page_number": 1,
+          "char_count": 693,
+          "chinese_char_count": 560,
+          "chinese_ratio": 0.9076,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 2,
+          "char_count": 762,
+          "chinese_char_count": 618,
+          "chinese_ratio": 0.9115,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 3,
+          "char_count": 597,
+          "chinese_char_count": 443,
+          "chinese_ratio": 0.879,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        }
+      ],
+      "sampled_pages": [
+        {
+          "page_number": 1,
+          "excerpt": "1 中國海洋石油有限公司 提名委員會章程 宗旨 1. 提名委員會的宗旨是識別、甄選並向中國海洋石油有限公司（“公司”）董事會 （“董事會”）推薦擔任公司董事和高級管理人員的適當候選人、監督董事會表 現評核的過程、向董事會提出建議並監察公司的提名原則。提名委員會也負責履 行某些與企"
+        },
+        {
+          "page_number": 2,
+          "excerpt": "2 6. 提名委員會與管理層應有全面而不受限制的溝通。提名委員會可邀請管理層成員 或其他人出席提名委員會會議並在適當情況下提供有關信息。 會議記錄 7. 公司的公司秘書（須參加每次會議）應編制每次提名委員會的會議記錄並在合理 可行的情況下盡快將會議記錄的初稿發給所有提名委員會成員"
+        },
+        {
+          "page_number": 3,
+          "excerpt": "3 15. 提名委員會應 在適當情況下檢討董事會成員多元化政策以及每年在《企業管治報 告》內披露檢討結果。 16. 提名委員會應每年評估獨立非執行董事的獨立性。 17. 提名委員會應推薦適合的候選人為公司高級管理人員。 報告 18. 提名委員會應每年對提名委員會的有效性和本提名委"
+        }
+      ]
+    },
+    {
+      "file_name": "audit_committee.pdf",
+      "relative_path": "data/cnooc/governance/audit_committee.pdf",
+      "document_title": "审核委员会章程",
+      "file_size_bytes": 254076,
+      "sha256": "da4f7fb4651adb3ab81193ed88cb14a16ec4af47034fb390123cb594e6e53812",
+      "page_count": 10,
+      "successfully_read_pages": 10,
+      "total_char_count": 7608,
+      "total_chinese_char_count": 6025,
+      "empty_text_pages": [],
+      "suspicious_garbled_pages": [],
+      "possibly_incomplete_pages": [],
+      "possible_table_pages": [],
+      "page_errors": [],
+      "pages": [
+        {
+          "page_number": 1,
+          "char_count": 778,
+          "chinese_char_count": 612,
+          "chinese_ratio": 0.8882,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 2,
+          "char_count": 750,
+          "chinese_char_count": 602,
+          "chinese_ratio": 0.9149,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 3,
+          "char_count": 653,
+          "chinese_char_count": 473,
+          "chinese_ratio": 0.8616,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 4,
+          "char_count": 876,
+          "chinese_char_count": 702,
+          "chinese_ratio": 0.8966,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 5,
+          "char_count": 797,
+          "chinese_char_count": 627,
+          "chinese_ratio": 0.8843,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 6,
+          "char_count": 912,
+          "chinese_char_count": 722,
+          "chinese_ratio": 0.8925,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 7,
+          "char_count": 952,
+          "chinese_char_count": 784,
+          "chinese_ratio": 0.9138,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 8,
+          "char_count": 913,
+          "chinese_char_count": 758,
+          "chinese_ratio": 0.9233,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 9,
+          "char_count": 907,
+          "chinese_char_count": 712,
+          "chinese_ratio": 0.8867,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 10,
+          "char_count": 70,
+          "chinese_char_count": 33,
+          "chinese_ratio": 0.7174,
+          "is_empty": false,
+          "warnings": []
+        }
+      ],
+      "sampled_pages": [
+        {
+          "page_number": 1,
+          "excerpt": "1 中國海洋石油有限公司 審核委員會章程 宗旨 1. 審核委員會（ “審核委員會 ”）的宗旨是協助中國海洋石油有限公司（ “公 司”）董事會（“董事會”）履行其有關公司財務報表的完整性、 負責公司年 度審計的外部審計師 （“外部審計師”） 的獨立性、資質與表現、遵守法律法 規要求"
+        },
+        {
+          "page_number": 5,
+          "excerpt": "5 (b) 熟悉公司及其附屬公司（ 統稱“集團”）在編制財務報表時適用的財務 報告準則與慣例及每年與公司的外部審計師和管理層審核集團的財務和 會計政策和慣例 ，對因會計準則變更以外的原因作出會計政策、會計估 計變更或者重大會計政策更正进行審議； (c) 評估外部審計師所獲得的配合"
+        },
+        {
+          "page_number": 10,
+          "excerpt": "10 採用 董事會於 2025 年 8 月 27 日批准和採用本章程。 注：此為中文翻譯本，一切以英文本為准。"
+        }
+      ]
+    },
+    {
+      "file_name": "remuneration_committee.pdf",
+      "relative_path": "data/cnooc/governance/remuneration_committee.pdf",
+      "document_title": "薪酬委员会章程",
+      "file_size_bytes": 143185,
+      "sha256": "a42c8c43651c10159fbb1ddc7722c4bba858af540358670930cf1f17fbae450c",
+      "page_count": 4,
+      "successfully_read_pages": 4,
+      "total_char_count": 2770,
+      "total_chinese_char_count": 2194,
+      "empty_text_pages": [],
+      "suspicious_garbled_pages": [],
+      "possibly_incomplete_pages": [],
+      "possible_table_pages": [],
+      "page_errors": [],
+      "pages": [
+        {
+          "page_number": 1,
+          "char_count": 807,
+          "chinese_char_count": 649,
+          "chinese_ratio": 0.9154,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 2,
+          "char_count": 816,
+          "chinese_char_count": 663,
+          "chinese_ratio": 0.9157,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 3,
+          "char_count": 914,
+          "chinese_char_count": 713,
+          "chinese_ratio": 0.877,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 4,
+          "char_count": 233,
+          "chinese_char_count": 169,
+          "chinese_ratio": 0.8667,
+          "is_empty": false,
+          "warnings": []
+        }
+      ],
+      "sampled_pages": [
+        {
+          "page_number": 1,
+          "excerpt": "1 中國海洋石油有限公司 薪酬委員會章程 宗旨 1. 中國海洋石油有限公司（ “公司”）薪酬委員會（ “薪酬委員會 ”）的 宗旨是審核和批准公司各執行董事及公司高級管理人員的薪酬方案 ，就 公司所有董事及高級管理人員薪酬的政策及架構及 就設立正規且具透明 度的程序以制定該等薪酬政"
+        },
+        {
+          "page_number": 2,
+          "excerpt": "2 6. 薪酬委員會與管理層應有全面而不受限制的溝通。薪酬委員會可邀請管 理層成員或其他人出席薪酬委員會會議並在適當情況下提供有關信息。 會議記錄 7. 公司的公司秘書（須參加每次會議）應編制每次薪酬委員會的會議記錄 並在合理可行的情況下盡快將會議記錄的初稿發給所有薪酬委員會成員"
+        },
+        {
+          "page_number": 4,
+          "excerpt": "4 （受限於有關條款）並就其管理作出所有其他決定，但受限於法律及該 等方案和計劃規定的限制。薪酬委員會亦有權將某些日常管理職能轉授 予公司的高級管理人員。 其他事項 13. 本章程未盡事宜，按照適用法律法規、股票上市地證券監管機構和證券 交易所公佈的規範性文件和《中國海洋石油有限"
+        }
+      ]
+    },
+    {
+      "file_name": "strategy_sustainability_committee.pdf",
+      "relative_path": "data/cnooc/governance/strategy_sustainability_committee.pdf",
+      "document_title": "战略与可持续发展委员会章程",
+      "file_size_bytes": 144865,
+      "sha256": "351f71ad8fdd71dcfcdc950f401f128de079f8c60e69d6b3d106fb951d5c3d70",
+      "page_count": 3,
+      "successfully_read_pages": 3,
+      "total_char_count": 1595,
+      "total_chinese_char_count": 1233,
+      "empty_text_pages": [],
+      "suspicious_garbled_pages": [],
+      "possibly_incomplete_pages": [],
+      "possible_table_pages": [],
+      "page_errors": [],
+      "pages": [
+        {
+          "page_number": 1,
+          "char_count": 744,
+          "chinese_char_count": 590,
+          "chinese_ratio": 0.9091,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 2,
+          "char_count": 669,
+          "chinese_char_count": 514,
+          "chinese_ratio": 0.8847,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 3,
+          "char_count": 182,
+          "chinese_char_count": 129,
+          "chinese_ratio": 0.8377,
+          "is_empty": false,
+          "warnings": []
+        }
+      ],
+      "sampled_pages": [
+        {
+          "page_number": 1,
+          "excerpt": "1 中國海洋石油有限公司 戰略與可持續發展委員會章程 宗旨 1. 戰略與可持續發展委員會（ “戰略與可持續發展委員會 ”）的宗旨是就中國海 洋石油有限公司（ “公司”）長期發展戰略、重大經營計劃及投資决策、可持 續發展事宜等進行研究並向公司董事會（“董事會”）提出建議。 組織結構"
+        },
+        {
+          "page_number": 2,
+          "excerpt": "2 適當情況下向参会人员提供有關信息。 會議記錄 7. 公司秘書（須參加每次會議）應編制 戰略與可持續發展 委員會的會議記錄並在 合理可行的情況下盡快將會議記錄的初稿發給所有 戰略與可持續發展 委員會成 員徵求其意見。會議記錄的最終稿應在可行的情況下盡快完成並送至所有 戰略 與可"
+        },
+        {
+          "page_number": 3,
+          "excerpt": "3 其他事項 11. 公司應提供足夠的資源保證戰略與可持續發展委員會履行其職責。 12. 本章程未盡事宜，按照適用法律法規、股票上市地證券監管機構和證券交易所 公佈的規範性文件和《中國海洋石油有限公司組織章程細則》等有關規定執行。 採用 董事會於2024年10月28日批准和採用本"
+        }
+      ]
+    },
+    {
+      "file_name": "annual_report_2025.pdf",
+      "relative_path": "data/cnooc/finance/annual_report_2025.pdf",
+      "document_title": "2025年年报",
+      "file_size_bytes": 13546943,
+      "sha256": "178224caad277f43e1b64174de18d448c3a512e82a77b0a9c4a836b1e0eafa35",
+      "page_count": 155,
+      "successfully_read_pages": 155,
+      "total_char_count": 145828,
+      "total_chinese_char_count": 96360,
+      "empty_text_pages": [
+        1
+      ],
+      "suspicious_garbled_pages": [
+        80,
+        81,
+        82,
+        83,
+        85,
+        86,
+        87,
+        89,
+        91,
+        93,
+        94,
+        95,
+        97,
+        102,
+        103,
+        105,
+        106,
+        107,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128,
+        129,
+        130,
+        132,
+        134,
+        136,
+        137,
+        139,
+        140,
+        141,
+        142,
+        143,
+        145,
+        146,
+        147,
+        148,
+        150,
+        151,
+        153,
+        155
+      ],
+      "possibly_incomplete_pages": [],
+      "possible_table_pages": [
+        3,
+        4,
+        7,
+        11,
+        15,
+        16,
+        36,
+        60,
+        65,
+        71,
+        72,
+        73,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        87,
+        108,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        121,
+        122,
+        125,
+        126,
+        127,
+        128,
+        129,
+        130,
+        131,
+        132,
+        133,
+        135,
+        136,
+        139,
+        142,
+        145,
+        147,
+        148,
+        150,
+        152,
+        153
+      ],
+      "page_errors": [],
+      "pages": [
+        {
+          "page_number": 1,
+          "char_count": 0,
+          "chinese_char_count": 0,
+          "chinese_ratio": 0.0,
+          "is_empty": true,
+          "warnings": [
+            "empty_text"
+          ]
+        },
+        {
+          "page_number": 2,
+          "char_count": 1395,
+          "chinese_char_count": 1080,
+          "chinese_ratio": 0.8626,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 3,
+          "char_count": 275,
+          "chinese_char_count": 157,
+          "chinese_ratio": 0.7512,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 4,
+          "char_count": 869,
+          "chinese_char_count": 562,
+          "chinese_ratio": 0.7318,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 5,
+          "char_count": 454,
+          "chinese_char_count": 295,
+          "chinese_ratio": 0.7213,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 6,
+          "char_count": 684,
+          "chinese_char_count": 511,
+          "chinese_ratio": 0.8446,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 7,
+          "char_count": 971,
+          "chinese_char_count": 187,
+          "chinese_ratio": 0.2216,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 8,
+          "char_count": 625,
+          "chinese_char_count": 486,
+          "chinese_ratio": 0.8408,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 9,
+          "char_count": 1060,
+          "chinese_char_count": 842,
+          "chinese_ratio": 0.8574,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 10,
+          "char_count": 440,
+          "chinese_char_count": 327,
+          "chinese_ratio": 0.7995,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 11,
+          "char_count": 588,
+          "chinese_char_count": 135,
+          "chinese_ratio": 0.2755,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 12,
+          "char_count": 717,
+          "chinese_char_count": 501,
+          "chinese_ratio": 0.7731,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 13,
+          "char_count": 137,
+          "chinese_char_count": 65,
+          "chinese_ratio": 0.5652,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 14,
+          "char_count": 963,
+          "chinese_char_count": 724,
+          "chinese_ratio": 0.8153,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 15,
+          "char_count": 1369,
+          "chinese_char_count": 962,
+          "chinese_ratio": 0.7727,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 16,
+          "char_count": 1248,
+          "chinese_char_count": 821,
+          "chinese_ratio": 0.7195,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 17,
+          "char_count": 1148,
+          "chinese_char_count": 905,
+          "chinese_ratio": 0.853,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 18,
+          "char_count": 1068,
+          "chinese_char_count": 779,
+          "chinese_ratio": 0.8073,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 19,
+          "char_count": 1214,
+          "chinese_char_count": 997,
+          "chinese_ratio": 0.8792,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 20,
+          "char_count": 1399,
+          "chinese_char_count": 1140,
+          "chinese_ratio": 0.8729,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 21,
+          "char_count": 1266,
+          "chinese_char_count": 1084,
+          "chinese_ratio": 0.9094,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 22,
+          "char_count": 1286,
+          "chinese_char_count": 1071,
+          "chinese_ratio": 0.8947,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 23,
+          "char_count": 1046,
+          "chinese_char_count": 840,
+          "chinese_ratio": 0.8669,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 24,
+          "char_count": 1181,
+          "chinese_char_count": 893,
+          "chinese_ratio": 0.844,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 25,
+          "char_count": 925,
+          "chinese_char_count": 731,
+          "chinese_ratio": 0.8754,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 26,
+          "char_count": 790,
+          "chinese_char_count": 605,
+          "chinese_ratio": 0.8606,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 27,
+          "char_count": 851,
+          "chinese_char_count": 676,
+          "chinese_ratio": 0.8678,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 28,
+          "char_count": 724,
+          "chinese_char_count": 597,
+          "chinese_ratio": 0.9018,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 29,
+          "char_count": 954,
+          "chinese_char_count": 743,
+          "chinese_ratio": 0.8824,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 30,
+          "char_count": 740,
+          "chinese_char_count": 592,
+          "chinese_ratio": 0.8836,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 31,
+          "char_count": 843,
+          "chinese_char_count": 553,
+          "chinese_ratio": 0.7945,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 32,
+          "char_count": 900,
+          "chinese_char_count": 551,
+          "chinese_ratio": 0.7569,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 33,
+          "char_count": 1032,
+          "chinese_char_count": 843,
+          "chinese_ratio": 0.9045,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 34,
+          "char_count": 880,
+          "chinese_char_count": 661,
+          "chinese_ratio": 0.8367,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 35,
+          "char_count": 920,
+          "chinese_char_count": 669,
+          "chinese_ratio": 0.8352,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 36,
+          "char_count": 1037,
+          "chinese_char_count": 705,
+          "chinese_ratio": 0.8094,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 37,
+          "char_count": 1004,
+          "chinese_char_count": 790,
+          "chinese_ratio": 0.8876,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 38,
+          "char_count": 857,
+          "chinese_char_count": 691,
+          "chinese_ratio": 0.8848,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 39,
+          "char_count": 937,
+          "chinese_char_count": 654,
+          "chinese_ratio": 0.7703,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 40,
+          "char_count": 1037,
+          "chinese_char_count": 821,
+          "chinese_ratio": 0.8679,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 41,
+          "char_count": 899,
+          "chinese_char_count": 735,
+          "chinese_ratio": 0.8963,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 42,
+          "char_count": 731,
+          "chinese_char_count": 574,
+          "chinese_ratio": 0.8723,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 43,
+          "char_count": 752,
+          "chinese_char_count": 588,
+          "chinese_ratio": 0.8685,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 44,
+          "char_count": 1063,
+          "chinese_char_count": 814,
+          "chinese_ratio": 0.8641,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 45,
+          "char_count": 888,
+          "chinese_char_count": 653,
+          "chinese_ratio": 0.8415,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 46,
+          "char_count": 653,
+          "chinese_char_count": 513,
+          "chinese_ratio": 0.8799,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 47,
+          "char_count": 1190,
+          "chinese_char_count": 973,
+          "chinese_ratio": 0.8829,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 48,
+          "char_count": 1124,
+          "chinese_char_count": 930,
+          "chinese_ratio": 0.89,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 49,
+          "char_count": 1343,
+          "chinese_char_count": 1084,
+          "chinese_ratio": 0.8849,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 50,
+          "char_count": 1027,
+          "chinese_char_count": 833,
+          "chinese_ratio": 0.8768,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 51,
+          "char_count": 1041,
+          "chinese_char_count": 798,
+          "chinese_ratio": 0.821,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 52,
+          "char_count": 1291,
+          "chinese_char_count": 1087,
+          "chinese_ratio": 0.8991,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 53,
+          "char_count": 1477,
+          "chinese_char_count": 1212,
+          "chinese_ratio": 0.8751,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 54,
+          "char_count": 1146,
+          "chinese_char_count": 911,
+          "chinese_ratio": 0.857,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 55,
+          "char_count": 1219,
+          "chinese_char_count": 1011,
+          "chinese_ratio": 0.89,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 56,
+          "char_count": 897,
+          "chinese_char_count": 745,
+          "chinese_ratio": 0.889,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 57,
+          "char_count": 962,
+          "chinese_char_count": 780,
+          "chinese_ratio": 0.8864,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 58,
+          "char_count": 1246,
+          "chinese_char_count": 1050,
+          "chinese_ratio": 0.9021,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 59,
+          "char_count": 1244,
+          "chinese_char_count": 973,
+          "chinese_ratio": 0.8513,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 60,
+          "char_count": 1238,
+          "chinese_char_count": 964,
+          "chinese_ratio": 0.8441,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 61,
+          "char_count": 999,
+          "chinese_char_count": 729,
+          "chinese_ratio": 0.7993,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 62,
+          "char_count": 1241,
+          "chinese_char_count": 995,
+          "chinese_ratio": 0.866,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 63,
+          "char_count": 1134,
+          "chinese_char_count": 853,
+          "chinese_ratio": 0.829,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 64,
+          "char_count": 884,
+          "chinese_char_count": 631,
+          "chinese_ratio": 0.7927,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 65,
+          "char_count": 1327,
+          "chinese_char_count": 549,
+          "chinese_ratio": 0.4799,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 66,
+          "char_count": 1445,
+          "chinese_char_count": 725,
+          "chinese_ratio": 0.5923,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 67,
+          "char_count": 759,
+          "chinese_char_count": 550,
+          "chinese_ratio": 0.8088,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 68,
+          "char_count": 1049,
+          "chinese_char_count": 628,
+          "chinese_ratio": 0.6886,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 69,
+          "char_count": 912,
+          "chinese_char_count": 755,
+          "chinese_ratio": 0.8977,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 70,
+          "char_count": 958,
+          "chinese_char_count": 766,
+          "chinese_ratio": 0.8578,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 71,
+          "char_count": 1234,
+          "chinese_char_count": 676,
+          "chinese_ratio": 0.6185,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 72,
+          "char_count": 1418,
+          "chinese_char_count": 716,
+          "chinese_ratio": 0.5723,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 73,
+          "char_count": 1084,
+          "chinese_char_count": 732,
+          "chinese_ratio": 0.7539,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 74,
+          "char_count": 356,
+          "chinese_char_count": 262,
+          "chinese_ratio": 0.7939,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 75,
+          "char_count": 1099,
+          "chinese_char_count": 782,
+          "chinese_ratio": 0.7947,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 76,
+          "char_count": 642,
+          "chinese_char_count": 478,
+          "chinese_ratio": 0.8213,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 77,
+          "char_count": 848,
+          "chinese_char_count": 723,
+          "chinese_ratio": 0.9175,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 78,
+          "char_count": 906,
+          "chinese_char_count": 745,
+          "chinese_ratio": 0.8987,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 79,
+          "char_count": 284,
+          "chinese_char_count": 217,
+          "chinese_ratio": 0.8251,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 80,
+          "char_count": 831,
+          "chinese_char_count": 187,
+          "chinese_ratio": 0.275,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 81,
+          "char_count": 555,
+          "chinese_char_count": 251,
+          "chinese_ratio": 0.5433,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 82,
+          "char_count": 837,
+          "chinese_char_count": 217,
+          "chinese_ratio": 0.321,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 83,
+          "char_count": 405,
+          "chinese_char_count": 104,
+          "chinese_ratio": 0.322,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 84,
+          "char_count": 1496,
+          "chinese_char_count": 333,
+          "chinese_ratio": 0.2916,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 85,
+          "char_count": 791,
+          "chinese_char_count": 259,
+          "chinese_ratio": 0.3924,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 86,
+          "char_count": 863,
+          "chinese_char_count": 649,
+          "chinese_ratio": 0.8257,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters"
+          ]
+        },
+        {
+          "page_number": 87,
+          "char_count": 956,
+          "chinese_char_count": 642,
+          "chinese_ratio": 0.7544,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 88,
+          "char_count": 1074,
+          "chinese_char_count": 890,
+          "chinese_ratio": 0.8927,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 89,
+          "char_count": 945,
+          "chinese_char_count": 759,
+          "chinese_ratio": 0.8674,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters"
+          ]
+        },
+        {
+          "page_number": 90,
+          "char_count": 1046,
+          "chinese_char_count": 865,
+          "chinese_ratio": 0.8872,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 91,
+          "char_count": 1017,
+          "chinese_char_count": 778,
+          "chinese_ratio": 0.8233,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters"
+          ]
+        },
+        {
+          "page_number": 92,
+          "char_count": 1149,
+          "chinese_char_count": 935,
+          "chinese_ratio": 0.8796,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 93,
+          "char_count": 954,
+          "chinese_char_count": 754,
+          "chinese_ratio": 0.8597,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters"
+          ]
+        },
+        {
+          "page_number": 94,
+          "char_count": 926,
+          "chinese_char_count": 751,
+          "chinese_ratio": 0.8722,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters"
+          ]
+        },
+        {
+          "page_number": 95,
+          "char_count": 855,
+          "chinese_char_count": 671,
+          "chinese_ratio": 0.8515,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters"
+          ]
+        },
+        {
+          "page_number": 96,
+          "char_count": 1273,
+          "chinese_char_count": 1060,
+          "chinese_ratio": 0.893,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 97,
+          "char_count": 1007,
+          "chinese_char_count": 804,
+          "chinese_ratio": 0.8654,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters"
+          ]
+        },
+        {
+          "page_number": 98,
+          "char_count": 1186,
+          "chinese_char_count": 971,
+          "chinese_ratio": 0.8819,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 99,
+          "char_count": 1135,
+          "chinese_char_count": 927,
+          "chinese_ratio": 0.8837,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 100,
+          "char_count": 1160,
+          "chinese_char_count": 971,
+          "chinese_ratio": 0.8941,
+          "is_empty": false,
+          "warnings": [
+            "repeated_lines"
+          ]
+        },
+        {
+          "page_number": 101,
+          "char_count": 1047,
+          "chinese_char_count": 862,
+          "chinese_ratio": 0.8859,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 102,
+          "char_count": 986,
+          "chinese_char_count": 808,
+          "chinese_ratio": 0.8802,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters"
+          ]
+        },
+        {
+          "page_number": 103,
+          "char_count": 863,
+          "chinese_char_count": 690,
+          "chinese_ratio": 0.8614,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters"
+          ]
+        },
+        {
+          "page_number": 104,
+          "char_count": 1149,
+          "chinese_char_count": 931,
+          "chinese_ratio": 0.88,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 105,
+          "char_count": 1002,
+          "chinese_char_count": 800,
+          "chinese_ratio": 0.8667,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters"
+          ]
+        },
+        {
+          "page_number": 106,
+          "char_count": 887,
+          "chinese_char_count": 697,
+          "chinese_ratio": 0.8542,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters"
+          ]
+        },
+        {
+          "page_number": 107,
+          "char_count": 721,
+          "chinese_char_count": 531,
+          "chinese_ratio": 0.8107,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters"
+          ]
+        },
+        {
+          "page_number": 108,
+          "char_count": 1752,
+          "chinese_char_count": 299,
+          "chinese_ratio": 0.213,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 109,
+          "char_count": 878,
+          "chinese_char_count": 449,
+          "chinese_ratio": 0.5955,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters"
+          ]
+        },
+        {
+          "page_number": 110,
+          "char_count": 573,
+          "chinese_char_count": 179,
+          "chinese_ratio": 0.4022,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 111,
+          "char_count": 860,
+          "chinese_char_count": 283,
+          "chinese_ratio": 0.4307,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 112,
+          "char_count": 1038,
+          "chinese_char_count": 530,
+          "chinese_ratio": 0.6272,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 113,
+          "char_count": 794,
+          "chinese_char_count": 486,
+          "chinese_ratio": 0.7137,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 114,
+          "char_count": 762,
+          "chinese_char_count": 364,
+          "chinese_ratio": 0.5549,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 115,
+          "char_count": 619,
+          "chinese_char_count": 281,
+          "chinese_ratio": 0.5488,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 116,
+          "char_count": 786,
+          "chinese_char_count": 346,
+          "chinese_ratio": 0.5172,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 117,
+          "char_count": 888,
+          "chinese_char_count": 656,
+          "chinese_ratio": 0.801,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 118,
+          "char_count": 808,
+          "chinese_char_count": 464,
+          "chinese_ratio": 0.661,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 119,
+          "char_count": 924,
+          "chinese_char_count": 211,
+          "chinese_ratio": 0.2762,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 120,
+          "char_count": 525,
+          "chinese_char_count": 383,
+          "chinese_ratio": 0.793,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters"
+          ]
+        },
+        {
+          "page_number": 121,
+          "char_count": 1457,
+          "chinese_char_count": 432,
+          "chinese_ratio": 0.3757,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 122,
+          "char_count": 1303,
+          "chinese_char_count": 410,
+          "chinese_ratio": 0.402,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 123,
+          "char_count": 614,
+          "chinese_char_count": 476,
+          "chinese_ratio": 0.8336,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters"
+          ]
+        },
+        {
+          "page_number": 124,
+          "char_count": 903,
+          "chinese_char_count": 365,
+          "chinese_ratio": 0.4746,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters"
+          ]
+        },
+        {
+          "page_number": 125,
+          "char_count": 716,
+          "chinese_char_count": 440,
+          "chinese_ratio": 0.7166,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 126,
+          "char_count": 765,
+          "chinese_char_count": 329,
+          "chinese_ratio": 0.5247,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 127,
+          "char_count": 807,
+          "chinese_char_count": 479,
+          "chinese_ratio": 0.6814,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 128,
+          "char_count": 618,
+          "chinese_char_count": 318,
+          "chinese_ratio": 0.6163,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 129,
+          "char_count": 510,
+          "chinese_char_count": 253,
+          "chinese_ratio": 0.5925,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 130,
+          "char_count": 822,
+          "chinese_char_count": 223,
+          "chinese_ratio": 0.3614,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters",
+            "possible_table_layout",
+            "repeated_lines"
+          ]
+        },
+        {
+          "page_number": 131,
+          "char_count": 1301,
+          "chinese_char_count": 382,
+          "chinese_ratio": 0.3463,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 132,
+          "char_count": 802,
+          "chinese_char_count": 294,
+          "chinese_ratio": 0.4441,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 133,
+          "char_count": 1117,
+          "chinese_char_count": 748,
+          "chinese_ratio": 0.7413,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 134,
+          "char_count": 1053,
+          "chinese_char_count": 718,
+          "chinese_ratio": 0.7471,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters"
+          ]
+        },
+        {
+          "page_number": 135,
+          "char_count": 1091,
+          "chinese_char_count": 708,
+          "chinese_ratio": 0.7217,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 136,
+          "char_count": 812,
+          "chinese_char_count": 405,
+          "chinese_ratio": 0.6009,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 137,
+          "char_count": 544,
+          "chinese_char_count": 337,
+          "chinese_ratio": 0.6948,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters"
+          ]
+        },
+        {
+          "page_number": 138,
+          "char_count": 1711,
+          "chinese_char_count": 1329,
+          "chinese_ratio": 0.8422,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 139,
+          "char_count": 1138,
+          "chinese_char_count": 415,
+          "chinese_ratio": 0.4396,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 140,
+          "char_count": 750,
+          "chinese_char_count": 531,
+          "chinese_ratio": 0.7809,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters"
+          ]
+        },
+        {
+          "page_number": 141,
+          "char_count": 673,
+          "chinese_char_count": 508,
+          "chinese_ratio": 0.8194,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters"
+          ]
+        },
+        {
+          "page_number": 142,
+          "char_count": 804,
+          "chinese_char_count": 377,
+          "chinese_ratio": 0.6022,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 143,
+          "char_count": 1058,
+          "chinese_char_count": 768,
+          "chinese_ratio": 0.8033,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters"
+          ]
+        },
+        {
+          "page_number": 144,
+          "char_count": 1490,
+          "chinese_char_count": 1166,
+          "chinese_ratio": 0.8407,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 145,
+          "char_count": 1027,
+          "chinese_char_count": 423,
+          "chinese_ratio": 0.4959,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 146,
+          "char_count": 656,
+          "chinese_char_count": 398,
+          "chinese_ratio": 0.6838,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters"
+          ]
+        },
+        {
+          "page_number": 147,
+          "char_count": 590,
+          "chinese_char_count": 213,
+          "chinese_ratio": 0.4591,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 148,
+          "char_count": 762,
+          "chinese_char_count": 250,
+          "chinese_ratio": 0.4,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 149,
+          "char_count": 1132,
+          "chinese_char_count": 875,
+          "chinese_ratio": 0.843,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 150,
+          "char_count": 1250,
+          "chinese_char_count": 297,
+          "chinese_ratio": 0.3235,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 151,
+          "char_count": 871,
+          "chinese_char_count": 289,
+          "chinese_ratio": 0.4488,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters"
+          ]
+        },
+        {
+          "page_number": 152,
+          "char_count": 1224,
+          "chinese_char_count": 588,
+          "chinese_ratio": 0.5429,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 153,
+          "char_count": 508,
+          "chinese_char_count": 187,
+          "chinese_ratio": 0.4193,
+          "is_empty": false,
+          "warnings": [
+            "unusual_non_latin_letters",
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 154,
+          "char_count": 715,
+          "chinese_char_count": 415,
+          "chinese_ratio": 0.6694,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 155,
+          "char_count": 67,
+          "chinese_char_count": 0,
+          "chinese_ratio": 0.0,
+          "is_empty": false,
+          "warnings": [
+            "replacement_characters"
+          ]
+        }
+      ],
+      "sampled_pages": [
+        {
+          "page_number": 1,
+          "excerpt": ""
+        },
+        {
+          "page_number": 3,
+          "excerpt": "目錄 2 公司簡介 5 財務摘要 6 董事長致辭 8 業務回顧 9 主要經營指標 10 勘探 10 工程建設與開發生產 12 分區域回顧 15 銷售與市場 15 科技發展 15 低碳發展 16 健康 、安全 、環保 16 企業公民 16 人力資源 17 風險管理及內部控制 17 "
+        },
+        {
+          "page_number": 4,
+          "excerpt": "ʕ਷ऎݱͩذϞࠢʮ̡ ɚཧɚʞϋϋజ 2 ʮ̡ᔊʧ 中國海洋石油有限公司於一九九九年八月在香港特別行政區 （以下簡稱 「香港」 ） 註冊成立 ，並於二零零一年二月二十八日 在香港聯合交易所 （以下簡稱 「香港聯交所」 ） （股票代碼：00883） 掛牌上市 。二零零一年七月 ，本"
+        },
+        {
+          "page_number": 7,
+          "excerpt": "ʕ਷ऎݱͩذϞࠢʮ̡ ɚཧɚʞϋϋజ 5 ৌਕ࿜ࠅ הϞږᕘѩ˸ɛ͏࿆ϵຬʩމఊЗ 合併損益及其他綜合收益表 （已經審計） 截至十二月三十一日止年度 二零二一年 二零二二年 二零二三年 二零二四年 二零二五年 收入總計 246,111 422,230 416,609 420,"
+        },
+        {
+          "page_number": 11,
+          "excerpt": "9 ุਕΫᚥ ʕ਷ऎݱͩذϞࠢʮ̡ ɚཧɚʞϋϋజ 主要經營指標 2025年 2024年 石油液體 天然氣 油氣合計 石油液體 天然氣 油氣合計 （百萬桶） （十億 立方英尺） （百萬桶 油當量） （百萬桶） （十億 立方英尺） （百萬桶 油當量） 淨產量 中國 401.8 79"
+        },
+        {
+          "page_number": 15,
+          "excerpt": "13 ุਕΫᚥ ʕ਷ऎݱͩذϞࠢʮ̡ ɚཧɚʞϋϋజ 渤海是中國最大的原油生產基地，同時也是公司最主要 的原油產區。二零二五年，公司在渤海共獲得3 個新發 現並成功評價10 個含油氣構造。其中，成功評價秦皇島 29-6 億噸級油田，展現了渤海淺層巖性領域良好的勘探 前景 。年內 "
+        },
+        {
+          "page_number": 16,
+          "excerpt": "14 ุਕΫᚥ ʕ਷ऎݱͩذϞࠢʮ̡ ɚཧɚʞϋϋజ 公司在大洋洲的油氣資產主要位於澳大利亞。澳大利亞 西北大陸架液化天然氣項目向包括中國廣東大鵬液化天然 氣終端在內的客戶供氣，增量氣以現貨LNG 形式自主銷 售。二零二五年，西北大陸架液化天然氣項目生產形勢 良好 ，實現增量氣超"
+        },
+        {
+          "page_number": 36,
+          "excerpt": "34 Άุ၍طజѓ ʕ਷ऎݱͩذϞࠢʮ̡ ɚཧɚʞϋϋజ 二零二五年召開的董事會會議各董事的出席率： 參加董事會情況 出席會議次數 （會議合共次數十三次） 本年度參加 董事會次數 是否連續 兩次未親自 參加會議 缺席次數 由董事出席 委託出席 非執行董事 張傳江（董事長） （附註"
+        },
+        {
+          "page_number": 60,
+          "excerpt": "58 ໨ԫึజѓࣣ ʕ਷ऎݱͩذϞࠢʮ̡ ɚཧɚʞϋϋజ 公司最近三個會計年度累計現金分紅金額為人民幣 170,114 百萬元 。公司最近三個會計年度合併報表歸屬於 上市公司普通股股東的年均淨利潤為人民幣127,954 百萬 元，最近一個會計年度合併報表歸屬於上市公司普通股 股東"
+        },
+        {
+          "page_number": 65,
+          "excerpt": "63 ໨ԫึజѓࣣ ʕ਷ऎݱͩذϞࠢʮ̡ ɚཧɚʞϋϋజ 上述債券均非香港聯交所或上交所上市債券 。 除本年報所披露外，於截至二零二五年十二月三十一日 之年度內，本公司或其任何附屬公司並無購入、出售或 贖回上市證券 （包括出售庫存股份） 。截至二零二五年十二 月三十一日 ，本公司"
+        },
+        {
+          "page_number": 78,
+          "excerpt": "ዹͭࣨᅰࢪజѓ 76 ʕ਷ऎݱͩذϞࠢʮ̡ ɚཧɚʞϋϋజ 核數師就審計合併財務報表承擔的責任（續） 在根據香港審計準則執行審計工作的過程中 ，我們運用了專業判斷 ，保持了專業懷疑態度 。我們亦： • 識別和評估由於舞弊或錯誤而導致合併財務報表存在重大錯報的風險 ，設計及執行審計"
+        },
+        {
+          "page_number": 155,
+          "excerpt": "G;r: di 00 iii i111� cnaac 202s fFm,iiS $ � it j$ E 5m � �& � P]"
+        }
+      ]
+    },
+    {
+      "file_name": "esg_report_2025.pdf",
+      "relative_path": "data/cnooc/sustainability/esg_report_2025.pdf",
+      "document_title": "2025年环境、社会及管治（ESG）报告",
+      "file_size_bytes": 37903396,
+      "sha256": "65ad403c7feb0398234fa374668a6c8a0386c73efc20e1ac01510547227d4777",
+      "page_count": 136,
+      "successfully_read_pages": 136,
+      "total_char_count": 99386,
+      "total_chinese_char_count": 73278,
+      "empty_text_pages": [],
+      "suspicious_garbled_pages": [],
+      "possibly_incomplete_pages": [
+        1,
+        31,
+        45,
+        61,
+        75,
+        101,
+        113
+      ],
+      "possible_table_pages": [
+        4,
+        5,
+        9,
+        16,
+        24,
+        34,
+        47,
+        50,
+        66,
+        68,
+        73,
+        77,
+        78,
+        79,
+        82,
+        85,
+        88,
+        89,
+        91,
+        95,
+        96,
+        104,
+        105,
+        108,
+        109,
+        110,
+        114,
+        117,
+        122,
+        124,
+        126,
+        127,
+        128,
+        129,
+        130,
+        132,
+        133,
+        134,
+        135
+      ],
+      "page_errors": [],
+      "pages": [
+        {
+          "page_number": 1,
+          "char_count": 38,
+          "chinese_char_count": 23,
+          "chinese_ratio": 0.6765,
+          "is_empty": false,
+          "warnings": [
+            "very_little_text"
+          ]
+        },
+        {
+          "page_number": 2,
+          "char_count": 1004,
+          "chinese_char_count": 728,
+          "chinese_ratio": 0.7939,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 3,
+          "char_count": 753,
+          "chinese_char_count": 582,
+          "chinese_ratio": 0.841,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 4,
+          "char_count": 198,
+          "chinese_char_count": 110,
+          "chinese_ratio": 0.6962,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 5,
+          "char_count": 152,
+          "chinese_char_count": 74,
+          "chinese_ratio": 0.6379,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 6,
+          "char_count": 1218,
+          "chinese_char_count": 940,
+          "chinese_ratio": 0.8423,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 7,
+          "char_count": 735,
+          "chinese_char_count": 612,
+          "chinese_ratio": 0.8693,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 8,
+          "char_count": 171,
+          "chinese_char_count": 113,
+          "chinese_ratio": 0.7434,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 9,
+          "char_count": 220,
+          "chinese_char_count": 139,
+          "chinese_ratio": 0.724,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 10,
+          "char_count": 315,
+          "chinese_char_count": 209,
+          "chinese_ratio": 0.7741,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 11,
+          "char_count": 290,
+          "chinese_char_count": 169,
+          "chinese_ratio": 0.738,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 12,
+          "char_count": 669,
+          "chinese_char_count": 551,
+          "chinese_ratio": 0.9229,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 13,
+          "char_count": 449,
+          "chinese_char_count": 350,
+          "chinese_ratio": 0.8838,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 14,
+          "char_count": 252,
+          "chinese_char_count": 198,
+          "chinese_ratio": 0.8319,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 15,
+          "char_count": 719,
+          "chinese_char_count": 612,
+          "chinese_ratio": 0.9189,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 16,
+          "char_count": 885,
+          "chinese_char_count": 629,
+          "chinese_ratio": 0.7718,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 17,
+          "char_count": 1456,
+          "chinese_char_count": 1199,
+          "chinese_ratio": 0.9118,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 18,
+          "char_count": 995,
+          "chinese_char_count": 810,
+          "chinese_ratio": 0.9091,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 19,
+          "char_count": 1019,
+          "chinese_char_count": 817,
+          "chinese_ratio": 0.9018,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 20,
+          "char_count": 1020,
+          "chinese_char_count": 827,
+          "chinese_ratio": 0.9048,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 21,
+          "char_count": 582,
+          "chinese_char_count": 495,
+          "chinese_ratio": 0.8824,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 22,
+          "char_count": 994,
+          "chinese_char_count": 828,
+          "chinese_ratio": 0.9119,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 23,
+          "char_count": 615,
+          "chinese_char_count": 457,
+          "chinese_ratio": 0.8117,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 24,
+          "char_count": 806,
+          "chinese_char_count": 596,
+          "chinese_ratio": 0.8312,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 25,
+          "char_count": 611,
+          "chinese_char_count": 465,
+          "chinese_ratio": 0.8101,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 26,
+          "char_count": 438,
+          "chinese_char_count": 361,
+          "chinese_ratio": 0.8555,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 27,
+          "char_count": 1062,
+          "chinese_char_count": 896,
+          "chinese_ratio": 0.8863,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 28,
+          "char_count": 803,
+          "chinese_char_count": 631,
+          "chinese_ratio": 0.8391,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 29,
+          "char_count": 565,
+          "chinese_char_count": 451,
+          "chinese_ratio": 0.8656,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 30,
+          "char_count": 263,
+          "chinese_char_count": 197,
+          "chinese_ratio": 0.8312,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 31,
+          "char_count": 13,
+          "chinese_char_count": 4,
+          "chinese_ratio": 0.4,
+          "is_empty": false,
+          "warnings": [
+            "very_little_text"
+          ]
+        },
+        {
+          "page_number": 32,
+          "char_count": 918,
+          "chinese_char_count": 761,
+          "chinese_ratio": 0.8921,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 33,
+          "char_count": 481,
+          "chinese_char_count": 352,
+          "chinese_ratio": 0.8691,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 34,
+          "char_count": 832,
+          "chinese_char_count": 626,
+          "chinese_ratio": 0.8183,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 35,
+          "char_count": 927,
+          "chinese_char_count": 723,
+          "chinese_ratio": 0.8607,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 36,
+          "char_count": 670,
+          "chinese_char_count": 479,
+          "chinese_ratio": 0.8064,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 37,
+          "char_count": 813,
+          "chinese_char_count": 619,
+          "chinese_ratio": 0.8388,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 38,
+          "char_count": 1033,
+          "chinese_char_count": 768,
+          "chinese_ratio": 0.7869,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 39,
+          "char_count": 514,
+          "chinese_char_count": 399,
+          "chinese_ratio": 0.8731,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 40,
+          "char_count": 461,
+          "chinese_char_count": 367,
+          "chinese_ratio": 0.8822,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 41,
+          "char_count": 577,
+          "chinese_char_count": 479,
+          "chinese_ratio": 0.8805,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 42,
+          "char_count": 1154,
+          "chinese_char_count": 892,
+          "chinese_ratio": 0.8439,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 43,
+          "char_count": 749,
+          "chinese_char_count": 630,
+          "chinese_ratio": 0.8799,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 44,
+          "char_count": 121,
+          "chinese_char_count": 92,
+          "chinese_ratio": 0.8288,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 45,
+          "char_count": 13,
+          "chinese_char_count": 4,
+          "chinese_ratio": 0.4,
+          "is_empty": false,
+          "warnings": [
+            "very_little_text"
+          ]
+        },
+        {
+          "page_number": 46,
+          "char_count": 983,
+          "chinese_char_count": 834,
+          "chinese_ratio": 0.9006,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 47,
+          "char_count": 880,
+          "chinese_char_count": 631,
+          "chinese_ratio": 0.7714,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 48,
+          "char_count": 997,
+          "chinese_char_count": 830,
+          "chinese_ratio": 0.8691,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 49,
+          "char_count": 911,
+          "chinese_char_count": 758,
+          "chinese_ratio": 0.8733,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 50,
+          "char_count": 1041,
+          "chinese_char_count": 786,
+          "chinese_ratio": 0.8205,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 51,
+          "char_count": 305,
+          "chinese_char_count": 233,
+          "chinese_ratio": 0.8412,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 52,
+          "char_count": 610,
+          "chinese_char_count": 509,
+          "chinese_ratio": 0.8821,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 53,
+          "char_count": 684,
+          "chinese_char_count": 567,
+          "chinese_ratio": 0.875,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 54,
+          "char_count": 862,
+          "chinese_char_count": 719,
+          "chinese_ratio": 0.8779,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 55,
+          "char_count": 750,
+          "chinese_char_count": 632,
+          "chinese_ratio": 0.8914,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 56,
+          "char_count": 983,
+          "chinese_char_count": 842,
+          "chinese_ratio": 0.8891,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 57,
+          "char_count": 490,
+          "chinese_char_count": 364,
+          "chinese_ratio": 0.8349,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 58,
+          "char_count": 778,
+          "chinese_char_count": 647,
+          "chinese_ratio": 0.8791,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 59,
+          "char_count": 216,
+          "chinese_char_count": 160,
+          "chinese_ratio": 0.804,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 60,
+          "char_count": 195,
+          "chinese_char_count": 143,
+          "chinese_ratio": 0.7989,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 61,
+          "char_count": 13,
+          "chinese_char_count": 4,
+          "chinese_ratio": 0.4,
+          "is_empty": false,
+          "warnings": [
+            "very_little_text"
+          ]
+        },
+        {
+          "page_number": 62,
+          "char_count": 813,
+          "chinese_char_count": 663,
+          "chinese_ratio": 0.8747,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 63,
+          "char_count": 868,
+          "chinese_char_count": 732,
+          "chinese_ratio": 0.9037,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 64,
+          "char_count": 714,
+          "chinese_char_count": 503,
+          "chinese_ratio": 0.8022,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 65,
+          "char_count": 656,
+          "chinese_char_count": 535,
+          "chinese_ratio": 0.8887,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 66,
+          "char_count": 882,
+          "chinese_char_count": 539,
+          "chinese_ratio": 0.7284,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 67,
+          "char_count": 833,
+          "chinese_char_count": 666,
+          "chinese_ratio": 0.8528,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 68,
+          "char_count": 745,
+          "chinese_char_count": 576,
+          "chinese_ratio": 0.8433,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 69,
+          "char_count": 614,
+          "chinese_char_count": 486,
+          "chinese_ratio": 0.8482,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 70,
+          "char_count": 773,
+          "chinese_char_count": 602,
+          "chinese_ratio": 0.8396,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 71,
+          "char_count": 544,
+          "chinese_char_count": 441,
+          "chinese_ratio": 0.875,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 72,
+          "char_count": 916,
+          "chinese_char_count": 780,
+          "chinese_ratio": 0.8854,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 73,
+          "char_count": 1032,
+          "chinese_char_count": 837,
+          "chinese_ratio": 0.8656,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 74,
+          "char_count": 198,
+          "chinese_char_count": 159,
+          "chinese_ratio": 0.8595,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 75,
+          "char_count": 13,
+          "chinese_char_count": 4,
+          "chinese_ratio": 0.4,
+          "is_empty": false,
+          "warnings": [
+            "very_little_text"
+          ]
+        },
+        {
+          "page_number": 76,
+          "char_count": 1001,
+          "chinese_char_count": 754,
+          "chinese_ratio": 0.8021,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 77,
+          "char_count": 1060,
+          "chinese_char_count": 791,
+          "chinese_ratio": 0.808,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 78,
+          "char_count": 879,
+          "chinese_char_count": 662,
+          "chinese_ratio": 0.8133,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 79,
+          "char_count": 1010,
+          "chinese_char_count": 578,
+          "chinese_ratio": 0.6598,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 80,
+          "char_count": 622,
+          "chinese_char_count": 517,
+          "chinese_ratio": 0.9007,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 81,
+          "char_count": 576,
+          "chinese_char_count": 484,
+          "chinese_ratio": 0.9132,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 82,
+          "char_count": 775,
+          "chinese_char_count": 606,
+          "chinese_ratio": 0.8359,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 83,
+          "char_count": 577,
+          "chinese_char_count": 431,
+          "chinese_ratio": 0.8132,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 84,
+          "char_count": 799,
+          "chinese_char_count": 583,
+          "chinese_ratio": 0.7975,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 85,
+          "char_count": 684,
+          "chinese_char_count": 420,
+          "chinese_ratio": 0.6931,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 86,
+          "char_count": 589,
+          "chinese_char_count": 438,
+          "chinese_ratio": 0.8202,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 87,
+          "char_count": 993,
+          "chinese_char_count": 806,
+          "chinese_ratio": 0.8676,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 88,
+          "char_count": 717,
+          "chinese_char_count": 526,
+          "chinese_ratio": 0.8018,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 89,
+          "char_count": 715,
+          "chinese_char_count": 514,
+          "chinese_ratio": 0.7969,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 90,
+          "char_count": 773,
+          "chinese_char_count": 551,
+          "chinese_ratio": 0.7761,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 91,
+          "char_count": 864,
+          "chinese_char_count": 643,
+          "chinese_ratio": 0.8098,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 92,
+          "char_count": 822,
+          "chinese_char_count": 569,
+          "chinese_ratio": 0.7487,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 93,
+          "char_count": 1086,
+          "chinese_char_count": 883,
+          "chinese_ratio": 0.8691,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 94,
+          "char_count": 944,
+          "chinese_char_count": 813,
+          "chinese_ratio": 0.8974,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 95,
+          "char_count": 835,
+          "chinese_char_count": 598,
+          "chinese_ratio": 0.7973,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 96,
+          "char_count": 925,
+          "chinese_char_count": 765,
+          "chinese_ratio": 0.8664,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 97,
+          "char_count": 627,
+          "chinese_char_count": 500,
+          "chinese_ratio": 0.8446,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 98,
+          "char_count": 880,
+          "chinese_char_count": 683,
+          "chinese_ratio": 0.838,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 99,
+          "char_count": 438,
+          "chinese_char_count": 349,
+          "chinese_ratio": 0.8369,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 100,
+          "char_count": 147,
+          "chinese_char_count": 112,
+          "chinese_ratio": 0.8175,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 101,
+          "char_count": 13,
+          "chinese_char_count": 4,
+          "chinese_ratio": 0.4,
+          "is_empty": false,
+          "warnings": [
+            "very_little_text"
+          ]
+        },
+        {
+          "page_number": 102,
+          "char_count": 927,
+          "chinese_char_count": 792,
+          "chinese_ratio": 0.8919,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 103,
+          "char_count": 946,
+          "chinese_char_count": 734,
+          "chinese_ratio": 0.8294,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 104,
+          "char_count": 605,
+          "chinese_char_count": 384,
+          "chinese_ratio": 0.73,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 105,
+          "char_count": 407,
+          "chinese_char_count": 210,
+          "chinese_ratio": 0.6213,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 106,
+          "char_count": 1162,
+          "chinese_char_count": 1013,
+          "chinese_ratio": 0.9045,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 107,
+          "char_count": 646,
+          "chinese_char_count": 520,
+          "chinese_ratio": 0.8581,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 108,
+          "char_count": 860,
+          "chinese_char_count": 601,
+          "chinese_ratio": 0.7484,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 109,
+          "char_count": 348,
+          "chinese_char_count": 185,
+          "chinese_ratio": 0.6126,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 110,
+          "char_count": 843,
+          "chinese_char_count": 655,
+          "chinese_ratio": 0.843,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 111,
+          "char_count": 987,
+          "chinese_char_count": 814,
+          "chinese_ratio": 0.8916,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 112,
+          "char_count": 179,
+          "chinese_char_count": 139,
+          "chinese_ratio": 0.8225,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 113,
+          "char_count": 14,
+          "chinese_char_count": 4,
+          "chinese_ratio": 0.3636,
+          "is_empty": false,
+          "warnings": [
+            "very_little_text"
+          ]
+        },
+        {
+          "page_number": 114,
+          "char_count": 914,
+          "chinese_char_count": 590,
+          "chinese_ratio": 0.6917,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 115,
+          "char_count": 900,
+          "chinese_char_count": 732,
+          "chinese_ratio": 0.8788,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 116,
+          "char_count": 868,
+          "chinese_char_count": 701,
+          "chinese_ratio": 0.8633,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 117,
+          "char_count": 780,
+          "chinese_char_count": 632,
+          "chinese_ratio": 0.8802,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 118,
+          "char_count": 713,
+          "chinese_char_count": 587,
+          "chinese_ratio": 0.8787,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 119,
+          "char_count": 858,
+          "chinese_char_count": 739,
+          "chinese_ratio": 0.9034,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 120,
+          "char_count": 961,
+          "chinese_char_count": 840,
+          "chinese_ratio": 0.914,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 121,
+          "char_count": 917,
+          "chinese_char_count": 768,
+          "chinese_ratio": 0.8817,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 122,
+          "char_count": 782,
+          "chinese_char_count": 606,
+          "chinese_ratio": 0.8405,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 123,
+          "char_count": 776,
+          "chinese_char_count": 636,
+          "chinese_ratio": 0.8736,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 124,
+          "char_count": 830,
+          "chinese_char_count": 583,
+          "chinese_ratio": 0.7868,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 125,
+          "char_count": 763,
+          "chinese_char_count": 627,
+          "chinese_ratio": 0.8881,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 126,
+          "char_count": 1292,
+          "chinese_char_count": 706,
+          "chinese_ratio": 0.6264,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 127,
+          "char_count": 957,
+          "chinese_char_count": 383,
+          "chinese_ratio": 0.5134,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 128,
+          "char_count": 1223,
+          "chinese_char_count": 433,
+          "chinese_ratio": 0.4441,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 129,
+          "char_count": 855,
+          "chinese_char_count": 404,
+          "chinese_ratio": 0.6021,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 130,
+          "char_count": 1171,
+          "chinese_char_count": 779,
+          "chinese_ratio": 0.7751,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 131,
+          "char_count": 1044,
+          "chinese_char_count": 884,
+          "chinese_ratio": 0.8966,
+          "is_empty": false,
+          "warnings": []
+        },
+        {
+          "page_number": 132,
+          "char_count": 1715,
+          "chinese_char_count": 651,
+          "chinese_ratio": 0.4369,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 133,
+          "char_count": 1691,
+          "chinese_char_count": 639,
+          "chinese_ratio": 0.4353,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 134,
+          "char_count": 1578,
+          "chinese_char_count": 624,
+          "chinese_ratio": 0.4422,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 135,
+          "char_count": 1560,
+          "chinese_char_count": 617,
+          "chinese_ratio": 0.4426,
+          "is_empty": false,
+          "warnings": [
+            "possible_table_layout"
+          ]
+        },
+        {
+          "page_number": 136,
+          "char_count": 91,
+          "chinese_char_count": 40,
+          "chinese_ratio": 0.5,
+          "is_empty": false,
+          "warnings": []
+        }
+      ],
+      "sampled_pages": [
+        {
+          "page_number": 1,
+          "excerpt": "公司管治 1 2025 中國海洋石油有限公司 環境、社會及管治（ESG）報告"
+        },
+        {
+          "page_number": 4,
+          "excerpt": "4 董事長致辭 關於我們 數說海油 2025 年度榮譽獎項 利益相關方溝通 雙重重要性矩陣 排放物管理 低碳發展 生態保護 安全生產 職業健康 專題一： 應對氣候變化，譜寫綠色未來 專題二： 強化科技創新，賦能海洋經濟 關鍵績效表 獨立鑒證報告 報告索引表 安全健康03 04 目"
+        },
+        {
+          "page_number": 5,
+          "excerpt": "5 治理保障 ESG 治理 風險管理與內控合規 審計與監督 商業道德 人權保障 員工發展 員工關愛 經濟貢獻 公益事業 產品與服務 供應鏈管理 科技創新 公司管治01 02 05 06 能源供應 關愛員工 社會貢獻 27 31 33 36 37 97 102 106 109 10"
+        },
+        {
+          "page_number": 9,
+          "excerpt": "數說海油 04 天然氣淨產量 1,037.3十億立方英尺 節能降碳項目 18項 納稅金額 931.30億元人民幣 凈證實儲量 77.7 億桶油當量 節能降碳項目年度投資 4.8億元人民幣 公益項目覆蓋國家和地區 10個 油氣銷售收入 3,357億元人民幣 公司員工可記錄事件率 0"
+        },
+        {
+          "page_number": 16,
+          "excerpt": "11 為切實提升中國海油氣候變化治理水平，公司持續完善針對董事會及高級管理人員的氣候相關薪酬指標，將減 碳量、新能源業務發展情況、天然氣產量等考核指標纳入公司董事及高級管理人員薪酬體系。 在培訓方面，中國海油每年面向治理層、管理層、執行層提供氣候變化主題等相關培訓，旨在深化公司各"
+        },
+        {
+          "page_number": 24,
+          "excerpt": "此外，公司高度重視各項氣候相關指標，全面加強監測工作，通過定期召開會議、管理層聽取匯報並持續監督 等方式，持續評估其完成情況，以實際行動助力國家綠色發展目標的實現。用於氣候相關風險和機遇的資本開 支等數據 5 的統計也在有序開展中。 行業指標 指標 單位 2025 年 溫室氣體排"
+        },
+        {
+          "page_number": 31,
+          "excerpt": "公司管治 26 SDGs"
+        },
+        {
+          "page_number": 34,
+          "excerpt": "2025 環境、社會及管治（ESG）報告 29 中國海油董事會多元化情況 7 71.4% 42.9% 28.6% 42.9% 28.6% 28.6% 57.1% 57.1% 42.8% 14.3% 非執行董事 （包括董事長） 美國 獨立非執行董事 中國 執行董事石油化工能源 財經"
+        },
+        {
+          "page_number": 45,
+          "excerpt": "能源供應 40 SDGs"
+        },
+        {
+          "page_number": 47,
+          "excerpt": "能源供應 產品與服務 作為中國海上油氣行業的先行者，中國海油立足於保障能源穩定供應的同時，主動求新求變，堅持管理創新、 技術創新，積極推進自身數字化轉型與智能化發展，持續提高產品的穩定供應能力與服務品質。 產品供應 2025 年，中國海油以實幹進取之姿抓增儲上產，以只爭朝夕之精神"
+        },
+        {
+          "page_number": 68,
+          "excerpt": "2025 環境、社會及管治（ESG）報告 63 國家海上油氣應急救援海南基地 構建現代井控救援體系，守護深海能源安全 湛江分公司多維提升防颱風應急實戰演練能力 2025 年 10 月，由中國海油牽頭建設的國家 海上油氣應急救援海南基地在海南澄邁正式啟 用。該基地是我國首個國家級深"
+        },
+        {
+          "page_number": 136,
+          "excerpt": "2025 環境、社會及管治（ESG）報告 131 中國海洋石油有限公司 地址 : 中國北京市東城區朝陽門北大街 25 號 郵編·100010 網站 :www.cnoocltd.com"
+        }
+      ]
+    }
+  ]
+}
