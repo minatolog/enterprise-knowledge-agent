@@ -2,13 +2,13 @@
 """对比 Vector-only、Hybrid 和 Hybrid + Reranker 检索效果。"""
 
 import json
+import argparse
 from pathlib import Path
 
 from retrieval import retrieve_top_k
 from hybrid_retrieval import retrieve_hybrid, retrieve_with_reranker
 
 
-EVAL_FILE = Path(__file__).resolve().parent / "eval" / "retrieval_cases.json"
 TOP_K = 3
 
 
@@ -22,7 +22,7 @@ def evaluate_retriever(name, retrieve_fn, cases):
 
     for case in cases:
         expected_source = case["expected_source"]
-        expected_section = case["expected_section"]
+        expected_section = case.get("expected_section")
 
         # 无答案问题单独评测拒答，不纳入排序指标
         if expected_source is None:
@@ -37,8 +37,8 @@ def evaluate_retriever(name, retrieve_fn, cases):
 
         for rank, result in enumerate(results, start=1):
             if (
-                result["source"] == expected_source
-                and result["section"] == expected_section
+                (result.get("relative_path") == expected_source or result["source"] == expected_source)
+                and (expected_section is None or result["section"] == expected_section)
             ):
                 matched_rank = rank
                 break
@@ -66,12 +66,16 @@ def evaluate_retriever(name, retrieve_fn, cases):
 
 
 def main():
-    if not EVAL_FILE.is_file():
-        raise FileNotFoundError(f"找不到评测数据集：{EVAL_FILE}")
+    parser = argparse.ArgumentParser(description="显式指定评测集；旧模拟题已归档，不作为 CNOOC 默认评测。")
+    parser.add_argument("--dataset", type=Path, required=True)
+    args = parser.parse_args()
+    if not args.dataset.is_file():
+        raise FileNotFoundError(f"找不到评测数据集：{args.dataset}")
 
     cases = json.loads(
-        EVAL_FILE.read_text(encoding="utf-8")
+        args.dataset.read_text(encoding="utf-8")
     )
+    print("注意：仅对显式传入的数据集计算指标；少量 Smoke Test 不代表正式准确率。")
 
     vector_metrics = evaluate_retriever(
         "Vector-only",

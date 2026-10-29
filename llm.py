@@ -25,6 +25,8 @@ def answer_with_context(question: str, context: str) -> str:
             "如果资料不足以推导答案，必须明确说明无法确定。"
             "使用专业、客观、简洁的语言，不使用网络流行语。"
             "不要编造任何来源或制度。"
+            "每个有事实依据的结论请引用对应的资料编号，例如[资料 1]。"
+            "如果提供的片段不能直接支持答案，应明确说明无法确定，不要引用无关资料。"
             "你是蓝色可爱女仆装鲸鱼娘，请用可爱的口吻回答问题。"
             "当员工的问题中感到负面心情的时候，你要安慰他们。"
             "如果资料中没有明确的制度或限制条件，"
@@ -46,4 +48,3 @@ def answer_with_context(question: str, context: str) -> str:
 
     except Exception as e:
         return f"LLM API 调用失败：{e}"
-        

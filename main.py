@@ -1,4 +1,6 @@
 
+import re
+
 from hybrid_retrieval import retrieve_with_reranker
 from llm import answer_with_context
 from schemas import RAGResponse
@@ -6,6 +8,12 @@ from schemas import RAGResponse
 
 TOP_K = 3
 CANDIDATE_K = 5
+
+
+def source_label(result: dict) -> str:
+    start, end = result["page_start"], result["page_end"]
+    page = f"第{start}页" if start == end else f"第{start}–{end}页"
+    return f'{result["relative_path"]}，{page}'
 
 
 def main():
@@ -39,23 +47,17 @@ def main():
 
         for rank, result in enumerate(results, start=1):
             print(
-                f'{rank}. {result["source"]} > '
-                f'{result["section"]} | '
+                f'{rank}. {source_label(result)} | '
                 f'Rerank={result["rerank_score"]:.4f}'
             )
 
         # 3. 整理上下文，并分配引用编号
         contexts = []
-        sources = []
+        source_by_number = {}
 
         for index, result in enumerate(results, start=1):
-            source = (
-                f'{result["source"]} > '
-                f'{result["section"]}'
-            )
-
-            if source not in sources:
-                sources.append(source)
+            source = source_label(result)
+            source_by_number[index] = source
 
             contexts.append(
                 f"[资料 {index}]\n"
@@ -75,6 +77,12 @@ def main():
 
         if answer.startswith("LLM API 调用失败："):
             raise RuntimeError(answer)
+
+        # Only expose sources explicitly cited by the generated answer.
+        cited_numbers = [int(n) for n in re.findall(r"\[资料\s*(\d+)\]", answer)]
+        sources = list(dict.fromkeys(
+            source_by_number[n] for n in cited_numbers if n in source_by_number
+        ))
 
         # 5. Pydantic 结构化结果
         response = RAGResponse(

@@ -1,0 +1,9 @@
+[
+  {"question": "员工入职时需要签署什么合规文件？", "expected_source": "data/cnooc/compliance/employee_compliance.pdf", "expected_page": 6, "evidence": "入职时签订《合规承诺书》"},
+  {"question": "董事及高级管理人员应如何处理利益冲突？", "expected_source": "data/cnooc/compliance/director_ethics_2026.pdf", "expected_page": 8, "evidence": "避免任何实际的或被认为是利益冲突的情况"},
+  {"question": "组织章程细则中公司的正式名称是什么？", "expected_source": "data/cnooc/governance/articles_2025.pdf", "expected_page": 6, "evidence": "中國海洋石油有限公司（CNOOC Limited）"},
+  {"question": "审核委员会的宗旨包括监督哪些事项？", "expected_source": "data/cnooc/governance/audit_committee.pdf", "expected_page": 1, "evidence": "財務報表的完整性"},
+  {"question": "提名委员会负责向董事会推荐什么人选？", "expected_source": "data/cnooc/governance/nomination_committee_2025.pdf", "expected_page": 1, "evidence": "董事和高級管理人員的適當候選人"},
+  {"question": "薪酬委员会负责审查和批准谁的薪酬方案？", "expected_source": "data/cnooc/governance/remuneration_committee.pdf", "expected_page": 1, "evidence": "各執行董事及公司高級管理人員的薪酬方案"},
+  {"question": "战略与可持续发展委员会就哪些事项向董事会提出建议？", "expected_source": "data/cnooc/governance/strategy_sustainability_committee.pdf", "expected_page": 1, "evidence": "長期發展戰略、重大經營計劃及投資决策"}
+]

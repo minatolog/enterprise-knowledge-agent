@@ -1,16 +1,18 @@
 
 import json
+import argparse
 from pathlib import Path
 
 from hybrid_retrieval import retrieve_with_reranker
 
 
-DATASET = Path("eval/threshold_cases.json")
-
-
 def main():
+    parser = argparse.ArgumentParser(description="阈值校准仅限显式指定的数据集；旧模拟题已归档。")
+    parser.add_argument("--dataset", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args()
     cases = json.loads(
-        DATASET.read_text(encoding="utf-8")
+        args.dataset.read_text(encoding="utf-8")
     )
 
     records = []
@@ -93,7 +95,7 @@ def main():
             f"FP={fp} FN={fn}"
         )
 
-    output = Path("eval/threshold_results.json")
+    output = args.output
     output.write_text(
         json.dumps(records, ensure_ascii=False, indent=2),
         encoding="utf-8"

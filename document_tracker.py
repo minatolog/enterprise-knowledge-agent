@@ -3,14 +3,7 @@ import json
 
 from pathlib import Path
 
-from ingestion import SUPPORTED_EXTENSIONS
-
-
-DATA_DIR = Path("data")
-
-STATE_FILE = Path(
-    ".index_state/document_hashes.json"
-)
+from knowledge_config import STATE_FILE, selected_paths
 
 
 def calculate_file_hash(path: Path) -> str:
@@ -35,22 +28,10 @@ def calculate_file_hash(path: Path) -> str:
 
 
 def scan_documents() -> dict[str, str]:
-
-    current_state = {}
-
-    for path in DATA_DIR.iterdir():
-
-        if not path.is_file():
-            continue
-
-        if path.suffix.lower() not in SUPPORTED_EXTENSIONS:
-            continue
-
-        current_state[path.name] = (
-            calculate_file_hash(path)
-        )
-
-    return current_state
+    return {
+        relative_path: calculate_file_hash(path)
+        for relative_path, path in selected_paths(require_existing=False).items()
+    }
 
 
 def load_previous_state() -> dict[str, str]:

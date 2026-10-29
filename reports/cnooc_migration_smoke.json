@@ -1,0 +1,537 @@
+{
+  "label": "smoke test only, not a formal accuracy estimate",
+  "cases": [
+    {
+      "question": "员工入职时需要签署什么合规文件？",
+      "expected_source": "data/cnooc/compliance/employee_compliance.pdf",
+      "expected_page": 6,
+      "methods": {
+        "vector": [
+          {
+            "chunk_id": "data/cnooc/compliance/employee_compliance.pdf::p0014::c0001",
+            "source": "data/cnooc/compliance/employee_compliance.pdf",
+            "page": 14,
+            "rerank_score": null,
+            "evidence_match": false
+          },
+          {
+            "chunk_id": "data/cnooc/compliance/employee_compliance.pdf::p0006::c0001",
+            "source": "data/cnooc/compliance/employee_compliance.pdf",
+            "page": 6,
+            "rerank_score": null,
+            "evidence_match": true
+          },
+          {
+            "chunk_id": "data/cnooc/compliance/employee_compliance.pdf::p0005::c0001",
+            "source": "data/cnooc/compliance/employee_compliance.pdf",
+            "page": 5,
+            "rerank_score": null,
+            "evidence_match": false
+          }
+        ],
+        "hybrid": [
+          {
+            "chunk_id": "data/cnooc/compliance/employee_compliance.pdf::p0006::c0001",
+            "source": "data/cnooc/compliance/employee_compliance.pdf",
+            "page": 6,
+            "rerank_score": null,
+            "evidence_match": true
+          },
+          {
+            "chunk_id": "data/cnooc/compliance/employee_compliance.pdf::p0010::c0001",
+            "source": "data/cnooc/compliance/employee_compliance.pdf",
+            "page": 10,
+            "rerank_score": null,
+            "evidence_match": false
+          },
+          {
+            "chunk_id": "data/cnooc/compliance/employee_compliance.pdf::p0014::c0001",
+            "source": "data/cnooc/compliance/employee_compliance.pdf",
+            "page": 14,
+            "rerank_score": null,
+            "evidence_match": false
+          }
+        ],
+        "reranked": [
+          {
+            "chunk_id": "data/cnooc/compliance/employee_compliance.pdf::p0006::c0001",
+            "source": "data/cnooc/compliance/employee_compliance.pdf",
+            "page": 6,
+            "rerank_score": 0.9842719435691833,
+            "evidence_match": true
+          },
+          {
+            "chunk_id": "data/cnooc/compliance/employee_compliance.pdf::p0010::c0001",
+            "source": "data/cnooc/compliance/employee_compliance.pdf",
+            "page": 10,
+            "rerank_score": 0.9582861661911011,
+            "evidence_match": false
+          },
+          {
+            "chunk_id": "data/cnooc/compliance/employee_compliance.pdf::p0014::c0001",
+            "source": "data/cnooc/compliance/employee_compliance.pdf",
+            "page": 14,
+            "rerank_score": 0.8369457721710205,
+            "evidence_match": false
+          }
+        ]
+      }
+    },
+    {
+      "question": "董事及高级管理人员应如何处理利益冲突？",
+      "expected_source": "data/cnooc/compliance/director_ethics_2026.pdf",
+      "expected_page": 8,
+      "methods": {
+        "vector": [
+          {
+            "chunk_id": "data/cnooc/compliance/director_ethics_2026.pdf::p0008::c0001",
+            "source": "data/cnooc/compliance/director_ethics_2026.pdf",
+            "page": 8,
+            "rerank_score": null,
+            "evidence_match": true
+          },
+          {
+            "chunk_id": "data/cnooc/compliance/employee_compliance.pdf::p0018::c0001",
+            "source": "data/cnooc/compliance/employee_compliance.pdf",
+            "page": 18,
+            "rerank_score": null,
+            "evidence_match": false
+          },
+          {
+            "chunk_id": "data/cnooc/compliance/director_ethics_2026.pdf::p0009::c0002",
+            "source": "data/cnooc/compliance/director_ethics_2026.pdf",
+            "page": 9,
+            "rerank_score": null,
+            "evidence_match": false
+          }
+        ],
+        "hybrid": [
+          {
+            "chunk_id": "data/cnooc/compliance/director_ethics_2026.pdf::p0008::c0001",
+            "source": "data/cnooc/compliance/director_ethics_2026.pdf",
+            "page": 8,
+            "rerank_score": null,
+            "evidence_match": true
+          },
+          {
+            "chunk_id": "data/cnooc/compliance/employee_compliance.pdf::p0025::c0001",
+            "source": "data/cnooc/compliance/employee_compliance.pdf",
+            "page": 25,
+            "rerank_score": null,
+            "evidence_match": false
+          },
+          {
+            "chunk_id": "data/cnooc/compliance/employee_compliance.pdf::p0018::c0001",
+            "source": "data/cnooc/compliance/employee_compliance.pdf",
+            "page": 18,
+            "rerank_score": null,
+            "evidence_match": false
+          }
+        ],
+        "reranked": [
+          {
+            "chunk_id": "data/cnooc/compliance/director_ethics_2026.pdf::p0008::c0001",
+            "source": "data/cnooc/compliance/director_ethics_2026.pdf",
+            "page": 8,
+            "rerank_score": 0.9991820454597473,
+            "evidence_match": true
+          },
+          {
+            "chunk_id": "data/cnooc/compliance/employee_compliance.pdf::p0018::c0001",
+            "source": "data/cnooc/compliance/employee_compliance.pdf",
+            "page": 18,
+            "rerank_score": 0.9064982533454895,
+            "evidence_match": false
+          },
+          {
+            "chunk_id": "data/cnooc/compliance/director_ethics_2026.pdf::p0009::c0002",
+            "source": "data/cnooc/compliance/director_ethics_2026.pdf",
+            "page": 9,
+            "rerank_score": 0.5376224517822266,
+            "evidence_match": false
+          }
+        ]
+      }
+    },
+    {
+      "question": "组织章程细则中公司的正式名称是什么？",
+      "expected_source": "data/cnooc/governance/articles_2025.pdf",
+      "expected_page": 6,
+      "methods": {
+        "vector": [
+          {
+            "chunk_id": "data/cnooc/compliance/employee_compliance.pdf::p0005::c0001",
+            "source": "data/cnooc/compliance/employee_compliance.pdf",
+            "page": 5,
+            "rerank_score": null,
+            "evidence_match": false
+          },
+          {
+            "chunk_id": "data/cnooc/compliance/employee_compliance.pdf::p0014::c0001",
+            "source": "data/cnooc/compliance/employee_compliance.pdf",
+            "page": 14,
+            "rerank_score": null,
+            "evidence_match": false
+          },
+          {
+            "chunk_id": "data/cnooc/compliance/employee_compliance.pdf::p0025::c0001",
+            "source": "data/cnooc/compliance/employee_compliance.pdf",
+            "page": 25,
+            "rerank_score": null,
+            "evidence_match": false
+          }
+        ],
+        "hybrid": [
+          {
+            "chunk_id": "data/cnooc/compliance/employee_compliance.pdf::p0005::c0001",
+            "source": "data/cnooc/compliance/employee_compliance.pdf",
+            "page": 5,
+            "rerank_score": null,
+            "evidence_match": false
+          },
+          {
+            "chunk_id": "data/cnooc/compliance/employee_compliance.pdf::p0020::c0001",
+            "source": "data/cnooc/compliance/employee_compliance.pdf",
+            "page": 20,
+            "rerank_score": null,
+            "evidence_match": false
+          },
+          {
+            "chunk_id": "data/cnooc/compliance/employee_compliance.pdf::p0014::c0001",
+            "source": "data/cnooc/compliance/employee_compliance.pdf",
+            "page": 14,
+            "rerank_score": null,
+            "evidence_match": false
+          }
+        ],
+        "reranked": [
+          {
+            "chunk_id": "data/cnooc/compliance/employee_compliance.pdf::p0025::c0001",
+            "source": "data/cnooc/compliance/employee_compliance.pdf",
+            "page": 25,
+            "rerank_score": 0.01942429691553116,
+            "evidence_match": false
+          },
+          {
+            "chunk_id": "data/cnooc/compliance/employee_compliance.pdf::p0005::c0001",
+            "source": "data/cnooc/compliance/employee_compliance.pdf",
+            "page": 5,
+            "rerank_score": 0.009517530910670757,
+            "evidence_match": false
+          },
+          {
+            "chunk_id": "data/cnooc/compliance/employee_compliance.pdf::p0014::c0001",
+            "source": "data/cnooc/compliance/employee_compliance.pdf",
+            "page": 14,
+            "rerank_score": 0.008806479163467884,
+            "evidence_match": false
+          }
+        ]
+      }
+    },
+    {
+      "question": "审核委员会的宗旨包括监督哪些事项？",
+      "expected_source": "data/cnooc/governance/audit_committee.pdf",
+      "expected_page": 1,
+      "methods": {
+        "vector": [
+          {
+            "chunk_id": "data/cnooc/governance/audit_committee.pdf::p0001::c0001",
+            "source": "data/cnooc/governance/audit_committee.pdf",
+            "page": 1,
+            "rerank_score": null,
+            "evidence_match": true
+          },
+          {
+            "chunk_id": "data/cnooc/governance/audit_committee.pdf::p0009::c0002",
+            "source": "data/cnooc/governance/audit_committee.pdf",
+            "page": 9,
+            "rerank_score": null,
+            "evidence_match": false
+          },
+          {
+            "chunk_id": "data/cnooc/governance/audit_committee.pdf::p0002::c0001",
+            "source": "data/cnooc/governance/audit_committee.pdf",
+            "page": 2,
+            "rerank_score": null,
+            "evidence_match": false
+          }
+        ],
+        "hybrid": [
+          {
+            "chunk_id": "data/cnooc/governance/nomination_committee_2025.pdf::p0001::c0001",
+            "source": "data/cnooc/governance/nomination_committee_2025.pdf",
+            "page": 1,
+            "rerank_score": null,
+            "evidence_match": false
+          },
+          {
+            "chunk_id": "data/cnooc/governance/audit_committee.pdf::p0001::c0001",
+            "source": "data/cnooc/governance/audit_committee.pdf",
+            "page": 1,
+            "rerank_score": null,
+            "evidence_match": true
+          },
+          {
+            "chunk_id": "data/cnooc/compliance/director_ethics_2026.pdf::p0002::c0002",
+            "source": "data/cnooc/compliance/director_ethics_2026.pdf",
+            "page": 2,
+            "rerank_score": null,
+            "evidence_match": false
+          }
+        ],
+        "reranked": [
+          {
+            "chunk_id": "data/cnooc/governance/audit_committee.pdf::p0001::c0001",
+            "source": "data/cnooc/governance/audit_committee.pdf",
+            "page": 1,
+            "rerank_score": 0.901996910572052,
+            "evidence_match": true
+          },
+          {
+            "chunk_id": "data/cnooc/governance/audit_committee.pdf::p0009::c0002",
+            "source": "data/cnooc/governance/audit_committee.pdf",
+            "page": 9,
+            "rerank_score": 0.6382557153701782,
+            "evidence_match": false
+          },
+          {
+            "chunk_id": "data/cnooc/compliance/director_ethics_2026.pdf::p0009::c0001",
+            "source": "data/cnooc/compliance/director_ethics_2026.pdf",
+            "page": 9,
+            "rerank_score": 0.12998823821544647,
+            "evidence_match": false
+          }
+        ]
+      }
+    },
+    {
+      "question": "提名委员会负责向董事会推荐什么人选？",
+      "expected_source": "data/cnooc/governance/nomination_committee_2025.pdf",
+      "expected_page": 1,
+      "methods": {
+        "vector": [
+          {
+            "chunk_id": "data/cnooc/governance/nomination_committee_2025.pdf::p0002::c0002",
+            "source": "data/cnooc/governance/nomination_committee_2025.pdf",
+            "page": 2,
+            "rerank_score": null,
+            "evidence_match": false
+          },
+          {
+            "chunk_id": "data/cnooc/governance/nomination_committee_2025.pdf::p0002::c0001",
+            "source": "data/cnooc/governance/nomination_committee_2025.pdf",
+            "page": 2,
+            "rerank_score": null,
+            "evidence_match": false
+          },
+          {
+            "chunk_id": "data/cnooc/governance/nomination_committee_2025.pdf::p0001::c0001",
+            "source": "data/cnooc/governance/nomination_committee_2025.pdf",
+            "page": 1,
+            "rerank_score": null,
+            "evidence_match": true
+          }
+        ],
+        "hybrid": [
+          {
+            "chunk_id": "data/cnooc/governance/nomination_committee_2025.pdf::p0001::c0001",
+            "source": "data/cnooc/governance/nomination_committee_2025.pdf",
+            "page": 1,
+            "rerank_score": null,
+            "evidence_match": true
+          },
+          {
+            "chunk_id": "data/cnooc/governance/nomination_committee_2025.pdf::p0002::c0002",
+            "source": "data/cnooc/governance/nomination_committee_2025.pdf",
+            "page": 2,
+            "rerank_score": null,
+            "evidence_match": false
+          },
+          {
+            "chunk_id": "data/cnooc/governance/nomination_committee_2025.pdf::p0002::c0001",
+            "source": "data/cnooc/governance/nomination_committee_2025.pdf",
+            "page": 2,
+            "rerank_score": null,
+            "evidence_match": false
+          }
+        ],
+        "reranked": [
+          {
+            "chunk_id": "data/cnooc/governance/nomination_committee_2025.pdf::p0002::c0002",
+            "source": "data/cnooc/governance/nomination_committee_2025.pdf",
+            "page": 2,
+            "rerank_score": 0.9986131191253662,
+            "evidence_match": false
+          },
+          {
+            "chunk_id": "data/cnooc/governance/nomination_committee_2025.pdf::p0003::c0001",
+            "source": "data/cnooc/governance/nomination_committee_2025.pdf",
+            "page": 3,
+            "rerank_score": 0.9947615265846252,
+            "evidence_match": false
+          },
+          {
+            "chunk_id": "data/cnooc/governance/nomination_committee_2025.pdf::p0002::c0001",
+            "source": "data/cnooc/governance/nomination_committee_2025.pdf",
+            "page": 2,
+            "rerank_score": 0.9924497604370117,
+            "evidence_match": false
+          }
+        ]
+      }
+    },
+    {
+      "question": "薪酬委员会负责审查和批准谁的薪酬方案？",
+      "expected_source": "data/cnooc/governance/remuneration_committee.pdf",
+      "expected_page": 1,
+      "methods": {
+        "vector": [
+          {
+            "chunk_id": "data/cnooc/governance/remuneration_committee.pdf::p0002::c0001",
+            "source": "data/cnooc/governance/remuneration_committee.pdf",
+            "page": 2,
+            "rerank_score": null,
+            "evidence_match": false
+          },
+          {
+            "chunk_id": "data/cnooc/governance/remuneration_committee.pdf::p0002::c0002",
+            "source": "data/cnooc/governance/remuneration_committee.pdf",
+            "page": 2,
+            "rerank_score": null,
+            "evidence_match": false
+          },
+          {
+            "chunk_id": "data/cnooc/governance/remuneration_committee.pdf::p0001::c0001",
+            "source": "data/cnooc/governance/remuneration_committee.pdf",
+            "page": 1,
+            "rerank_score": null,
+            "evidence_match": true
+          }
+        ],
+        "hybrid": [
+          {
+            "chunk_id": "data/cnooc/governance/remuneration_committee.pdf::p0001::c0001",
+            "source": "data/cnooc/governance/remuneration_committee.pdf",
+            "page": 1,
+            "rerank_score": null,
+            "evidence_match": true
+          },
+          {
+            "chunk_id": "data/cnooc/governance/remuneration_committee.pdf::p0002::c0002",
+            "source": "data/cnooc/governance/remuneration_committee.pdf",
+            "page": 2,
+            "rerank_score": null,
+            "evidence_match": false
+          },
+          {
+            "chunk_id": "data/cnooc/governance/remuneration_committee.pdf::p0002::c0001",
+            "source": "data/cnooc/governance/remuneration_committee.pdf",
+            "page": 2,
+            "rerank_score": null,
+            "evidence_match": false
+          }
+        ],
+        "reranked": [
+          {
+            "chunk_id": "data/cnooc/governance/remuneration_committee.pdf::p0001::c0001",
+            "source": "data/cnooc/governance/remuneration_committee.pdf",
+            "page": 1,
+            "rerank_score": 0.9756336212158203,
+            "evidence_match": true
+          },
+          {
+            "chunk_id": "data/cnooc/governance/remuneration_committee.pdf::p0002::c0002",
+            "source": "data/cnooc/governance/remuneration_committee.pdf",
+            "page": 2,
+            "rerank_score": 0.9529173970222473,
+            "evidence_match": false
+          },
+          {
+            "chunk_id": "data/cnooc/governance/remuneration_committee.pdf::p0002::c0001",
+            "source": "data/cnooc/governance/remuneration_committee.pdf",
+            "page": 2,
+            "rerank_score": 0.8117715120315552,
+            "evidence_match": false
+          }
+        ]
+      }
+    },
+    {
+      "question": "战略与可持续发展委员会就哪些事项向董事会提出建议？",
+      "expected_source": "data/cnooc/governance/strategy_sustainability_committee.pdf",
+      "expected_page": 1,
+      "methods": {
+        "vector": [
+          {
+            "chunk_id": "data/cnooc/governance/strategy_sustainability_committee.pdf::p0002::c0001",
+            "source": "data/cnooc/governance/strategy_sustainability_committee.pdf",
+            "page": 2,
+            "rerank_score": null,
+            "evidence_match": false
+          },
+          {
+            "chunk_id": "data/cnooc/governance/strategy_sustainability_committee.pdf::p0001::c0001",
+            "source": "data/cnooc/governance/strategy_sustainability_committee.pdf",
+            "page": 1,
+            "rerank_score": null,
+            "evidence_match": true
+          },
+          {
+            "chunk_id": "data/cnooc/governance/strategy_sustainability_committee.pdf::p0001::c0002",
+            "source": "data/cnooc/governance/strategy_sustainability_committee.pdf",
+            "page": 1,
+            "rerank_score": null,
+            "evidence_match": false
+          }
+        ],
+        "hybrid": [
+          {
+            "chunk_id": "data/cnooc/governance/strategy_sustainability_committee.pdf::p0002::c0001",
+            "source": "data/cnooc/governance/strategy_sustainability_committee.pdf",
+            "page": 2,
+            "rerank_score": null,
+            "evidence_match": false
+          },
+          {
+            "chunk_id": "data/cnooc/compliance/employee_compliance.pdf::p0002::c0001",
+            "source": "data/cnooc/compliance/employee_compliance.pdf",
+            "page": 2,
+            "rerank_score": null,
+            "evidence_match": false
+          },
+          {
+            "chunk_id": "data/cnooc/governance/strategy_sustainability_committee.pdf::p0001::c0001",
+            "source": "data/cnooc/governance/strategy_sustainability_committee.pdf",
+            "page": 1,
+            "rerank_score": null,
+            "evidence_match": true
+          }
+        ],
+        "reranked": [
+          {
+            "chunk_id": "data/cnooc/governance/strategy_sustainability_committee.pdf::p0002::c0001",
+            "source": "data/cnooc/governance/strategy_sustainability_committee.pdf",
+            "page": 2,
+            "rerank_score": 0.9992049336433411,
+            "evidence_match": false
+          },
+          {
+            "chunk_id": "data/cnooc/governance/strategy_sustainability_committee.pdf::p0001::c0001",
+            "source": "data/cnooc/governance/strategy_sustainability_committee.pdf",
+            "page": 1,
+            "rerank_score": 0.9905270338058472,
+            "evidence_match": true
+          },
+          {
+            "chunk_id": "data/cnooc/governance/strategy_sustainability_committee.pdf::p0001::c0002",
+            "source": "data/cnooc/governance/strategy_sustainability_committee.pdf",
+            "page": 1,
+            "rerank_score": 0.9346015453338623,
+            "evidence_match": false
+          }
+        ]
+      }
+    }
+  ]
+}
