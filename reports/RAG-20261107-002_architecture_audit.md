@@ -1,11 +1,14 @@
 # RAG-20261107-002 当前 RAG 架构审计报告
 
 - 审计日期：2026-11-07（Australia/Sydney）
+- 最后修订：2026-11-08（Australia/Sydney）
 - Task ID：`RAG-20261107-002`
 - 审计性质：只读架构审计；本次不开发新功能
 - 审计工具/模型：VS Code GitHub Copilot（DeepSeek V4.1 Flash）
-- 代码基线：`main` @ `49a40dfdf00d60075cf5bfdbfd1a9f5071982cf8`；本地 `origin/main` 同值；本地无 Git Tag
-- 工作区状态：存在用户原有未跟踪文件；已跟踪文件无改动，暂存区为空
+- 代码基线（审计当时，2026-11-07）：`main` @ `49a40dfdf00d60075cf5bfdbfd1a9f5071982cf8`；本地 `origin/main` 同值；本地无 Git Tag
+- 工作区状态（审计当时）：存在用户原有未跟踪文件；已跟踪文件无改动，暂存区为空
+- 后续状态（2026-11-08 修订时）：HEAD 已前进到 `2bbaa9c`（`创建prompt 管理`），治理文档与审计报告已提交；本轮修订产生未提交改动，详见 2.5 与 11.6。
+- 时间口径：除特别注明外，正文中的“当前”指 2026-11-07 审计当时；2026-11-08 修订只修正报告结论与记录，未重新运行审计、模型或索引。
 - 报告状态：`REVIEW`，等待用户确认下一阶段优先级；本次未实施任何后续任务
 
 ## 0. 结论摘要
@@ -14,8 +17,8 @@
 2. **在线问答仍是命令行原型，不是 API 服务。** 入口是 `main.py` 的交互式 CLI；仓库没有 FastAPI 路由、请求 ID、生产日志、鉴权/ACL、Docker 或 `.env.example`。`requirements.txt` 中出现 `uvicorn`、`pydantic-settings`、OpenTelemetry 包，但没有 `fastapi`，不能据此认定 API 已完成。
 3. **P0 的最大缺口是“可信评测”而不是“再写一个接口”。** 当前 CNOOC 评测只有 7 题，且全部是有答案题，没有无答案/拒答题；`evaluate_retrieval.py` 只算 Hit@1、Hit@3、MRR@3，不保存运行配置，也不做引用/答案正确性检查。旧模拟制度的 6 题结果（Reranker Hit@1 100%）不能用于当前语料。
 4. **历史 Smoke Test 线索已复核。** 解析既有 `reports/cnooc_migration_smoke.json` 后，严格按“来源 + 页码 + 证据片段”匹配：Vector Top-1 2/7、Top-3 6/7；Hybrid Top-1 4/7、Top-3 6/7；Hybrid + Reranker Top-1 4/7、Top-3 5/7。这是 7 题接线检查，**不是正式准确率**，本次也没有重新运行模型。
-5. **高风险点集中在正确性与可复现性：** 页码错位/错文档、Reranker 高分但页码不对、无证据问题只靠 Prompt 拒答、引用没有程序化校验、LLM/CLI 异常处理薄弱、PDF/Chroma/状态文件被 Git 忽略导致新环境无法复现、README 只有两行。
-6. **建议的最小顺序：** 先把评测基线做可信（约 30 题，含无答案）→ 再集中配置并补 request ID/阶段日志/结构化错误 → 再做证据充分性判断与引用校验 → 再包 FastAPI 最小闭环 → 最后补 README、`.env.example` 和可复现 Demo。Docker、ACL、Query Rewrite、GraphRAG、OCR、年报/ESG 入库暂缓。
+5. **高风险点集中在正确性与可复现性：** 页码错位/错文档、Reranker 高分但页码不对、无证据问题只靠 Prompt 拒答、引用有来源标签映射但缺 Chunk 级字段与语义支持校验、LLM/CLI 异常处理薄弱、PDF/Chroma/状态文件被 Git 忽略导致新环境无法复现、README 只有两行。
+6. **建议的最小顺序：** 先把评测基线做可信（约 30 题，含无答案；任务 1 记录当前系统基线）→ 再集中配置并补 request ID/阶段日志/结构化错误 → 再做证据充分性判断与引用校验（任务 3，比较改进前后）→ 再包 FastAPI 最小闭环 → 最后补 README、`.env.example` 和可复现 Demo。Docker、ACL、Query Rewrite、GraphRAG、OCR、年报/ESG 入库暂缓。
 
 ## 1. 审计边界、方法与证据标签
 
@@ -30,6 +33,7 @@
 - 报告与日志：`reports/cnooc_ingestion_audit.md/.json`、`reports/cnooc_migration_report.md`、`reports/cnooc_migration_smoke.json`、`docs/devlog/001-retrieval-failure.md`、`docs/devlog/002-dataset-scale-and-evaluation.md`、`docs/devlog/readme.md`、`docs/devlog/DevLog #003 — Real-world PDF Ingestion and Parsing Quality`。
 - Git：分支、HEAD、最近提交、Tag、`git status`、已跟踪文件与忽略规则。
 - 本地只读数据：`chroma_db/chroma.sqlite3`（SQLite `mode=ro&immutable=1`）、`.index_state/cnooc_document_hashes.json`、`data/cnooc/sources.csv`。
+- Prompt 追溯：Codex 编写的原始任务 Prompt 已完整归档在 `docs/ai_workflow/prompts/architecture/RAG-20261107-002_current_architecture_audit.md`；用户确认截图显示这份任务指令。DeepSeek 记录的聊天版与归档版有措辞差异，差异表见 `docs/ai_workflow/issues/RAG-20261107-002-ISSUE-01.md`；聊天版全文尚未单独归档，不能据差异表声称逐字留痕已完成。
 
 未执行：索引重建、Embedding 计算、检索/重排模型推理、DeepSeek API 调用、Git Commit/Tag/Push、对业务代码/PDF/Chroma/状态文件/评测数据的写入。
 
@@ -49,6 +53,8 @@
 ## 2. 真实目录结构与入口
 
 ### 2.1 当前目录树（只列审计相关项）
+
+目录树中的“未跟踪”注释是审计当时（2026-11-07）的状态；2026-11-08 修订时 `AGENTS.md`、`docs/ai_workflow/`、总指导和本报告已随 `2bbaa9c` 提交。
 
 ```text
 enterprise-knowledge-agent/
@@ -159,7 +165,7 @@ enterprise-knowledge-agent/
 
 ### 2.5 Git 状态
 
-实际命令与结果：
+以下命令与结果是**审计当时（2026-11-07）**的状态；2026-11-08 修订时仓库已前进，不能把下面的 HEAD/未跟踪列表当作修订时状态。
 
 ```text
 $ git branch --show-current
@@ -183,9 +189,10 @@ $ git diff --cached --stat
 （无输出）
 ```
 
-- 当前分支 `main`；HEAD 为 `49a40df`；本地 `origin/main` 指向同一 Commit；本地没有 Tag。
-- `AGENTS.md`、`docs/ai_workflow/`、总指导文件均**未被 Git 跟踪**；本次没有暂存或提交它们。
+- 审计当时分支 `main`；HEAD 为 `49a40df`；本地 `origin/main` 指向同一 Commit；本地没有 Tag。
+- 审计当时 `AGENTS.md`、`docs/ai_workflow/`、总指导文件均**未被 Git 跟踪**；本次没有暂存或提交它们。2026-11-08 修订时，这些文件以及本报告已随 `2bbaa9c`（`创建prompt 管理`）提交。
 - PDF 被 `.gitignore:186-187` 的 `data/cnooc/**/*.pdf` 忽略；`chroma_db/` 与 `.index_state/` 被 `.gitignore:182-183` 忽略；`.env` 被 `.gitignore:131` 忽略。
+- 2026-11-08 修订时实际状态：HEAD `2bbaa9c`；`docs/ai_workflow/DEVELOPMENT_LOG.md`、`TASK_INDEX.md`、`execution_logs/RAG-20261107-002.md` 及本报告有未提交修改；`docs/ai_workflow/issues/RAG-20261107-002-ISSUE-01.md` 与 `docs/ai_workflow/prompts/architecture/RAG-20261107-002_audit_report_revision.md` 未跟踪；暂存区为空。
 - 未联网 `git fetch`，因此远端实时状态未知；以上只代表本地引用。
 
 ## 3. 离线入库流水线
@@ -194,7 +201,7 @@ $ git diff --cached --stat
 
 | 步骤 | 输入 | 输出 | 负责文件 | 本次证据/说明 |
 |---|---|---|---|---|
-| 1. 白名单与路径校验 | `INDEXED_DOCUMENTS` 中的 7 条相对路径 | 7 个 `Path` | `knowledge_config.py:15-35` | 只允许 `data/cnooc/` 下、扩展名为 `.pdf` 的文件；缺失文件默认报错 |
+| 1. 白名单与路径校验 | `INDEXED_DOCUMENTS` 中的 7 条相对路径 | 7 个 `Path` | `knowledge_config.py:15-33` | 只允许 `data/cnooc/` 下、扩展名为 `.pdf` 的文件；缺失文件默认报错 |
 | 2. 来源清单与原件哈希 | `data/cnooc/sources.csv` + 白名单文件 | 每份文件的 CSV 行 | `index_documents.py:18-25` | 逐份比较 SHA-256；不一致直接抛错 |
 | 3. PDF 逐页解析 | PDF 路径 | `pages`（页码 + 文本 + 页错误）、`text`、`page_count` | `ingestion.py:20-100` | 单页失败记录到 `page_errors` 并警告；整份无可提取文本才报错 |
 | 4. Chunking | `document` 字典 | Chunk 列表 | `rag.py:112-174` | PDF 按页、页内按行累积到约 700 字符；长行退回 700/80 字符切分 |
@@ -267,7 +274,7 @@ Chroma Metadata：194 条记录 × 8 个 key（relative_path、knowledge_base、
 | 4. Reranker | 问题 + 5 个候选文本 | 重排后的 Top-3 | `hybrid_retrieval.py:64-73` | `BAAI/bge-reranker-base`；保留 `rerank_score` |
 | 5. Context Builder | Top-3 Chunk | `[资料 N]` 文本块 | `main.py:54-70` | 只有来源路径 + 页码 + 正文；无 Token 预算/去重 |
 | 6. LLM 生成 | 问题 + Context | 回答文本 | `llm.py:13-49` | `deepseek-flash`；Prompt 要求引用 `[资料 N]` |
-| 7. 引用映射 | 回答中的 `[资料 N]` | `sources` 字符串列表 | `main.py:82-87` | 只保留回答明确引用的资料编号 |
+| 7. 引用映射 | 回答中的 `[资料 N]` + 本次检索结果 | `sources` 字符串列表 | `main.py:82-87` | 编号 → 来源标签；越界编号忽略；不做 Chunk 级或语义支持校验 |
 | 8. 结构化输出 | 回答 + sources + rerank_score | `RAGResponse` JSON | `main.py:88-96`、`schemas.py:5-8` | `sources: list[str]`，无 request_id、无 chunk_id |
 | 9. 异常处理 | 任意异常 | 终端打印 | `main.py:93-96` | `print` 后正常退出，退出码为 0 |
 
@@ -285,10 +292,11 @@ Chroma Metadata：194 条记录 × 8 个 key（relative_path、knowledge_base、
 
 - `retrieval.py:39-49` 返回 `chunk_id`、`source`、`relative_path`、`page_start`、`page_end`、`section`、`source_url`、`distance`。
 - `hybrid_retrieval.py` 在 RRF 和 Reranker 中保留这些字段，并追加 `rrf_score` / `rerank_score`。
-- `main.py:13-16` 的 `source_label()` 只把 `relative_path` 和页码格式化为字符串。
+- `main.py:13-16` 的 `source_label()` 的输入是检索结果中的 `relative_path`、`page_start`、`page_end`，所以来源标签不是凭空生成，而是由真实检索元数据生成。
+- `main.py:82-86` 把回答中的 `[资料 N]` 映射到 `source_by_number`（本次检索结果的来源标签）；越界编号会被忽略，但映射只到字符串标签，不到 Chunk ID。
 - Context 只包含 `[资料 N]`、来源标签、正文；**没有 Chunk ID**。
-- 最终 `RAGResponse.sources` 是 `list[str]`，只有“相对路径，第 X 页”；**没有 Chunk ID、文档标题、`source_url`、文档版本**。
-- 引用映射只检查 LLM 回答中是否出现 `[资料 N]`，不检查该 Chunk 是否真的支持对应结论；LLM 只要写出一个存在的编号，就会被接受。
+- 最终 `RAGResponse.sources` 是 `list[str]`，只有“相对路径，第 X 页”；**没有 Chunk ID、文档标题、`source_url`、文档版本**；同一页的多个 Chunk 会合并为同一标签。
+- 引用映射不做逐条引用、不做 Chunk 级存在性校验，也不检查该 Chunk 是否在语义上支持对应结论；编号存在不等于证据支持结论。
 
 ### 4.4 在线侧未实现或未验证的点
 
@@ -298,7 +306,7 @@ Chroma Metadata：194 条记录 × 8 个 key（relative_path、knowledge_base、
 - **超时 / 重试 / 温度 / 最大输出 Token**：未实现；`llm.py:8-11` 在导入时创建 `OpenAI` 客户端，`answer_with_context` 直接调用，没有显式超时/重试配置。
 - **配置集中化**：部分实现。模型名、Collection、路径在 `knowledge_config.py`；`TOP_K=3`、`CANDIDATE_K=5` 在 `main.py:9-10`；RRF 常数 60 和候选数 10 在 `hybrid_retrieval.py:50,58`；Chunk 大小 700/80 和 500/80 在 `rag.py:69-70,130-138`；Embedding/写入批量 32/64 在 `index_documents.py:36,52`。
 - **证据充分性判断**：未实现；只在 `llm.py:18-35` 的 Prompt 中要求“资料不足时说明无法确定”。
-- **引用校验**：未实现；只有正则映射。
+- **引用校验**：部分。`main.py:82-86` 只做 `[资料 N]` 到本次检索来源标签的映射，能过滤越界编号；但没有 Chunk ID 级映射、没有逐条/逐结论引用，也没有“结论是否被 Chunk 文本语义支持”的校验。
 - **权限/ACL**：未实现；Chunk Metadata 没有 `tenant_id`、`department_id`、`allowed_roles`、`classification_level`。
 - **Prompt 注入防护**：未实现；Context 中的文档内容没有明确标注为“不可信数据”，也没有“不得执行文档内指令”的系统约束。
 - **输入校验**：只有空字符串检查；没有最大长度、空白规范化、Top-K 范围校验。
@@ -311,14 +319,14 @@ Chroma Metadata：194 条记录 × 8 个 key（relative_path、knowledge_base、
 | P0 条目 | 现状与证据 | 状态 | 差距 |
 |---|---|---|---|
 | 1. 审计当前仓库和现有功能 | 本报告；Git/代码/数据只读检查 | **已实现且本次验证** | 完成；等待用户确认优先级 |
-| 2. 确认文档入库、Chunk 元数据和增量索引 | `knowledge_config.py:15-35`、`rag.py:112-174`、`document_tracker.py:71-104`、`index_documents.py:18-118`；本次核对 194 Chunk/7 文档/Chroma ID 一致 | **代码存在，只读部分本次验证；写入路径未验证** | 需在隔离副本上做一次新增/修改/删除的端到端索引验收 |
+| 2. 确认文档入库、Chunk 元数据和增量索引 | `knowledge_config.py:15-33`、`rag.py:112-174`、`document_tracker.py:71-104`、`index_documents.py:18-118`；本次核对 194 Chunk/7 文档/Chroma ID 一致 | **代码存在，只读部分本次验证；写入路径未验证** | 需在隔离副本上做一次新增/修改/删除的端到端索引验收 |
 | 3. 确认 Dense、BM25、RRF、Reranker 流程 | `retrieval.py`、`hybrid_retrieval.py`；本次只读代码；历史 Smoke Test 有结果 | **代码存在但本次未运行；实际指标仅历史报告记录** | 需用约 30 题基线重新运行，保留原始分数/排名/失败案例 |
 | 4. 固定测试集和可重复评测脚本 | `eval/cnooc_smoke_cases.json` 7 题；`evaluate_retrieval.py`；`smoke_test_cnooc.py` | **部分实现** | 7 题全为有答案；无版本字段/配置快照/结果文件；指标不足 |
 | 5. 真实检索对照结果和失败案例 | `reports/cnooc_migration_report.md:23-37`、`reports/cnooc_migration_smoke.json` | **仅历史报告记录** | 7 题 Smoke，不是正式准确率；本次未重跑 |
 | 6. FastAPI 封装核心问答 | 无 `app/`；`fastapi` 未安装（`fastapi installed: False`）；`requirements.txt` 有 `uvicorn` 但无 `fastapi` | **未实现** | 需新增 API 层与请求/响应模型 |
 | 7. 统一请求/响应和异常处理 | `schemas.py:5-8` 只有 `RAGResponse`；`main.py:93-96` 捕获并打印 | **部分/未实现** | 无 API schema、无错误码、无 request_id、CLI 失败退出码为 0 |
 | 8. request ID、阶段耗时、基础日志 | 生产代码无 `logging`/`request_id`；仅测试设置 `pypdf` 日志级别 | **未实现** | 需 Python logging + request ID + 阶段耗时/候选 ID |
-| 9. README、架构图、环境配置、运行说明 | `README.md` 仅 2 行；无 `.env.example`；无架构图；总指导与制度文件未跟踪 | **未实现/严重不足** | 新环境无法按 README 启动；需完整运行手册 |
+| 9. README、架构图、环境配置、运行说明 | `README.md` 仅 2 行；无 `.env.example`；无架构图；总指导与制度文件在审计当时未跟踪，修订时已随 `2bbaa9c` 提交 | **部分实现/交付严重不足** | 新环境无法按 README 启动；需完整运行手册 |
 | 10. 可运行本地 Demo | `main.py` CLI 存在；历史报告记录一次 DeepSeek 端到端成功 | **部分实现** | 只有 CLI，无 API Demo；本次未重跑 |
 
 **P0 验收结论：未满足。** 主要卡点是评测可信度、API、日志/错误契约、README/环境复现，而不是检索算法本身。
@@ -359,7 +367,7 @@ Chroma Metadata：194 条记录 × 8 个 key（relative_path、knowledge_base、
 | Context Builder | 固定 3 条、无 Token 预算/去重 | **部分** |
 | LLM 生成 | DeepSeek `deepseek-flash`；无超时/重试/温度配置 | **代码存在但本次未运行** |
 | 证据不足时说明 | 仅 Prompt 约束 | **未实现（独立检查）** |
-| 引用来自真实元数据 | 只映射来源标签；无 Chunk ID/标题/URL；无程序化校验 | **部分** |
+| 引用来自真实元数据 | 来源标签由检索结果的路径/页码生成；缺 Chunk ID/标题/URL/版本；无 Chunk 级与语义支持校验 | **部分** |
 | FastAPI | 无 | **未实现** |
 | 身份校验/权限过滤 | 无 | **未实现** |
 | 日志/Trace | 无 | **未实现** |
@@ -370,7 +378,7 @@ Chroma Metadata：194 条记录 × 8 个 key（relative_path、knowledge_base、
 ### 5.5 关键目标与现状差距
 
 1. **目标架构中的 API、权限、日志、Docker、引用校验、证据充分性都没有落地**；当前是“单机 CLI + 混合检索原型”。
-2. **目标要求引用至少包含文档标题、来源路径、页码和 Chunk ID**；当前只输出“相对路径 + 页码”，且没有标题/Chunk ID/URL。
+2. **目标要求引用至少包含文档标题、来源路径、页码和 Chunk ID**；当前来源标签确实由检索结果的路径/页码生成，但没有标题/Chunk ID/URL/版本，也没有 Chunk 级映射和语义支持校验。
 3. **目标要求固定评测集逐步达到约 30 题**；当前 CNOOC 只有 7 题，且没有无答案题。
 4. **目标要求配置集中化**；当前模型名/路径集中了，但 Top-K、RRF、Chunk 大小、批量大小、阈值仍散落在代码中。
 5. **目标要求文档版本/索引版本管理**；当前只有文件 SHA-256，Chroma 不记录 Embedding 模型/版本。
@@ -395,7 +403,7 @@ Chroma Metadata：194 条记录 × 8 个 key（relative_path、knowledge_base、
 **覆盖缺口：**
 
 - 没有检索排序测试（Vector/BM25/RRF/Reranker 的实际排序断言）。
-- 没有引用提取/拒绝伪造引用的测试。
+- 没有引用提取、编号映射、拒绝伪造引用或语义支持校验的测试。
 - 没有 LLM 超时/异常/无 Key 的测试。
 - 没有 FastAPI 集成测试。
 - 没有索引写入、更新、删除的端到端测试（只在隔离副本上做才安全）。
@@ -501,12 +509,13 @@ Chroma Metadata：194 条记录 × 8 个 key（relative_path、knowledge_base、
 - 当前 CNOOC 评测没有无答案题；旧阈值脚本的 12 题是模拟数据，且 `calibrate_threshold.py:43` 依赖 `answerable` 字段，当前 CNOOC 数据集没有该字段。
 - **影响**：对“公司明年股价”“员工平均工资”等无答案问题，系统可能给出基于无关 Chunk 的编造答案，或过度拒答。
 
-### 7.4 引用完整性不足（高）
+### 7.4 引用字段与语义支持不足（高）
 
-- 最终 `sources` 只有“相对路径，第 X 页”字符串，没有 Chunk ID、文档标题、`source_url`、版本。
-- 引用映射是正则 + 编号查表（`main.py:82-86`），不验证被引用的 Chunk 是否真的支持结论；LLM 只要写 `[资料 1]` 就会被接受。
-- 如果 LLM 不写引用，`sources` 为空；如果写了一个存在的编号但内容无关，也会被列为来源。
-- **影响**：无法满足“引用必须来自真实检索元数据”的目标，也无法审计答案与证据的对应关系。
+- 现有 `sources` 不是凭空生成的：`main.py:13-16` 的 `source_label()` 使用检索结果的 `relative_path` 和 `page_start/page_end`；`main.py:82-86` 只保留回答中出现的 `[资料 N]` 对应的来源标签。因此“来源来自真实检索元数据”这一点成立。
+- 真正缺口是返回字段不完整：`RAGResponse.sources` 是 `list[str]`，没有 Chunk ID、文档标题、`source_url`、文档版本；同一页多个 Chunk 会被合并成一个字符串标签。
+- 编号映射只到来源标签，不到 Chunk ID；越界编号会被忽略，但没有逐条引用、没有 Chunk 级存在性校验，也没有“答案结论是否被该 Chunk 文本支持”的语义校验。
+- 如果 LLM 不写引用，`sources` 为空；如果写了一个存在的编号但内容无关，也会被列为来源。编号/Chunk ID 存在本身不能证明结论有证据支持。
+- **影响**：可以追溯到大致的文件/页码，但不能满足目标要求的 Chunk 级、逐结论可审计引用；仍需要程序化字段补全 + 语义支持校验。
 
 ### 7.5 API/LLM 异常处理薄弱（高，尤其上 API 后）
 
@@ -562,8 +571,7 @@ Chroma Metadata：194 条记录 × 8 个 key（relative_path、knowledge_base、
 ### 7.12 文档与交付缺口（高）
 
 - `README.md` 2 行；`docs/devlog/DevLog #003 — Real-world PDF Ingestion and Parsing Quality` 是 0 字节文件（`wc -l` 为 0）；`docs/devlog/readme.md` 是个人文本，不是运行说明。
-- `AGENTS.md`、`docs/ai_workflow/`、总指导文件均未跟踪；如果只提交代码，GitHub 上缺少制度与架构文档。
-- 本次报告 `reports/RAG-20261107-002_architecture_audit.md` 也是新增未跟踪文件，需用户决定是否提交。
+- 审计当时 `AGENTS.md`、`docs/ai_workflow/`、总指导文件和本报告均未跟踪；如果当时只提交代码，GitHub 上会缺少制度、架构文档和审计报告。它们已在后续 `2bbaa9c` 中提交，当前剩余风险是 README 和环境/运行说明不足。
 - **影响**：交付物不完整，评审者无法快速理解/复现项目。
 
 ## 8. 最重要的 5 个下一步任务
@@ -572,9 +580,9 @@ Chroma Metadata：194 条记录 × 8 个 key（relative_path、knowledge_base、
 
 | 顺序 | 任务 | 要解决的问题 | 预计涉及文件 | 验收标准 | 依赖 |
 |---|---|---|---|---|---|
-| 1 | **建立约 30 题 CNOOC 评测基线（含无答案）** | 7 题 Smoke 全为有答案，无法衡量拒答/页码/引用/Recall | 新增 `eval/cnooc_eval_v1.json`；改 `evaluate_retrieval.py`、`smoke_test_cnooc.py`、`calibrate_threshold.py`；新增 `reports/eval/` 结果 | ≥30 题；≥5 道无答案；覆盖精确编号/数字日期金额/同义改写/相似条款/多文档；每题有 `question_id`、`difficulty`、`category`、`expected_document_ids`、`expected_pages`、`expected_chunk_ids`（可得时）、`answer_reference`、`requires_abstention`；输出 Hit@1/3、Recall@5/10、MRR、拒答 precision/recall、延迟；保存数据集版本/索引快照/模型/参数/结果；可重复运行 | 当前 194 Chunk 快照；人工 Ground Truth；不需要重建索引 |
+| 1 | **建立约 30 题 CNOOC 人工标注评测集并测当前基线** | 7 题 Smoke 全为有答案，无法衡量拒答/页码/引用/Recall | 新增 `eval/cnooc_eval_v1.json`；改 `evaluate_retrieval.py`、`smoke_test_cnooc.py`、`calibrate_threshold.py`；新增 `reports/eval/` 结果 | ≥30 题；≥5 道无答案；覆盖精确编号/数字日期金额/同义改写/相似条款/多文档；每题有 `question_id`、`difficulty`、`category`、`expected_document_ids`、`expected_pages`、`expected_chunk_ids`（可得时）、`answer_reference`、`requires_abstention`；用当前系统测 Hit@1/3、Recall@5/10、MRR、延迟；**如实际运行当前问答流程**，可把 prompt-only 拒答 precision/recall 记为“改进前基线”，并注明样本、配置、是否调用模型；未运行则不填指标，只列计划；独立证据充分性判断不在本任务验收内；保存数据集版本/索引快照/模型/参数/结果；可重复运行 | 当前 194 Chunk 快照；人工 Ground Truth；不需要重建索引 |
 | 2 | **配置集中化 + request ID/阶段日志 + 结构化错误** | 模型/Top-K/RRF/Chunk/批量硬编码；无日志；LLM 客户端导入即创建；CLI 失败退出码 0 | `knowledge_config.py`（扩展或拆分 `config.py`）、新增 `logging_config.py`/`errors.py`、`llm.py`、`main.py`、`schemas.py`、`tests/` | 单一配置源覆盖模型、路径、Top-K、candidate_k、RRF k、Chunk 大小、批量、阈值、超时/重试；缺配置时清晰报错；每次查询有 `request_id`；记录 Dense/BM25/RRF/Rerank/LLM 阶段耗时与候选 ID；LLM 超时/重试；结构化错误类型；无 Key 不在导入阶段崩溃；测试用 mock 覆盖 | 无；FastAPI 的前置 |
-| 3 | **证据充分性判断 + 引用校验 + 结构化 sources** | 无独立拒答；引用只靠正则；sources 缺 Chunk ID/标题/URL/版本；Reranker 高分不等于证据正确 | `hybrid_retrieval.py`（返回分数/排名）、新增 `evidence.py`/`citation.py`、`main.py` 或 service、`schemas.py`、`llm.py`、`tests/` | 对每个问题输出 `answer` 或 `insufficient_evidence`；无证据时返回拒答且 sources 为空；引用必须映射到本次检索到的 Chunk ID；sources 至少含文档标题、路径、页码、Chunk ID、`source_url`；伪造/越界引用被拒绝；用 30 题基线报告拒答与引用准确率 | 任务 1（无答案题）、任务 2（配置/日志/错误） |
+| 3 | **证据充分性判断 + 引用校验 + 结构化 sources** | 无独立拒答；引用有编号到来源标签映射但缺 Chunk ID/标题/URL/版本与语义支持校验；Reranker 高分不等于证据正确 | `hybrid_retrieval.py`（返回分数/排名）、新增 `evidence.py`/`citation.py`、`main.py` 或 service、`schemas.py`、`llm.py`、`tests/` | 对每个问题输出 `answer` 或 `insufficient_evidence`；无证据时返回拒答且 sources 为空；引用必须映射到本次检索到的 Chunk ID；sources 至少含文档标题、路径、页码、Chunk ID、`source_url`；伪造/越界引用被拒绝；明确区分“引用存在校验”与“结论语义支持校验”，后者用人工/辅助评测，不能仅凭编号存在判定；用同一 30 题基线比较改进前后拒答与引用表现 | 任务 1（无答案题）、任务 2（配置/日志/错误） |
 | 4 | **FastAPI 最小闭环** | 没有 HTTP API；P0 验收要求 API 问答；无请求/响应契约 | 新增 `app/api/`、`app/services/rag_service.py`、`schemas.py`、`requirements.txt`（增加 `fastapi`）、`tests/test_api.py` | `uvicorn` 可启动；`GET /health` 返回状态/Collection/记录数；`POST /api/v1/query` 接收 `{question, top_k?}`，返回 `answer`、结构化 `sources`、`request_id`、检索元数据；`GET /api/v1/documents` 返回已索引文档；4xx/5xx 返回 JSON 错误 + request_id；LLM/检索异常不崩溃；集成测试用 mock LLM/检索；README 有 curl 示例 | 任务 2（配置/日志/错误）、任务 3（证据/引用）；任务 1 做回归 |
 | 5 | **README + `.env.example` + 本地 Demo 可复现** | README 2 行；无环境模板；PDF/Chroma 被忽略；新环境无法重建 | `README.md`、新增 `.env.example`、新增 `docs/architecture/`（架构图/运行手册）、可选 `scripts/` | 新环境按 README：创建环境 → 安装依赖 → 从官方来源取得 7 份 PDF → 配置 `DEEPSEEK_API_KEY` → `python index_documents.py` → 跑 30 题评测 → 启动 CLI/API；明确预期 7 份/106 页/194 Chunk；含架构图、已知限制、安全说明；不提交密钥/PDF/Chroma | 任务 1（评测命令）、任务 4（API 示例） |
 
@@ -595,6 +603,7 @@ Chroma Metadata：194 条记录 × 8 个 key（relative_path、knowledge_base、
 **理由：**
 
 - 先做评测，后续每一步都有同一套 Ground Truth 和指标，避免“改完不知道好坏”。
+- 任务 1 的拒答指标只是当前 prompt-only 系统的改进前基线；独立证据充分性判断在任务 3，二者不能用同一验收结论。
 - 配置/日志/错误契约是 FastAPI 和引用校验的共同地基；先做可以避免在 API 层重复硬编码。
 - 证据/引用是回答可信度的核心；如果先包 API，会把“无拒答、无引用校验”的问题直接暴露给调用方。
 - FastAPI 是包装层，不应先于核心正确性；但它是 P0 验收的必要条件，所以放在第 4。
@@ -604,7 +613,7 @@ Chroma Metadata：194 条记录 × 8 个 key（relative_path、knowledge_base、
 
 ### 8.2 每项任务的边界
 
-- 任务 1 只改评测数据/脚本/结果，不改检索算法、不重建索引。
+- 任务 1 只改评测数据/脚本/结果，不改检索算法、不重建索引；拒答指标只记录当前 prompt-only 系统的改进前基线（若实际运行），独立证据判断留给任务 3。
 - 任务 2 只做配置/日志/错误契约，不改变检索排序行为。
 - 任务 3 才允许改检索/生成入口的证据判断与引用结构；仍不重建索引。
 - 任务 4 只做 API 包装与服务层抽取，不引入权限/上传/Docker。
@@ -612,18 +621,21 @@ Chroma Metadata：194 条记录 × 8 个 key（relative_path、knowledge_base、
 
 ## 9. 最小改造方案（建议）
 
-### Step 0：冻结当前基线（本次已完成）
+### Step 0：记录审计快照（不是可恢复的稳定版本）
 
-- 记录 HEAD `49a40df`、Chroma 194 条、7 份 PDF/106 页、当前 7 题 Smoke 结果。
+- 审计时（2026-11-07）记录：HEAD `49a40df`、Chroma `cnooc_knowledge` 194 条、7 份 PDF/106 页、当前 7 题 Smoke 结果。
+- 当时没有为这些数据创建 Commit/Tag，也没有受保护的 PDF、ChromaDB、`.index_state/` 备份；因此这只是审计快照，不是“已有可恢复的稳定版本”。
+- Git 只能恢复已跟踪内容；PDF、`chroma_db/`、`.index_state/` 被 `.gitignore` 忽略，不能靠 Git 恢复。若后续需要可恢复基线，应在用户授权下另行创建 Commit/Tag 和受保护备份；本次不创建。
 - 不改 BGE/Chroma/Chunker；不做索引重建。
 
 ### Step 1：评测基线（任务 1）
 
 - 新增 `eval/cnooc_eval_v1.json`，约 30 题，至少 5 题无答案。
 - 每题人工标注来源、页码、证据片段、答案参考、是否应拒答。
-- 扩展 `evaluate_retrieval.py`：Hit@1/3、Recall@5/10、MRR、拒答 precision/recall、延迟；保存结果 JSON。
+- 用当前系统测检索：Hit@1/3、Recall@5/10、MRR、延迟；保存结果 JSON 与运行配置。
+- 拒答指标分两层：任务 1 只在**实际运行当前问答流程**时，把 prompt-only 的拒答 precision/recall 记为“改进前基线”，并注明样本、配置、是否调用模型；未运行则不填指标，只列计划。独立证据充分性判断与引用校验在任务 3 实现，并用同一评测集比较改进前后。
 - 保留 `smoke_test_cnooc.py` 作为快速接线检查，但不再把它当正式指标。
-- **验收门**：能在当前 194 Chunk 上重复运行，结果稳定；失败案例可定位到 Chunk/页码。
+- **验收门**：能在当前 194 Chunk 上重复运行，结果稳定；失败案例可定位到 Chunk/页码；能明确区分“当前系统基线”与“任务 3 改进后结果”。
 
 ### Step 2：配置/日志/错误契约（任务 2）
 
@@ -636,8 +648,9 @@ Chroma Metadata：194 条记录 × 8 个 key（relative_path、knowledge_base、
 
 - 在检索结果上增加证据充分性判断（至少：reranker score/排名 + 关键词/数字/条款命中 + 无答案题校准）。
 - 生成结构化 `sources`：`document_title`、`relative_path`、`page_start`、`page_end`、`chunk_id`、`source_url`。
-- 校验 LLM 引用编号必须来自本次检索结果；引用 Chunk 必须存在且文本可用。
-- **验收门**：30 题基线中，无答案题有明确拒答；有答案题的引用可逐条回溯到 Chunk；不出现伪造来源。
+- 校验 LLM 引用编号必须来自本次检索结果；引用 Chunk 必须存在且文本可用；明确区分“引用存在/编号有效”和“该 Chunk 语义上支持该结论”，后者不能仅靠编号或 Chunk ID 存在来证明。
+- 用同一 30 题评测集比较任务 1 的当前系统基线与任务 3 改进后结果。
+- **验收门**：30 题基线中，无答案题有明确拒答；有答案题的引用可逐条回溯到 Chunk；不出现伪造来源；对“引用存在但语义不支持”的情况有单独计数/失败案例。
 
 ### Step 4：FastAPI（任务 4）
 
@@ -691,15 +704,16 @@ conda run -n agent python -c "import chromadb, pypdf, sentence_transformers, ran
 conda run -n agent python -c "import importlib.util as u; print('fastapi installed:', bool(u.find_spec('fastapi')))"
 ```
 
-结果：
+结果（审计当时，2026-11-07）：
 
 - 仓库路径：`/Users/luogewen/Documents/GitHub/enterprise-knowledge-agent`
-- 分支：`main`；HEAD：`49a40dfdf00d60075cf5bfdbfd1a9f5071982cf8`；本地 `origin/main` 同值；无 Tag。
-- 未跟踪：`.DS_Store`、`AGENTS.md`、`data/.DS_Store`、`data/cnooc/.DS_Store`、`docs/ai_workflow/`、`docs/enterprise_rag_architecture_development_guide.md`。
-- `git diff --stat` 与 `git diff --cached --stat` 均为空。
+- 审计当时分支：`main`；HEAD：`49a40dfdf00d60075cf5bfdbfd1a9f5071982cf8`；本地 `origin/main` 同值；无 Tag。
+- 审计当时未跟踪：`.DS_Store`、`AGENTS.md`、`data/.DS_Store`、`data/cnooc/.DS_Store`、`docs/ai_workflow/`、`docs/enterprise_rag_architecture_development_guide.md`。
+- 审计当时 `git diff --stat` 与 `git diff --cached --stat` 均为空。
 - Python：3.12.14；`chromadb 1.5.9`、`pypdf 6.20.1`、`pydantic 2.13.5`；`fastapi installed: False`。
 - `requirements.txt`：有 `uvicorn==0.54.0`、`pydantic-settings==2.15.0`、OpenTelemetry 包；无 `fastapi`。
 - 生产代码 `grep`：未发现 `FastAPI`、`APIRouter`、`request_id`、`logging.`/`logger`；仅 `tests/test_ingestion.py:14` 设置 `pypdf` 日志级别。
+- 2026-11-08 修订时 HEAD 已为 `2bbaa9c`，具体状态见 11.6。
 
 ### 11.2 只读数据核对
 
@@ -763,9 +777,19 @@ PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -p 'test_cnooc_mi
 ### 11.5 受保护文件状态
 
 - 审计期间未修改业务代码、PDF、`sources.csv`、ChromaDB、`.index_state/`、`eval/`、`requirements.txt`、`.env`。
-- `git status` 除本任务新增的审计报告外，未跟踪文件集合未变化；已跟踪文件无改动，暂存区为空。
+- 审计当时 `git status` 除本任务新增的审计报告外，未跟踪文件集合未变化；已跟踪文件无改动，暂存区为空。
 - 只读 SQLite 使用 `immutable=1`，未写入 Chroma；未读取 `.env` 内容。
 - `chroma_db/chroma.sqlite3` 的 mtime 为 `Nov 7 15:46:37 2026`，早于本次审计开始时间；`.index_state/cnooc_document_hashes.json` 为 `Oct 29 19:18:03 2026`；`data/cnooc/sources.csv` 为 `Oct 23 23:25:20 2026`。未见审计期间变更。
+
+### 11.6 2026-11-08 修订轮次的检查与 Git 状态
+
+- 修订开始时 HEAD：`2bbaa9c`（`创建prompt 管理`），本地 `origin/main` 同值；审计当时的 `49a40df` 已不再是 HEAD。
+- Prompt 差异核对：DeepSeek 报告已将归档版与其可见的完整聊天指令按段落比较；差异主要是标题层级、措辞、Markdown 格式及重复段落，未报告任务目标、范围或边界的实质冲突。但实际聊天版全文未写入仓库，故只完成差异说明，未完成逐字归档。详见 `docs/ai_workflow/issues/RAG-20261107-002-ISSUE-01.md`。
+- 文档内部链接：本报告及同 Task ID 的执行记录、ISSUE-01、任务索引、开发流水账相对链接失效 0 处。
+- 行号引用：检查报告中的 64 处 `文件:行号` 引用，越界 0；检查中把 `knowledge_config.py` 的 15–35 行引用修正为 15–33 行（实际文件 33 行）。
+- `git diff --check`：无空白错误。
+- 本轮未运行索引、模型推理、检索评测或 RAG 单元测试；未修改业务代码、测试、评测数据、知识库、索引、依赖或 `.env`；未 Commit/Tag/Push。
+- 本轮修改/新增：审计报告、执行记录、ISSUE-01、任务索引、开发流水账；其中 ISSUE-01 与 `prompts/architecture/RAG-20261107-002_audit_report_revision.md` 为未跟踪文件，其余为已跟踪文件的未提交修改。
 
 ## 12. 未验证的假设
 
@@ -785,7 +809,7 @@ PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -p 'test_cnooc_mi
 ## 13. 审计结论与等待确认
 
 - 当前项目是一个**可运行的 CNOOC 单知识库 RAG 原型**：离线入库、Chunk 元数据、SHA-256 增量检测、Chroma 向量检索、BM25、RRF、Cross-Encoder Reranker、DeepSeek 生成和来源页码输出都已存在。
-- 但它还不是总指导所要求的**企业级可交付应用**：缺少 FastAPI、日志/request ID、证据充分性判断、引用校验、权限、Docker、配置集中化、约 30 题评测集和可复现 README。
+- 但它还不是总指导所要求的**企业级可交付应用**：缺少 FastAPI、日志/request ID、独立证据充分性判断、Chunk 级引用字段与语义支持校验、权限、Docker、配置集中化、约 30 题评测集和可复现 README。
 - 历史线索中的 7 份 PDF/106 页/194 Chunk/`cnooc_knowledge` 已与当前本地快照核对一致；Reranker Smoke Top-1 4/7、Top-3 5/7 已从既有 JSON 复核，但**不是本次实测准确率**。
 - 建议先按第 8 节的 1 → 2 → 3 → 4 → 5 顺序推进；本次不实施任何任务。
 - **等待用户确认优先级后**，再按总指导 P0 → P1 → P2 推进。审计任务到此停止，不扩大为 FastAPI 开发或架构重构。
