@@ -257,6 +257,21 @@ class ConfigLoadingTests(unittest.TestCase):
 
 
 class APITests(unittest.TestCase):
+    def test_local_chat_page_and_assets_are_served_without_index_or_key(self):
+        with patch.dict(os.environ, {"DEEPSEEK_API_KEY": ""}, clear=False):
+            client = TestClient(create_app())
+            page = client.get("/")
+            script = client.get("/static/app.js")
+            stylesheet = client.get("/static/styles.css")
+
+        self.assertEqual(page.status_code, 200)
+        self.assertIn("资料问答", page.text)
+        self.assertIn('id="query-form"', page.text)
+        self.assertEqual(script.status_code, 200)
+        self.assertIn('fetch("/api/v1/query"', script.text)
+        self.assertEqual(stylesheet.status_code, 200)
+        self.assertIn(".conversation", stylesheet.text)
+
     def test_health_does_not_require_key_or_index(self):
         with patch.dict(os.environ, {"DEEPSEEK_API_KEY": ""}, clear=False):
             client = TestClient(create_app())

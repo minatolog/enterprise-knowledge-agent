@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>企业知识库 · 问答台</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="知识库信息">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">知</div>
+        <div><strong>企业知识库</strong><span>LOCAL RAG WORKSPACE</span></div>
+      </div>
+
+      <section class="side-section">
+        <p class="eyebrow">当前知识库</p>
+        <h1>CNOOC 官方资料</h1>
+        <p class="muted">基于已索引文档回答问题。答案可能出错，请核对原始资料与页码。</p>
+      </section>
+
+      <section class="status-card" aria-label="系统状态">
+        <div class="status-row"><span>服务状态</span><span id="service-status" class="status-pill">检查中</span></div>
+        <div class="status-row"><span>已索引文档</span><strong id="document-count">—</strong></div>
+        <div class="status-row"><span>知识片段</span><strong id="chunk-count">—</strong></div>
+        <p id="index-message" class="side-note" role="status"></p>
+      </section>
+
+      <details class="documents">
+        <summary>查看已索引文档 <span aria-hidden="true">↗</span></summary>
+        <ul id="document-list"><li class="muted">正在读取…</li></ul>
+      </details>
+
+      <div class="sidebar-footer">本地单用户演示 · 每次提问独立处理</div>
+    </aside>
+
+    <main class="main-panel">
+      <header class="topbar">
+        <div><span class="eyebrow">KNOWLEDGE ASSISTANT</span><h2>资料问答</h2></div>
+        <span class="topbar-badge">来源可追溯</span>
+      </header>
+
+      <div id="conversation" class="conversation" aria-live="polite">
+        <div id="welcome" class="welcome">
+          <div class="welcome-icon" aria-hidden="true">✳</div>
+          <p class="eyebrow">开始探索</p>
+          <h3>直接问一个关于企业资料的问题</h3>
+          <p>系统会从当前索引中寻找相关内容，生成回答并显示引用的文件与页码。</p>
+          <div class="suggestions" aria-label="示例问题">
+            <button type="button" class="suggestion" data-question="员工应如何遵守公司的合规要求？">员工应如何遵守公司的合规要求？</button>
+            <button type="button" class="suggestion" data-question="审计委员会的主要职责是什么？">审计委员会的主要职责是什么？</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="composer-wrap">
+        <p id="form-message" class="form-message" role="alert"></p>
+        <form id="query-form" class="composer">
+          <label for="question" class="visually-hidden">输入问题</label>
+          <textarea id="question" name="question" rows="2" maxlength="2000" placeholder="输入问题，例如：审计委员会有哪些职责？" required></textarea>
+          <div class="composer-actions">
+            <label for="top-k">参考片段 <select id="top-k" name="top_k"><option value="3" selected>3</option><option value="5">5</option><option value="8">8</option></select></label>
+            <button id="send-button" type="submit">发送问题 <span aria-hidden="true">↗</span></button>
+          </div>
+        </form>
+        <p class="composer-hint">Enter 发送 · Shift + Enter 换行 · 本页对话刷新后清空，后端不保存会话</p>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

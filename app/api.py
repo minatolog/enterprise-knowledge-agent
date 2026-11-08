@@ -6,11 +6,13 @@ import logging
 import re
 import time
 import uuid
+from pathlib import Path
 from typing import Callable
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.errors import ApplicationError
 from app.index_status import list_indexed_documents
@@ -28,6 +30,7 @@ from schemas import (
 
 logger = logging.getLogger(__name__)
 _REQUEST_ID_PATTERN = re.compile(r"^[A-Za-z0-9._-]{1,128}$")
+_WEB_DIR = Path(__file__).resolve().parent / "web"
 
 
 def _get_request_id(request: Request) -> str:
@@ -58,6 +61,7 @@ def create_app(
 ) -> FastAPI:
     configure_logging()
     app = FastAPI(title=API_TITLE, version=API_VERSION)
+    app.mount("/static", StaticFiles(directory=_WEB_DIR), name="static")
     rag_service = service or RAGService()
     get_documents = documents_provider or list_indexed_documents
 
@@ -126,6 +130,10 @@ def create_app(
     @app.get("/health", response_model=HealthResponse)
     def health() -> HealthResponse:
         return HealthResponse(status="ok")
+
+    @app.get("/", include_in_schema=False)
+    def home() -> FileResponse:
+        return FileResponse(_WEB_DIR / "index.html")
 
     @app.post("/api/v1/query", response_model=QueryResponse)
     def query(payload: QueryRequest, request: Request) -> QueryResponse:

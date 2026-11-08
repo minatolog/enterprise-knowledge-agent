@@ -1,6 +1,6 @@
 # enterprise-knowledge-agent
 
-基于 CNOOC 官方资料的企业知识库 RAG 本地原型。当前实现离线入库、Chroma 向量检索、BM25、RRF、Cross-Encoder Reranker、DeepSeek 生成，并提供共享服务层的 CLI 与最小 FastAPI。
+基于 CNOOC 官方资料的企业知识库 RAG 本地原型。当前实现离线入库、Chroma 向量检索、BM25、RRF、Cross-Encoder Reranker、DeepSeek 生成，并提供共享服务层的 CLI、FastAPI 与本地对话测试页面。
 
 > 当前是本地单用户原型，不是生产系统。权限/ACL、上传、Docker、正式评测和严格的证据/引用语义校验尚未完成。
 
@@ -8,6 +8,7 @@
 
 - `app/service.py`：`RAGService`，CLI 和 API 共用；输入问题与 `top_k`，返回答案、结构化 sources、`request_id` 和阶段耗时。
 - `app/api.py`：FastAPI 路由 `/health`、`/api/v1/query`、`/api/v1/documents`。
+- `app/web/`：由 FastAPI 同源提供的本地网页，调用现有问答与文档接口。
 - `app/index_status.py`：只读 SQLite 检查实际索引；不写 Chroma。
 - `knowledge_config.py`：共享配置（模型、路径、Top-K、候选数、超时、日志级别）。
 - `retrieval.py` / `hybrid_retrieval.py`：现有向量/BM25/RRF/Reranker 链路，未改排序算法。
@@ -50,6 +51,8 @@ cp .env.example .env
 ```bash
 uvicorn app.api:app --host 127.0.0.1 --port 8000
 ```
+
+浏览器打开 `http://127.0.0.1:8000/`，即可在对话框里连续提问，查看答案、引用文件和页码。网页与 API 使用同一个服务，**只需启动一次**，不用每次运行 `main.py`。页面会显示实际索引状态；若索引或 API Key 未就绪，提问时会显示错误。当前每次问题独立处理，页面里的历史仅在本次打开期间显示，刷新即清空；后端没有多轮记忆。首次问答可能需要加载本地检索模型，速度较慢。
 
 三个端点：
 
@@ -100,6 +103,7 @@ python -m unittest discover -s tests -p 'test_cnooc_migration.py' \
 ## 已知限制
 
 - 本地单用户原型；无身份认证、ACL、上传、Docker、正式评测。
+- 本地对话页面只用于单用户测试；未提供账号、会话持久化或多轮上下文。请仅绑定 `127.0.0.1` 使用，不要直接暴露到公网。
 - 检索/重排模型首次查询时懒加载，第一次请求会较慢。
 - `/api/v1/query` 的引用只做“编号 → 本次检索来源”的映射；没有 Chunk 级语义支持校验，编号存在不等于答案结论有证据支持。
 - 本次实现没有调用真实 DeepSeek API；API 测试全部使用 mock LLM。真实端到端问答需要配置 Key 后自行验证。
