@@ -1,0 +1,558 @@
+{
+  "dataset_version": "cnooc_eval_v1.0",
+  "created_at": "2026-11-09",
+  "language": "zh-CN",
+  "corpus": {
+    "knowledge_base": "cnooc",
+    "collection": "cnooc_knowledge",
+    "indexed_documents": [
+      "data/cnooc/compliance/employee_compliance.pdf",
+      "data/cnooc/compliance/director_ethics_2026.pdf",
+      "data/cnooc/governance/articles_2025.pdf",
+      "data/cnooc/governance/nomination_committee_2025.pdf",
+      "data/cnooc/governance/audit_committee.pdf",
+      "data/cnooc/governance/remuneration_committee.pdf",
+      "data/cnooc/governance/strategy_sustainability_committee.pdf"
+    ],
+    "indexed_pages": 106,
+    "indexed_chunks": 194,
+    "excluded_documents": [
+      "data/cnooc/finance/annual_report_2025.pdf",
+      "data/cnooc/sustainability/esg_report_2025.pdf"
+    ],
+    "note": "只有 knowledge_config.INDEXED_DOCUMENTS 中的 7 份 PDF 属于正式索引；年报和 ESG 报告保留在磁盘但不进入当前 Collection。"
+  },
+  "label_status": "ai_draft_source_checked",
+  "review_status_definition": {
+    "ai_draft_source_checked": "AI 草拟题目；已直接对照原始 PDF 页文本核对证据和页码，并核对当前索引中的 Chunk ID；尚未由用户人工复核，不能称为人工标注。",
+    "user_reviewed": "用户逐题确认后才可使用；本次没有题目使用该状态。"
+  },
+  "metrics_note": "本数据集只用于检索评测；未对所有题目运行 LLM 生成，因此不得据此报告答案准确率或拒答准确率。无答案题单独统计。",
+  "questions": [
+    {
+      "question_id": "E01",
+      "question": "员工入职时需要签署哪些合规文件？",
+      "category": "multi_evidence",
+      "difficulty": "easy",
+      "expected_document_ids": ["data/cnooc/compliance/employee_compliance.pdf"],
+      "expected_pages": [6, 10, 14],
+      "expected_chunk_ids": [
+        "data/cnooc/compliance/employee_compliance.pdf::p0006::c0001",
+        "data/cnooc/compliance/employee_compliance.pdf::p0010::c0001",
+        "data/cnooc/compliance/employee_compliance.pdf::p0014::c0001"
+      ],
+      "evidence": [
+        {"document_id": "data/cnooc/compliance/employee_compliance.pdf", "page": 6, "quote": "公司应组织员工在入职时签订《合规承诺书》"},
+        {"document_id": "data/cnooc/compliance/employee_compliance.pdf", "page": 10, "quote": "员工入职时须签署保密协议"},
+        {"document_id": "data/cnooc/compliance/employee_compliance.pdf", "page": 14, "quote": "员工在学习本《手册》后，要在《合规承诺书》上签字"}
+      ],
+      "answer_reference": "入职时签订《合规承诺书》；入职时须签署保密协议；学习《手册》后需在《合规承诺书》上签字，该承诺书作为雇佣合同的重要附件。",
+      "requires_abstention": false,
+      "review_status": "ai_draft_source_checked"
+    },
+    {
+      "question_id": "E02",
+      "question": "员工发现可能存在利益冲突时应该怎么做？家属或家庭成员的范围包括哪些？",
+      "category": "clause",
+      "difficulty": "medium",
+      "expected_document_ids": ["data/cnooc/compliance/employee_compliance.pdf"],
+      "expected_pages": [7],
+      "expected_chunk_ids": ["data/cnooc/compliance/employee_compliance.pdf::p0007::c0002"],
+      "evidence": [
+        {"document_id": "data/cnooc/compliance/employee_compliance.pdf", "page": 7, "quote": "员工应及时向公司报告任何可能产生利益冲突的情况"},
+        {"document_id": "data/cnooc/compliance/employee_compliance.pdf", "page": 7, "quote": "家属或家庭成员包括员工的配偶、子女及其配偶、父母、兄弟姐妹及其配偶，以及员工的配偶的父母、配偶的兄弟姐妹及其配偶等"}
+      ],
+      "answer_reference": "应及时向公司报告任何可能产生利益冲突的情况；家属/家庭成员包括配偶、子女及其配偶、父母、兄弟姐妹及其配偶，以及配偶的父母、配偶的兄弟姐妹及其配偶等。",
+      "requires_abstention": false,
+      "review_status": "ai_draft_source_checked"
+    },
+    {
+      "question_id": "E03",
+      "question": "员工离职后在竞业和保密方面仍有哪些义务？",
+      "category": "multi_evidence",
+      "difficulty": "medium",
+      "expected_document_ids": ["data/cnooc/compliance/employee_compliance.pdf"],
+      "expected_pages": [7, 10],
+      "expected_chunk_ids": [
+        "data/cnooc/compliance/employee_compliance.pdf::p0007::c0001",
+        "data/cnooc/compliance/employee_compliance.pdf::p0007::c0002",
+        "data/cnooc/compliance/employee_compliance.pdf::p0010::c0001"
+      ],
+      "evidence": [
+        {"document_id": "data/cnooc/compliance/employee_compliance.pdf", "page": 7, "quote": "员工离职后在约定的竞业禁止期限内不得自己经营或者为他人经营与原单位同类的"},
+        {"document_id": "data/cnooc/compliance/employee_compliance.pdf", "page": 7, "quote": "业务，不得作为供应商或经销商与原单位直接或间接交易"},
+        {"document_id": "data/cnooc/compliance/employee_compliance.pdf", "page": 10, "quote": "在终止雇佣关系后仍有符合法律要求的保密义务"}
+      ],
+      "answer_reference": "竞业禁止期限内不得自己经营或为他人经营与原单位同类业务，不得作为供应商/经销商与原单位直接或间接交易，不得从事其他有损公司和本单位利益的活动；终止雇佣时应返还所有财产（包括各种媒介），禁止保存副本，终止后仍有符合法律要求的保密义务。",
+      "requires_abstention": false,
+      "review_status": "ai_draft_source_checked"
+    },
+    {
+      "question_id": "E04",
+      "question": "员工发现财务报告存在错误、不完整或不及时的情况时应如何处理？",
+      "category": "clause",
+      "difficulty": "easy",
+      "expected_document_ids": ["data/cnooc/compliance/employee_compliance.pdf"],
+      "expected_pages": [11],
+      "expected_chunk_ids": ["data/cnooc/compliance/employee_compliance.pdf::p0011::c0001"],
+      "evidence": [
+        {"document_id": "data/cnooc/compliance/employee_compliance.pdf", "page": 11, "quote": "员工发现财务报告存在错误、不完整或不及时的情况，尤其是财务报告与相关业务表现不一致、没有明显商业目的的交易和批准程序等方面的问题必须及时报告"}
+      ],
+      "answer_reference": "必须及时报告；尤其包括财务报告与业务表现不一致、没有明显商业目的的交易、批准程序等方面的问题。",
+      "requires_abstention": false,
+      "review_status": "ai_draft_source_checked"
+    },
+    {
+      "question_id": "E05",
+      "question": "员工可以接受供应商赠送的奢侈招待或不寻常礼物吗？",
+      "category": "synonym",
+      "difficulty": "easy",
+      "expected_document_ids": ["data/cnooc/compliance/employee_compliance.pdf"],
+      "expected_pages": [8],
+      "expected_chunk_ids": [
+        "data/cnooc/compliance/employee_compliance.pdf::p0008::c0001",
+        "data/cnooc/compliance/employee_compliance.pdf::p0008::c0002"
+      ],
+      "evidence": [
+        {"document_id": "data/cnooc/compliance/employee_compliance.pdf", "page": 8, "quote": "员工不得向业务伙伴赠送可能影响或被认为影响其业务决定的奢侈的招待或不寻常的礼物"},
+        {"document_id": "data/cnooc/compliance/employee_compliance.pdf", "page": 8, "quote": "员工与业务伙伴、政府官员互赠礼品、招待等活动，必须遵守公司相关业务标准和制度以及当地法律法规"}
+      ],
+      "answer_reference": "不得赠送或接受可能影响、或被外界认为影响业务决定的奢侈招待或不寻常礼物；与业务伙伴、政府官员互赠礼品和招待须遵守公司业务标准、制度和当地法律法规。",
+      "requires_abstention": false,
+      "review_status": "ai_draft_source_checked"
+    },
+    {
+      "question_id": "D01",
+      "question": "董事及高级管理人员遇到利益冲突时应如何处理，应向谁报告？",
+      "category": "clause",
+      "difficulty": "medium",
+      "expected_document_ids": ["data/cnooc/compliance/director_ethics_2026.pdf"],
+      "expected_pages": [8],
+      "expected_chunk_ids": ["data/cnooc/compliance/director_ethics_2026.pdf::p0008::c0001"],
+      "evidence": [
+        {"document_id": "data/cnooc/compliance/director_ethics_2026.pdf", "page": 8, "quote": "所有董事及高级管理人员必须避免任何实际的或被认为是利益冲突的情况，申报和管理利益冲突"},
+        {"document_id": "data/cnooc/compliance/director_ethics_2026.pdf", "page": 8, "quote": "请联系并报告本公司的法规主任或总法律顾问，以及/或审核委员会的成员"}
+      ],
+      "answer_reference": "必须避免任何实际或被认为的利益冲突，申报和管理利益冲突；潜在利益冲突及披露事宜应联系并报告公司法规主任或总法律顾问，和/或审核委员会成员。",
+      "requires_abstention": false,
+      "review_status": "ai_draft_source_checked"
+    },
+    {
+      "question_id": "D02",
+      "question": "在香港市场，内幕交易可能面临怎样的刑事处罚？",
+      "category": "numeric_date",
+      "difficulty": "medium",
+      "expected_document_ids": ["data/cnooc/compliance/director_ethics_2026.pdf"],
+      "expected_pages": [3],
+      "expected_chunk_ids": ["data/cnooc/compliance/director_ethics_2026.pdf::p0003::c0002"],
+      "evidence": [
+        {"document_id": "data/cnooc/compliance/director_ethics_2026.pdf", "page": 3, "quote": "刑事处罚可高达 1000 万港元的罚款及 10 年监禁，也可能受到民事处罚，并可能在最多五年内丧失在上市公司或其它特定公司担任董事或参与管理的资格"}
+      ],
+      "answer_reference": "最高可处1000万港元罚款及10年监禁；也可能受到民事处罚，并可能在最多五年内丧失在上市公司或其它特定公司担任董事或参与管理的资格。",
+      "requires_abstention": false,
+      "review_status": "ai_draft_source_checked"
+    },
+    {
+      "question_id": "D03",
+      "question": "A股市场对董事、高级管理人员的短线交易如何界定，收益归谁？",
+      "category": "numeric_date",
+      "difficulty": "medium",
+      "expected_document_ids": ["data/cnooc/compliance/director_ethics_2026.pdf"],
+      "expected_pages": [7],
+      "expected_chunk_ids": ["data/cnooc/compliance/director_ethics_2026.pdf::p0007::c0001"],
+      "evidence": [
+        {"document_id": "data/cnooc/compliance/director_ethics_2026.pdf", "page": 7, "quote": "在买入后六个月内卖出，或者在卖出后六个月内又买入"},
+        {"document_id": "data/cnooc/compliance/director_ethics_2026.pdf", "page": 7, "quote": "所得收益归公司所有，公司董事会应当收回该所得收益"}
+      ],
+      "answer_reference": "指买入后六个月内卖出，或卖出后六个月内又买入；所得收益归公司所有，公司董事会应当收回。",
+      "requires_abstention": false,
+      "review_status": "ai_draft_source_checked"
+    },
+    {
+      "question_id": "D04",
+      "question": "董事及高级管理人员发现违法或不道德行为时，应向谁举报？善意举报是否受保护？",
+      "category": "multi_evidence",
+      "difficulty": "medium",
+      "expected_document_ids": ["data/cnooc/compliance/director_ethics_2026.pdf"],
+      "expected_pages": [9],
+      "expected_chunk_ids": [
+        "data/cnooc/compliance/director_ethics_2026.pdf::p0009::c0001",
+        "data/cnooc/compliance/director_ethics_2026.pdf::p0009::c0002"
+      ],
+      "evidence": [
+        {"document_id": "data/cnooc/compliance/director_ethics_2026.pdf", "page": 9, "quote": "必须迅速将此类信息提请法规主任、总法律顾问和/或审核委员会"},
+        {"document_id": "data/cnooc/compliance/director_ethics_2026.pdf", "page": 9, "quote": "将不会因为善意举报违反本道德守则或者其它违法或不道德的行为而受到处罚"}
+      ],
+      "answer_reference": "应迅速提请法规主任、总法律顾问和/或审核委员会注意，并及时向董事会报告、提请核查，尽可能保密；善意举报不受处罚，公司禁止任何形式报复；故意虚假举报将受纪律处分。",
+      "requires_abstention": false,
+      "review_status": "ai_draft_source_checked"
+    },
+    {
+      "question_id": "A01",
+      "question": "组织章程细则中公司的正式名称是什么？",
+      "category": "synonym",
+      "difficulty": "easy",
+      "expected_document_ids": ["data/cnooc/governance/articles_2025.pdf"],
+      "expected_pages": [6],
+      "expected_chunk_ids": ["data/cnooc/governance/articles_2025.pdf::p0006::c0001"],
+      "evidence": [
+        {"document_id": "data/cnooc/governance/articles_2025.pdf", "page": 6, "quote": "本公司的名稱為中國海洋石油有限公司（CNOOC Limited）"}
+      ],
+      "answer_reference": "中国海洋石油有限公司（CNOOC Limited）。",
+      "requires_abstention": false,
+      "review_status": "ai_draft_source_checked"
+    },
+    {
+      "question_id": "A03",
+      "question": "公司召开股东周年大会和其他股东大会，分别需要提前多少天发出书面通知？",
+      "category": "numeric_date",
+      "difficulty": "medium",
+      "expected_document_ids": ["data/cnooc/governance/articles_2025.pdf"],
+      "expected_pages": [16],
+      "expected_chunk_ids": ["data/cnooc/governance/articles_2025.pdf::p0016::c0001"],
+      "evidence": [
+        {"document_id": "data/cnooc/governance/articles_2025.pdf", "page": 16, "quote": "周年大會須在舉行前最少二十一天前發出書面通知"},
+        {"document_id": "data/cnooc/governance/articles_2025.pdf", "page": 16, "quote": "其他的股東大會須在舉行前最少十四天前發出書面通知"}
+      ],
+      "answer_reference": "股东周年大会至少提前21天发出书面通知；其他股东大会至少提前14天；除非条例规定了不同期限，则适用规定通知。",
+      "requires_abstention": false,
+      "review_status": "ai_draft_source_checked"
+    },
+    {
+      "question_id": "A04",
+      "question": "董事会会议的法定人数和表决规则是什么？",
+      "category": "numeric_date",
+      "difficulty": "medium",
+      "expected_document_ids": ["data/cnooc/governance/articles_2025.pdf"],
+      "expected_pages": [28],
+      "expected_chunk_ids": [
+        "data/cnooc/governance/articles_2025.pdf::p0028::c0001",
+        "data/cnooc/governance/articles_2025.pdf::p0028::c0002"
+      ],
+      "evidence": [
+        {"document_id": "data/cnooc/governance/articles_2025.pdf", "page": 28, "quote": "除非董事會另有決定，半數以上董事出席會議方為法定人數"},
+        {"document_id": "data/cnooc/governance/articles_2025.pdf", "page": 28, "quote": "董事會會議上提出的問題須由出席有關會議的全體董事的過半數投票表決通過"},
+        {"document_id": "data/cnooc/governance/articles_2025.pdf", "page": 28, "quote": "如出現相同票數，則該會議主席可投第二票或決定票"}
+      ],
+      "answer_reference": "除非董事会另有决定，半数以上董事出席为法定人数；董事会问题由出席会议的全体董事过半数投票通过；票数相等时，会议主席可投第二票或决定票。",
+      "requires_abstention": false,
+      "review_status": "ai_draft_source_checked"
+    },
+    {
+      "question_id": "AU01",
+      "question": "审核委员会的宗旨是什么？",
+      "category": "clause",
+      "difficulty": "easy",
+      "expected_document_ids": ["data/cnooc/governance/audit_committee.pdf"],
+      "expected_pages": [1],
+      "expected_chunk_ids": ["data/cnooc/governance/audit_committee.pdf::p0001::c0001"],
+      "evidence": [
+        {"document_id": "data/cnooc/governance/audit_committee.pdf", "page": 1, "quote": "審核委員會（ “審核委員會 ”）的宗旨是協助中國海洋石油有限公司"}
+      ],
+      "answer_reference": "协助董事会履行公司财务报表完整性、外部审计师独立性/资质与表现、遵守法律法规、持续监察风险管理及内部监控系统、内部审计功能等职责，并编制审核委员会报告、履行企业管治职责。",
+      "requires_abstention": false,
+      "review_status": "ai_draft_source_checked"
+    },
+    {
+      "question_id": "AU02",
+      "question": "审核委员会多久至少召开一次会议？会议文件和资料需提前多久发送？每次会议至少多少成员参加？",
+      "category": "numeric_date",
+      "difficulty": "medium",
+      "expected_document_ids": ["data/cnooc/governance/audit_committee.pdf"],
+      "expected_pages": [1, 2],
+      "expected_chunk_ids": [
+        "data/cnooc/governance/audit_committee.pdf::p0001::c0002",
+        "data/cnooc/governance/audit_committee.pdf::p0002::c0001"
+      ],
+      "evidence": [
+        {"document_id": "data/cnooc/governance/audit_committee.pdf", "page": 1, "quote": "審核委員會每季度至少召開一次會議"},
+        {"document_id": "data/cnooc/governance/audit_committee.pdf", "page": 2, "quote": "所有會議文件和/或資料需在每次開會前至少三天發送"},
+        {"document_id": "data/cnooc/governance/audit_committee.pdf", "page": 2, "quote": "每次會議至少應有三分之二以上審核委員會成員參加"}
+      ],
+      "answer_reference": "每季度至少召开一次会议；除紧急情况外，会议文件和/或资料至少提前三天发送全体成员；每次会议至少三分之二以上成员参加。",
+      "requires_abstention": false,
+      "review_status": "ai_draft_source_checked"
+    },
+    {
+      "question_id": "AU03",
+      "question": "审核委员会如何接收和处理员工关于财务报告、内部监控或审计事务的投诉？",
+      "category": "clause",
+      "difficulty": "medium",
+      "expected_document_ids": ["data/cnooc/governance/audit_committee.pdf"],
+      "expected_pages": [6],
+      "expected_chunk_ids": ["data/cnooc/governance/audit_committee.pdf::p0006::c0001"],
+      "evidence": [
+        {"document_id": "data/cnooc/governance/audit_committee.pdf", "page": 6, "quote": "應制定接收、保留和處理公司員工有關財務報告、內部監控或審計事務的投诉程序（包括提交保密的匿名舉報的程序）"}
+      ],
+      "answer_reference": "应制定接收、保留和处理员工有关财务报告、内部监控或审计事务的投诉程序，包括保密匿名举报程序；审核相关机制，并确保公正、独立的调查和后续行动。",
+      "requires_abstention": false,
+      "review_status": "ai_draft_source_checked"
+    },
+    {
+      "question_id": "N01",
+      "question": "提名委员会的宗旨是什么？",
+      "category": "clause",
+      "difficulty": "easy",
+      "expected_document_ids": ["data/cnooc/governance/nomination_committee_2025.pdf"],
+      "expected_pages": [1],
+      "expected_chunk_ids": ["data/cnooc/governance/nomination_committee_2025.pdf::p0001::c0001"],
+      "evidence": [
+        {"document_id": "data/cnooc/governance/nomination_committee_2025.pdf", "page": 1, "quote": "提名委員會的宗旨是識別、甄選並向中國海洋石油有限公司"}
+      ],
+      "answer_reference": "识别、甄选并向董事会推荐担任公司董事和高级管理人员的适当候选人，监督董事会表现评核过程，向董事会提出建议并监察公司提名原则，并履行若干企业管治职责。",
+      "requires_abstention": false,
+      "review_status": "ai_draft_source_checked"
+    },
+    {
+      "question_id": "N02",
+      "question": "提名委员会的成员构成和会议法定人数有什么要求？",
+      "category": "numeric_date",
+      "difficulty": "medium",
+      "expected_document_ids": ["data/cnooc/governance/nomination_committee_2025.pdf"],
+      "expected_pages": [1],
+      "expected_chunk_ids": ["data/cnooc/governance/nomination_committee_2025.pdf::p0001::c0001"],
+      "evidence": [
+        {"document_id": "data/cnooc/governance/nomination_committee_2025.pdf", "page": 1, "quote": "提名委員會由董事會不時任命，惟大多數成員應為公司的獨立非執行董事，且至少應有一名不同性別的董事"},
+        {"document_id": "data/cnooc/governance/nomination_committee_2025.pdf", "page": 1, "quote": "每次會議法定人數為兩位提名委員會成員"}
+      ],
+      "answer_reference": "由董事会不时任命，大多数成员应为独立非执行董事，且至少有一名不同性别董事；每次会议法定人数为两名成员；主席由董事长或一名独立非执行董事成员担任。",
+      "requires_abstention": false,
+      "review_status": "ai_draft_source_checked"
+    },
+    {
+      "question_id": "N03",
+      "question": "提名委员会是否负责董事和高管继任计划？具体关注哪些职位？",
+      "category": "clause",
+      "difficulty": "easy",
+      "expected_document_ids": ["data/cnooc/governance/nomination_committee_2025.pdf"],
+      "expected_pages": [3],
+      "expected_chunk_ids": ["data/cnooc/governance/nomination_committee_2025.pdf::p0003::c0001"],
+      "evidence": [
+        {"document_id": "data/cnooc/governance/nomination_committee_2025.pdf", "page": 3, "quote": "提名委員會應定期審核公司就董事和高級管理人員的繼任計劃，特別是董事長和首席執行官"}
+      ],
+      "answer_reference": "是；应定期审核公司就董事和高级管理人员的继任计划，特别是董事长和首席执行官。",
+      "requires_abstention": false,
+      "review_status": "ai_draft_source_checked"
+    },
+    {
+      "question_id": "R01",
+      "question": "薪酬委员会的宗旨是什么？",
+      "category": "clause",
+      "difficulty": "easy",
+      "expected_document_ids": ["data/cnooc/governance/remuneration_committee.pdf"],
+      "expected_pages": [1],
+      "expected_chunk_ids": ["data/cnooc/governance/remuneration_committee.pdf::p0001::c0001"],
+      "evidence": [
+        {"document_id": "data/cnooc/governance/remuneration_committee.pdf", "page": 1, "quote": "薪酬委員會（ “薪酬委員會 ”）的宗旨是審核和批准公司各執行董事及公司高級管理人員的薪酬方案"}
+      ],
+      "answer_reference": "审核和批准各执行董事及公司高级管理人员的薪酬方案；就所有董事及高管薪酬政策、架构和透明程序向董事会提出建议；就非执行董事薪酬提出建议；就股份计划及其他股权补偿计划提出建议。",
+      "requires_abstention": false,
+      "review_status": "ai_draft_source_checked"
+    },
+    {
+      "question_id": "R02",
+      "question": "薪酬委员会会议至少需要多少成员参加？会议文件需提前多久发送？",
+      "category": "numeric_date",
+      "difficulty": "medium",
+      "expected_document_ids": ["data/cnooc/governance/remuneration_committee.pdf"],
+      "expected_pages": [1],
+      "expected_chunk_ids": ["data/cnooc/governance/remuneration_committee.pdf::p0001::c0001"],
+      "evidence": [
+        {"document_id": "data/cnooc/governance/remuneration_committee.pdf", "page": 1, "quote": "每次會議至少應有兩名薪酬委員會成員參加"},
+        {"document_id": "data/cnooc/governance/remuneration_committee.pdf", "page": 1, "quote": "所有會議文件和/或資料需在每次開會前至少三天發送"}
+      ],
+      "answer_reference": "每次会议至少两名薪酬委员会成员参加；除紧急情况外，会议文件和/或资料至少提前三天发送。",
+      "requires_abstention": false,
+      "review_status": "ai_draft_source_checked"
+    },
+    {
+      "question_id": "R03",
+      "question": "董事可以参与决定自己的薪酬吗？",
+      "category": "synonym",
+      "difficulty": "medium",
+      "expected_document_ids": ["data/cnooc/governance/remuneration_committee.pdf"],
+      "expected_pages": [3],
+      "expected_chunk_ids": ["data/cnooc/governance/remuneration_committee.pdf::p0003::c0001"],
+      "evidence": [
+        {"document_id": "data/cnooc/governance/remuneration_committee.pdf", "page": 3, "quote": "確保任何董事或其任何聯繫人不得參與厘定 其自身的薪酬"},
+        {"document_id": "data/cnooc/governance/remuneration_committee.pdf", "page": 3, "quote": "各董事應在董事會會議上就關於其本人薪酬議案的部分放棄投票"}
+      ],
+      "answer_reference": "不能；任何董事或其联系人不得参与厘定其自身薪酬，董事应就本人薪酬议案放弃投票。",
+      "requires_abstention": false,
+      "review_status": "ai_draft_source_checked"
+    },
+    {
+      "question_id": "S01",
+      "question": "战略与可持续发展委员会的宗旨是什么？",
+      "category": "clause",
+      "difficulty": "easy",
+      "expected_document_ids": ["data/cnooc/governance/strategy_sustainability_committee.pdf"],
+      "expected_pages": [1],
+      "expected_chunk_ids": ["data/cnooc/governance/strategy_sustainability_committee.pdf::p0001::c0001"],
+      "evidence": [
+        {"document_id": "data/cnooc/governance/strategy_sustainability_committee.pdf", "page": 1, "quote": "戰略與可持續發展委員會（ “戰略與可持續發展委員會 ”）的宗旨是就中國海洋石油有限公司"}
+      ],
+      "answer_reference": "就公司长期发展战略、重大经营计划及投资决策、可持续发展事宜等进行研究，并向董事会提出建议。",
+      "requires_abstention": false,
+      "review_status": "ai_draft_source_checked"
+    },
+    {
+      "question_id": "S02",
+      "question": "战略与可持续发展委员会的组成和会议法定人数有什么要求？",
+      "category": "numeric_date",
+      "difficulty": "medium",
+      "expected_document_ids": ["data/cnooc/governance/strategy_sustainability_committee.pdf"],
+      "expected_pages": [1],
+      "expected_chunk_ids": ["data/cnooc/governance/strategy_sustainability_committee.pdf::p0001::c0001"],
+      "evidence": [
+        {"document_id": "data/cnooc/governance/strategy_sustainability_committee.pdf", "page": 1, "quote": "戰略與可持續發展委員會由 三名以上（含三名）董事組成"},
+        {"document_id": "data/cnooc/governance/strategy_sustainability_committee.pdf", "page": 1, "quote": "每次會議法定人數至少為戰略與可持續發展委員會成員總數的二分之一"}
+      ],
+      "answer_reference": "由三名以上（含三名）董事组成；成员由董事会不时任命，主席由董事长或首席执行官担任；每次会议法定人数至少为成员总数的二分之一。",
+      "requires_abstention": false,
+      "review_status": "ai_draft_source_checked"
+    },
+    {
+      "question_id": "X01",
+      "question": "员工和董事/高级管理人员发现利益冲突时，分别应向谁报告？",
+      "category": "cross_document",
+      "difficulty": "hard",
+      "expected_document_ids": [
+        "data/cnooc/compliance/employee_compliance.pdf",
+        "data/cnooc/compliance/director_ethics_2026.pdf"
+      ],
+      "expected_pages": [7, 8],
+      "expected_chunk_ids": [
+        "data/cnooc/compliance/employee_compliance.pdf::p0007::c0002",
+        "data/cnooc/compliance/director_ethics_2026.pdf::p0008::c0001"
+      ],
+      "evidence": [
+        {"document_id": "data/cnooc/compliance/employee_compliance.pdf", "page": 7, "quote": "员工应及时向公司报告任何可能产生利益冲突的情况"},
+        {"document_id": "data/cnooc/compliance/director_ethics_2026.pdf", "page": 8, "quote": "请联系并报告本公司的法规主任或总法律顾问，以及/或审核委员会的成员"}
+      ],
+      "answer_reference": "员工应及时向公司报告可能产生利益冲突的情况；董事及高级管理人员应联系并报告公司法规主任或总法律顾问，和/或审核委员会成员。",
+      "requires_abstention": false,
+      "review_status": "ai_draft_source_checked"
+    },
+    {
+      "question_id": "X02",
+      "question": "审核委员会和薪酬委员会在会议文件发送时间上有什么共同要求？",
+      "category": "cross_document",
+      "difficulty": "medium",
+      "expected_document_ids": [
+        "data/cnooc/governance/audit_committee.pdf",
+        "data/cnooc/governance/remuneration_committee.pdf"
+      ],
+      "expected_pages": [2, 1],
+      "expected_chunk_ids": [
+        "data/cnooc/governance/audit_committee.pdf::p0002::c0001",
+        "data/cnooc/governance/remuneration_committee.pdf::p0001::c0001"
+      ],
+      "evidence": [
+        {"document_id": "data/cnooc/governance/audit_committee.pdf", "page": 2, "quote": "所有會議文件和/或資料需在每次開會前至少三天發送"},
+        {"document_id": "data/cnooc/governance/remuneration_committee.pdf", "page": 1, "quote": "所有會議文件和/或資料需在每次開會前至少三天發送"}
+      ],
+      "answer_reference": "两个委员会均要求：除紧急情况外，所有会议文件和/或资料在每次开会前至少三天发送给全体成员。",
+      "requires_abstention": false,
+      "review_status": "ai_draft_source_checked"
+    },
+    {
+      "question_id": "X03",
+      "question": "审核、提名、薪酬、战略与可持续发展四个委员会的章程分别由董事会何时批准和采用？",
+      "category": "cross_document",
+      "difficulty": "hard",
+      "expected_document_ids": [
+        "data/cnooc/governance/audit_committee.pdf",
+        "data/cnooc/governance/nomination_committee_2025.pdf",
+        "data/cnooc/governance/remuneration_committee.pdf",
+        "data/cnooc/governance/strategy_sustainability_committee.pdf"
+      ],
+      "expected_pages": [10, 3, 4, 3],
+      "expected_chunk_ids": [
+        "data/cnooc/governance/audit_committee.pdf::p0010::c0001",
+        "data/cnooc/governance/nomination_committee_2025.pdf::p0003::c0001",
+        "data/cnooc/governance/remuneration_committee.pdf::p0004::c0001",
+        "data/cnooc/governance/strategy_sustainability_committee.pdf::p0003::c0001"
+      ],
+      "evidence": [
+        {"document_id": "data/cnooc/governance/audit_committee.pdf", "page": 10, "quote": "董事會於 2025 年 8 月 27 日批准和採用本章程"},
+        {"document_id": "data/cnooc/governance/nomination_committee_2025.pdf", "page": 3, "quote": "公司董事會於 2025 年 12 月 29 日批准和採用本章程"},
+        {"document_id": "data/cnooc/governance/remuneration_committee.pdf", "page": 4, "quote": "董事會於2024年10月28日批准和採用本章程"},
+        {"document_id": "data/cnooc/governance/strategy_sustainability_committee.pdf", "page": 3, "quote": "董事會於2024年10月28日批准和採用本章程"}
+      ],
+      "answer_reference": "审核委员会章程：2025-08-27；提名委员会章程：2025-12-29；薪酬委员会章程：2024-10-28；战略与可持续发展委员会章程：2024-10-28。",
+      "requires_abstention": false,
+      "review_status": "ai_draft_source_checked"
+    },
+    {
+      "question_id": "U01",
+      "question": "中国海油2025年的营业收入是多少？",
+      "category": "abstention",
+      "difficulty": "easy",
+      "expected_document_ids": [],
+      "expected_pages": [],
+      "expected_chunk_ids": [],
+      "evidence": [],
+      "answer_reference": "当前正式语料无法回答；应说明缺少2025年营业收入数据。",
+      "requires_abstention": true,
+      "abstention_basis": "7份白名单PDF为合规手册、董事道德守则和公司治理章程；2025年年报不在正式索引中。对7份PDF逐页检索“营业收入”“营业额”“净利润”均为0命中。",
+      "review_status": "ai_draft_source_checked"
+    },
+    {
+      "question_id": "U02",
+      "question": "中国海油2025年员工平均薪酬是多少？",
+      "category": "abstention",
+      "difficulty": "easy",
+      "expected_document_ids": [],
+      "expected_pages": [],
+      "expected_chunk_ids": [],
+      "evidence": [],
+      "answer_reference": "当前正式语料无法回答；薪酬委员会章程只规定董事及高管薪酬政策，不包含员工平均薪酬数据。",
+      "requires_abstention": true,
+      "abstention_basis": "7份PDF中没有“平均薪酬”命中；薪酬委员会章程仅涉及董事及高级管理人员薪酬政策与审批，不含员工平均薪酬数字。",
+      "review_status": "ai_draft_source_checked"
+    },
+    {
+      "question_id": "U03",
+      "question": "中国海油2025年ESG报告中的温室气体排放总量是多少？",
+      "category": "abstention",
+      "difficulty": "easy",
+      "expected_document_ids": [],
+      "expected_pages": [],
+      "expected_chunk_ids": [],
+      "evidence": [],
+      "answer_reference": "当前正式语料无法回答；2025年ESG报告不在正式索引中，7份正式PDF不含温室气体排放总量数据。",
+      "requires_abstention": true,
+      "abstention_basis": "ESG报告保留在磁盘但未进入正式索引；对7份PDF逐页检索“温室气体”“排放总量”均为0命中。",
+      "review_status": "ai_draft_source_checked"
+    },
+    {
+      "question_id": "U04",
+      "question": "中国海油现任董事会的董事名单及各自任期是什么？",
+      "category": "abstention",
+      "difficulty": "medium",
+      "expected_document_ids": [],
+      "expected_pages": [],
+      "expected_chunk_ids": [],
+      "evidence": [],
+      "answer_reference": "当前正式语料无法回答；章程只规定董事会人数、会议和表决规则，不提供现任董事名单及任期。",
+      "requires_abstention": true,
+      "abstention_basis": "对7份PDF逐页检索“董事名单”“董事姓名”均为0命中；组织章程细则不包含现任董事个人名单和任期。",
+      "review_status": "ai_draft_source_checked"
+    },
+    {
+      "question_id": "U05",
+      "question": "中国海油员工每年可享受多少天带薪年假？",
+      "category": "abstention",
+      "difficulty": "easy",
+      "expected_document_ids": [],
+      "expected_pages": [],
+      "expected_chunk_ids": [],
+      "evidence": [],
+      "answer_reference": "当前正式语料无法回答；员工合规手册只原则性提及休息休假权益，没有规定具体带薪年假天数。",
+      "requires_abstention": true,
+      "abstention_basis": "对7份PDF逐页检索“年假”“带薪休假”均为0命中；合规手册只提到依法保障休息休假等权益。",
+      "review_status": "ai_draft_source_checked"
+    }
+  ]
+}

@@ -1,0 +1,322 @@
+{
+  "summary": {
+    "candidate_k": 5,
+    "top_k": 3,
+    "denominator": 26,
+    "hit_at_1": 0.9230769230769231,
+    "hit_at_3": 0.9615384615384616,
+    "all_evidence_retrieved": 0.8461538461538461
+  },
+  "records": [
+    {
+      "question_id": "E01",
+      "first_rank": 1,
+      "all_evidence_retrieved": true,
+      "retrieved_ids": [
+        "data/cnooc/compliance/employee_compliance.pdf::p0006::c0001",
+        "data/cnooc/compliance/employee_compliance.pdf::p0010::c0001",
+        "data/cnooc/compliance/employee_compliance.pdf::p0014::c0001"
+      ],
+      "missing": []
+    },
+    {
+      "question_id": "E02",
+      "first_rank": 1,
+      "all_evidence_retrieved": true,
+      "retrieved_ids": [
+        "data/cnooc/compliance/employee_compliance.pdf::p0007::c0002",
+        "data/cnooc/compliance/employee_compliance.pdf::p0018::c0001",
+        "data/cnooc/compliance/director_ethics_2026.pdf::p0008::c0001"
+      ],
+      "missing": []
+    },
+    {
+      "question_id": "E03",
+      "first_rank": 1,
+      "all_evidence_retrieved": false,
+      "retrieved_ids": [
+        "data/cnooc/compliance/employee_compliance.pdf::p0007::c0001",
+        "data/cnooc/compliance/employee_compliance.pdf::p0010::c0001",
+        "data/cnooc/compliance/employee_compliance.pdf::p0021::c0001"
+      ],
+      "missing": [
+        "data/cnooc/compliance/employee_compliance.pdf::p0007::c0002"
+      ]
+    },
+    {
+      "question_id": "E04",
+      "first_rank": 1,
+      "all_evidence_retrieved": true,
+      "retrieved_ids": [
+        "data/cnooc/compliance/employee_compliance.pdf::p0011::c0001",
+        "data/cnooc/compliance/employee_compliance.pdf::p0021::c0001",
+        "data/cnooc/compliance/employee_compliance.pdf::p0010::c0002"
+      ],
+      "missing": []
+    },
+    {
+      "question_id": "E05",
+      "first_rank": 1,
+      "all_evidence_retrieved": true,
+      "retrieved_ids": [
+        "data/cnooc/compliance/employee_compliance.pdf::p0008::c0001",
+        "data/cnooc/compliance/employee_compliance.pdf::p0008::c0002",
+        "data/cnooc/compliance/employee_compliance.pdf::p0012::c0002"
+      ],
+      "missing": []
+    },
+    {
+      "question_id": "D01",
+      "first_rank": 1,
+      "all_evidence_retrieved": true,
+      "retrieved_ids": [
+        "data/cnooc/compliance/director_ethics_2026.pdf::p0008::c0001",
+        "data/cnooc/compliance/director_ethics_2026.pdf::p0009::c0001",
+        "data/cnooc/compliance/employee_compliance.pdf::p0007::c0002"
+      ],
+      "missing": []
+    },
+    {
+      "question_id": "D02",
+      "first_rank": 1,
+      "all_evidence_retrieved": true,
+      "retrieved_ids": [
+        "data/cnooc/compliance/director_ethics_2026.pdf::p0003::c0002",
+        "data/cnooc/compliance/director_ethics_2026.pdf::p0005::c0001",
+        "data/cnooc/compliance/director_ethics_2026.pdf::p0006::c0002"
+      ],
+      "missing": []
+    },
+    {
+      "question_id": "D03",
+      "first_rank": 1,
+      "all_evidence_retrieved": true,
+      "retrieved_ids": [
+        "data/cnooc/compliance/director_ethics_2026.pdf::p0007::c0001",
+        "data/cnooc/compliance/director_ethics_2026.pdf::p0007::c0002",
+        "data/cnooc/compliance/director_ethics_2026.pdf::p0004::c0002"
+      ],
+      "missing": []
+    },
+    {
+      "question_id": "D04",
+      "first_rank": 1,
+      "all_evidence_retrieved": true,
+      "retrieved_ids": [
+        "data/cnooc/compliance/director_ethics_2026.pdf::p0009::c0002",
+        "data/cnooc/compliance/director_ethics_2026.pdf::p0009::c0001",
+        "data/cnooc/compliance/director_ethics_2026.pdf::p0002::c0001"
+      ],
+      "missing": []
+    },
+    {
+      "question_id": "A01",
+      "first_rank": null,
+      "all_evidence_retrieved": false,
+      "retrieved_ids": [
+        "data/cnooc/compliance/employee_compliance.pdf::p0025::c0001",
+        "data/cnooc/compliance/employee_compliance.pdf::p0005::c0001",
+        "data/cnooc/compliance/employee_compliance.pdf::p0014::c0001"
+      ],
+      "missing": [
+        "data/cnooc/governance/articles_2025.pdf::p0006::c0001"
+      ]
+    },
+    {
+      "question_id": "A03",
+      "first_rank": 1,
+      "all_evidence_retrieved": true,
+      "retrieved_ids": [
+        "data/cnooc/governance/articles_2025.pdf::p0016::c0001",
+        "data/cnooc/governance/articles_2025.pdf::p0016::c0002",
+        "data/cnooc/governance/articles_2025.pdf::p0015::c0002"
+      ],
+      "missing": []
+    },
+    {
+      "question_id": "A04",
+      "first_rank": 2,
+      "all_evidence_retrieved": false,
+      "retrieved_ids": [
+        "data/cnooc/governance/articles_2025.pdf::p0017::c0001",
+        "data/cnooc/governance/articles_2025.pdf::p0028::c0002",
+        "data/cnooc/governance/articles_2025.pdf::p0027::c0002"
+      ],
+      "missing": [
+        "data/cnooc/governance/articles_2025.pdf::p0028::c0001"
+      ]
+    },
+    {
+      "question_id": "AU01",
+      "first_rank": 1,
+      "all_evidence_retrieved": true,
+      "retrieved_ids": [
+        "data/cnooc/governance/audit_committee.pdf::p0001::c0001",
+        "data/cnooc/governance/audit_committee.pdf::p0002::c0001",
+        "data/cnooc/compliance/director_ethics_2026.pdf::p0002::c0002"
+      ],
+      "missing": []
+    },
+    {
+      "question_id": "AU02",
+      "first_rank": 1,
+      "all_evidence_retrieved": true,
+      "retrieved_ids": [
+        "data/cnooc/governance/audit_committee.pdf::p0002::c0001",
+        "data/cnooc/governance/audit_committee.pdf::p0001::c0002",
+        "data/cnooc/governance/remuneration_committee.pdf::p0001::c0001"
+      ],
+      "missing": []
+    },
+    {
+      "question_id": "AU03",
+      "first_rank": 1,
+      "all_evidence_retrieved": true,
+      "retrieved_ids": [
+        "data/cnooc/governance/audit_committee.pdf::p0006::c0001",
+        "data/cnooc/governance/audit_committee.pdf::p0008::c0002",
+        "data/cnooc/compliance/director_ethics_2026.pdf::p0009::c0001"
+      ],
+      "missing": []
+    },
+    {
+      "question_id": "N01",
+      "first_rank": 1,
+      "all_evidence_retrieved": true,
+      "retrieved_ids": [
+        "data/cnooc/governance/nomination_committee_2025.pdf::p0001::c0001",
+        "data/cnooc/governance/nomination_committee_2025.pdf::p0003::c0001",
+        "data/cnooc/governance/nomination_committee_2025.pdf::p0002::c0002"
+      ],
+      "missing": []
+    },
+    {
+      "question_id": "N02",
+      "first_rank": 1,
+      "all_evidence_retrieved": true,
+      "retrieved_ids": [
+        "data/cnooc/governance/nomination_committee_2025.pdf::p0001::c0001",
+        "data/cnooc/governance/nomination_committee_2025.pdf::p0002::c0001",
+        "data/cnooc/governance/nomination_committee_2025.pdf::p0002::c0002"
+      ],
+      "missing": []
+    },
+    {
+      "question_id": "N03",
+      "first_rank": 1,
+      "all_evidence_retrieved": true,
+      "retrieved_ids": [
+        "data/cnooc/governance/nomination_committee_2025.pdf::p0003::c0001",
+        "data/cnooc/governance/nomination_committee_2025.pdf::p0002::c0001",
+        "data/cnooc/governance/nomination_committee_2025.pdf::p0001::c0001"
+      ],
+      "missing": []
+    },
+    {
+      "question_id": "R01",
+      "first_rank": 1,
+      "all_evidence_retrieved": true,
+      "retrieved_ids": [
+        "data/cnooc/governance/remuneration_committee.pdf::p0001::c0001",
+        "data/cnooc/governance/remuneration_committee.pdf::p0002::c0001",
+        "data/cnooc/governance/remuneration_committee.pdf::p0002::c0002"
+      ],
+      "missing": []
+    },
+    {
+      "question_id": "R02",
+      "first_rank": 1,
+      "all_evidence_retrieved": true,
+      "retrieved_ids": [
+        "data/cnooc/governance/remuneration_committee.pdf::p0001::c0001",
+        "data/cnooc/governance/audit_committee.pdf::p0002::c0001",
+        "data/cnooc/governance/audit_committee.pdf::p0001::c0002"
+      ],
+      "missing": []
+    },
+    {
+      "question_id": "R03",
+      "first_rank": 1,
+      "all_evidence_retrieved": true,
+      "retrieved_ids": [
+        "data/cnooc/governance/remuneration_committee.pdf::p0003::c0001",
+        "data/cnooc/governance/remuneration_committee.pdf::p0002::c0002",
+        "data/cnooc/governance/remuneration_committee.pdf::p0002::c0001"
+      ],
+      "missing": []
+    },
+    {
+      "question_id": "S01",
+      "first_rank": 1,
+      "all_evidence_retrieved": true,
+      "retrieved_ids": [
+        "data/cnooc/governance/strategy_sustainability_committee.pdf::p0001::c0001",
+        "data/cnooc/governance/strategy_sustainability_committee.pdf::p0001::c0002",
+        "data/cnooc/governance/strategy_sustainability_committee.pdf::p0002::c0001"
+      ],
+      "missing": []
+    },
+    {
+      "question_id": "S02",
+      "first_rank": 1,
+      "all_evidence_retrieved": true,
+      "retrieved_ids": [
+        "data/cnooc/governance/strategy_sustainability_committee.pdf::p0001::c0001",
+        "data/cnooc/governance/strategy_sustainability_committee.pdf::p0002::c0001",
+        "data/cnooc/governance/strategy_sustainability_committee.pdf::p0001::c0002"
+      ],
+      "missing": []
+    },
+    {
+      "question_id": "X01",
+      "first_rank": 1,
+      "all_evidence_retrieved": true,
+      "retrieved_ids": [
+        "data/cnooc/compliance/director_ethics_2026.pdf::p0008::c0001",
+        "data/cnooc/compliance/employee_compliance.pdf::p0007::c0002",
+        "data/cnooc/compliance/director_ethics_2026.pdf::p0009::c0001"
+      ],
+      "missing": []
+    },
+    {
+      "question_id": "X02",
+      "first_rank": 1,
+      "all_evidence_retrieved": true,
+      "retrieved_ids": [
+        "data/cnooc/governance/audit_committee.pdf::p0002::c0001",
+        "data/cnooc/governance/remuneration_committee.pdf::p0002::c0001",
+        "data/cnooc/governance/remuneration_committee.pdf::p0001::c0001"
+      ],
+      "missing": []
+    },
+    {
+      "question_id": "X03",
+      "first_rank": 1,
+      "all_evidence_retrieved": false,
+      "retrieved_ids": [
+        "data/cnooc/governance/strategy_sustainability_committee.pdf::p0003::c0001",
+        "data/cnooc/governance/nomination_committee_2025.pdf::p0003::c0001",
+        "data/cnooc/governance/strategy_sustainability_committee.pdf::p0001::c0001"
+      ],
+      "missing": [
+        "data/cnooc/governance/audit_committee.pdf::p0010::c0001",
+        "data/cnooc/governance/remuneration_committee.pdf::p0004::c0001"
+      ]
+    }
+  ],
+  "run": {
+    "task_id": "RAG-20261109-001",
+    "reviewer": "Codex / gpt-6.1-sol",
+    "date_sydney": "2026-11-09",
+    "dataset": "eval/cnooc_eval_v1.json",
+    "dataset_sha256": "9359469bfae0b6b34188d35713aff2f98c18b95576b417260c0b68d04fd6a384",
+    "collection": "cnooc_knowledge",
+    "index_snapshot_sha256": "c45504a26cec0942637c4a3da6c0544699fea32f048af2f86ec97d525dc9d44f",
+    "retrieval": "retrieve_with_reranker",
+    "embedding_model": "BAAI/bge-small-zh-v1.5",
+    "reranker_model": "BAAI/bge-reranker-base",
+    "llm_called": false,
+    "production_index_used_for_queries": false,
+    "note": "使用临时 Chroma 副本，逐题调用网页/服务默认 top_k=3、candidate_k=5；all_evidence_retrieved 仅指标签 Chunk 集合是否全部进入 Top-3，不代表答案正确率。"
+  }
+}
