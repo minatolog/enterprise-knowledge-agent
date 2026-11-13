@@ -1,0 +1,12 @@
+{
+  "postgres_new_database_recovery": true,
+  "table_counts_match": {
+    "active_release": 1,
+    "documents": 1,
+    "jobs": 1,
+    "releases": 1,
+    "turns": 0,
+    "versions": 1
+  },
+  "original_database_overwritten": false
+}

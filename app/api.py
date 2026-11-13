@@ -31,6 +31,7 @@ from schemas import (
 logger = logging.getLogger(__name__)
 _REQUEST_ID_PATTERN = re.compile(r"^[A-Za-z0-9._-]{1,128}$")
 _WEB_DIR = Path(__file__).resolve().parent / "web"
+_STUDIO_DIR = Path(__file__).resolve().parent.parent / "frontend" / "dist"
 
 
 def _get_request_id(request: Request) -> str:
@@ -62,6 +63,8 @@ def create_app(
     configure_logging()
     app = FastAPI(title=API_TITLE, version=API_VERSION)
     app.mount("/static", StaticFiles(directory=_WEB_DIR), name="static")
+    if (_STUDIO_DIR / "index.html").is_file():
+        app.mount("/studio", StaticFiles(directory=_STUDIO_DIR, html=True), name="studio")
     rag_service = service or RAGService()
     get_documents = documents_provider or list_indexed_documents
 
@@ -133,6 +136,12 @@ def create_app(
 
     @app.get("/", include_in_schema=False)
     def home() -> FileResponse:
+        if (_STUDIO_DIR / "index.html").is_file():
+            return FileResponse(_STUDIO_DIR / "index.html")
+        return FileResponse(_WEB_DIR / "index.html")
+
+    @app.get("/legacy", include_in_schema=False)
+    def legacy_home() -> FileResponse:
         return FileResponse(_WEB_DIR / "index.html")
 
     @app.post("/api/v1/query", response_model=QueryResponse)

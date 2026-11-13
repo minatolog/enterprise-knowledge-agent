@@ -1,0 +1,9 @@
+{
+  "postgres_metadata": true,
+  "rabbitmq_worker_publication": "succeeded",
+  "redis_cache_hit": true,
+  "retrieval_count": 1,
+  "generation": "mock; zero external LLM calls",
+  "source_identity_matches": true,
+  "s3_backend": "local object fallback; external S3 pending"
+}

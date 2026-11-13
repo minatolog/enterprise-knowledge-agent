@@ -181,6 +181,7 @@ cython_debug/
 .cursorindexingignore
 chroma_db/
 .index_state/
+.enterprise/
 .env
 
 # CNOOC originals are for local retrieval experiments; keep metadata tracked.

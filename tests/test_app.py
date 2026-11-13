@@ -260,7 +260,7 @@ class APITests(unittest.TestCase):
     def test_local_chat_page_and_assets_are_served_without_index_or_key(self):
         with patch.dict(os.environ, {"DEEPSEEK_API_KEY": ""}, clear=False):
             client = TestClient(create_app())
-            page = client.get("/")
+            page = client.get("/legacy")
             script = client.get("/static/app.js")
             stylesheet = client.get("/static/styles.css")
 

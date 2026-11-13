@@ -4,6 +4,8 @@
 
 > 当前是本地单用户原型，不是生产系统。没有身份认证、ACL、上传、Docker、GraphRAG、Agent 或企业部署能力；不要把它描述为“生产级”或“已高并发验证”。
 
+2026-11-13 更新：上述范围描述保留给原 `app.api` 演示入口。新增独立 `app.enterprise.api` 企业扩展，提供鉴权/ACL、上传与版本、索引发布回滚、任务、上下文预算、会话缓存、核验和观测接口；不等于生产部署已经验收。请按 [企业扩展运行说明](docs/enterprise_runtime.md) 启动，实际完成与外部待验收项见 [交付报告](reports/RAG-20261113-002_delivery.md)。
+
 ## P0 交付与验证状态（2026-11-09）
 
 本项目按《企业级 RAG 项目架构与开发指导》的 P0 范围完成了本地可运行、可演示、结果可复核的交付：
@@ -50,6 +52,29 @@ flowchart LR
 
 说明：BM25 不是持久化倒排索引，而是在首次检索时从 Chroma 中的同一批 Chunk 懒加载构建的内存索引；因此它与向量检索共享 Chunk ID 和元数据。Reranker 只重排已召回候选，不能找回第一阶段漏掉的文档。
 
+### LangChain 与 LangGraph 接入（2026-11-12）
+
+CLI 和 FastAPI 的 `RAGService.answer()` 现在默认执行 LangGraph，而不是只安装框架但继续使用旧编排。LangChain 使用独立的 `langchain-core` 包：`BaseRetriever` 调用原有混合检索算法，`Document` 保留正文、Chunk ID、页码和评分，`RunnableLambda` 适配原有 DeepSeek 生成函数。没有使用顶层 `langchain` 包的 Agent API。
+
+```mermaid
+flowchart TD
+  START["CLI / API → RAGService"] --> CHECK["check_index：只读索引检查"]
+  CHECK --> RET["retrieve：LangChain BaseRetriever / Document"]
+  RET --> BRANCH{"有检索证据？"}
+  BRANCH -->|有| CTX["build_context：上下文及来源编号"]
+  CTX --> GEN["generate：LangChain Runnable → 现有 DeepSeek 适配器"]
+  GEN --> CITE["map_citations：映射真实来源"]
+  BRANCH -->|无| NO["no_evidence：跳过 LLM"]
+  CITE --> OUT["原有 RAGResult / API 响应"]
+  NO --> OUT
+```
+
+依赖安装与启动方式保持下文命令；在已激活的项目环境执行 `python -m pip install -r requirements.txt` 后重启 CLI/API 进程即可加载新代码。当前机器的 `agent` conda 环境已安装新框架依赖；其他环境需自行执行安装。
+
+框架接入保持既有 Chroma、Embedding、BM25/RRF/Reranker、模型 API 协议和引用格式；无需重建索引。每个问题使用独立状态，没有持久记忆、Agent、自主循环或新增流式 API，也不据此宣称回答准确率提升。框架的 `langsmith` 传递依赖不代表已配置云端跟踪。
+
+代码见 `app/langchain_adapters.py`、`app/workflow.py` 和 `app/service.py`。技术选择及依赖维护边界见 [决策记录](docs/ai_workflow/decisions/RAG-20261112-002-DECISION-01.md)，实际验证范围见 [执行记录](docs/ai_workflow/execution_logs/RAG-20261112-002.md)。
+
 ### 模块职责
 
 | 路径 | 职责 |
@@ -63,6 +88,8 @@ flowchart LR
 | `hybrid_retrieval.py` | jieba + BM25、RRF 融合、Cross-Encoder Reranker |
 | `llm.py` | DeepSeek 客户端延迟创建、超时/重试、企业问答 Prompt |
 | `app/service.py` | CLI/API 共享的 `RAGService`：校验、检索、上下文、生成、引用映射、阶段耗时 |
+| `app/langchain_adapters.py` | LangChain 检索器、Document 转换及生成 Runnable，复用现有算法和模型协议 |
+| `app/workflow.py` | LangGraph 状态与条件分支；每次请求独立执行，不持久化证据 |
 | `app/api.py` | FastAPI 路由、请求/错误封装、`request_id` 和访问日志 |
 | `app/index_status.py` | 用只读 SQLite 检查真实索引与文档清单；不写 Chroma |
 | `app/web/` | 同源本地问答页面，展示答案、来源、页码、索引状态 |
@@ -304,3 +331,11 @@ python -m unittest discover -s tests -p 'test_cnooc_eval.py' -v
 - P1：索引版本管理、更完整的增量一致性、失败案例回归、Docker 本地运行、上传安全、日志/追踪增强。
 - P2：ACL/RBAC、Query Rewrite/多查询、更多数据源、Agent/GraphRAG、Long-Context 对比。
 - 在扩展前先保持当前 P0 评测集和真实指标可复现，不为提高分数修改 Ground Truth。
+
+### 统一 React 工作台（RAG-20261113-003）
+
+问答、知识库、工作流、运行记录现统一在 React + TypeScript 应用中，复用本地 FastAPI。运行 `./start-studio.command` 后访问 `http://127.0.0.1:8021/studio/`，保持终端开启。首次需 Node/npm 安装前端依赖；不修改 Python 依赖或索引。旧问答页保留在 `/legacy`；未构建新前端时 `/` 自动回退。详见 [前端说明](frontend/README.md)。这是本地单用户入口，不是企业多租户鉴权界面。
+
+### 聊天优先的 CNOOC Enterprise Knowledge Assistant（RAG-20261113-005）
+
+在同一个 `/studio/` 入口升级为炭黑、克制蓝色的专业聊天界面；加入安全Markdown、来源展开、技术详情、对话搜索、可选本浏览器历史保存、折叠侧栏/移动抽屉和设置。复用v1 API；原件页数/分类/片段正文等未提供字段不编造。详见 [当前前端说明](frontend/README.md)。启动方式继续使用 `./start-studio.command`。

@@ -1,0 +1,28 @@
+-r requirements.txt
+# Opt-in enterprise runtime and transport adapters
+sqlalchemy==2.1.8
+psycopg==3.3.9
+psycopg-binary==3.3.9
+celery==5.7.0
+boto3==1.44.1
+redis==7.4.1
+PyJWT==2.15.1
+cryptography==50.0.2
+prometheus-client==0.26.0
+tiktoken==0.14.0
+python-multipart==0.0.32
+amqp==5.4.2
+billiard==4.3.2
+kombu==5.7.0
+vine==5.1.0
+botocore==1.44.1
+s3transfer==0.19.3
+jmespath==1.1.0
+cffi==2.1.1
+pycparser==3.12
+click-didyoumean==0.3.1
+click-plugins==1.1.1.2
+click-repl==0.4.1
+prompt-toolkit==3.0.53
+tzlocal==5.4.5
+wcwidth==0.9.4

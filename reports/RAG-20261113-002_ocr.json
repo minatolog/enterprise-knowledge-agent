@@ -1,0 +1,11 @@
+{
+  "fixture": "synthetic single-page scanned PDF with 2-column expense table",
+  "parser": "Docling 2.150.0",
+  "ocr_and_table_extraction": true,
+  "pages": 1,
+  "verified_content": [
+    "Sydney",
+    "200 AUD"
+  ],
+  "production_documents_processed": false
+}

@@ -24,3 +24,19 @@
 | 2026-11-09 | `RAG-20261109-001` | Codex 独立验收通过：完整 46 项测试与四路 31 题排序复现一致；补测网页默认配置、核对资料/索引哈希并修正文档说明。保持 AI 标签、有限真实问答及未测浏览器交互的边界；未提交。 | COMPLETED | [独立验收](../../reports/p0_codex_acceptance.md) / [执行记录](execution_logs/RAG-20261109-001.md) |
 | 2026-11-09 | `RAG-20261109-001` | 按用户新指令恢复原有可爱口吻和安慰员工指令，保留事实/引用要求；32 项应用测试通过，未追加真实 API 调用。 | COMPLETED | [用户指令](prompts/debugging/RAG-20261109-001_restore_cute_tone.md) / [执行记录](execution_logs/RAG-20261109-001.md) |
 | 2026-11-09 | `RAG-20261109-001` | 按用户要求重启 127.0.0.1:8767 的问答服务，首页/健康/文档接口均 200，索引仍为 7/194；未调用 DeepSeek。 | COMPLETED | [执行记录](execution_logs/RAG-20261109-001.md) |
+
+| 2026-11-12 | `RAG-20261112-001` | 企业级 RAG 参考架构、技术栈与流程图讲解；官方资料核对及当前代码只读检查，不实施迁移。 | REVIEW | [执行记录](execution_logs/RAG-20261112-001.md) / [用户原文](prompts/architecture/RAG-20261112-001_enterprise_rag_explanation.md) |
+
+| 2026-11-12 | `RAG-20261112-002` | LangChain 核心接口与 LangGraph 默认问答编排接入；51 项测试通过，隔离索引真实检索及 API 集成通过，生成使用模拟函数。 | REVIEW | [执行记录](execution_logs/RAG-20261112-002.md) / [决策](decisions/RAG-20261112-002-DECISION-01.md) / [问题修复](issues/RAG-20261112-002-ISSUE-01.md) |
+
+| 2026-11-12 | `RAG-20261112-003` | 企业级 RAG 绿红完成状态图与技术应用表，拆分本地实现和生产待办。 | REVIEW | [报告](../../reports/RAG-20261112-003_architecture_status.md) / [执行记录](execution_logs/RAG-20261112-003.md) |
+
+- 2026-11-13 · `RAG-20261113-001` · Codex / GPT-6（具体变体未知）：新增独立 RAGFlow 风格固定流程工作台、可行性评估；复用现有 API，无新依赖；API/服务测试 32 项通过，本地页面 HTTP 200、浏览器显示通过，未复测外部生成。状态 REVIEW，未提交。[执行记录](execution_logs/RAG-20261113-001.md) / [评估](../../reports/RAG-20261113-001_workflow_ui_assessment.md)。
+
+| 2026-11-13 | `RAG-20261113-002` | 企业扩展：权限/版本/队列/快照/上下文/会话/核验/运维工具；70项测试、真实队列缓存/OCR/恢复及1题真实生成核验通过；Docker完整部署和企业联调待验收。 | REVIEW | [交付](../../reports/RAG-20261113-002_delivery.md) / [执行](execution_logs/RAG-20261113-002.md) |
+
+- 2026-11-13 · `RAG-20261113-003` · Codex / GPT-6（具体变体未知）：统一 React/TypeScript/React Flow 四视图工作台；34项相关测试与类型构建通过，真实问答及来源/耗时已浏览器核验；一键启动脚本与旧页回退保留。状态 REVIEW，未提交。[执行记录](execution_logs/RAG-20261113-003.md) / [报告](../../reports/RAG-20261113-003_unified_studio.md)。
+
+- 2026-11-13 · `RAG-20261113-004` · Codex / GPT-6（具体变体未知）：统一石墨/青蓝/冰绿/珊瑚视觉层，新增页面与悬浮动效、SVG装饰流光、动效开关、聚焦/总览；类型构建与浏览器动效切换/窄屏检查通过，无新依赖/后端改动。状态 REVIEW，未提交。[执行记录](execution_logs/RAG-20261113-004.md)。
+
+- 2026-11-13 · `RAG-20261113-005` · Codex / GPT-6（具体变体未知）：Grok-inspired聊天优先重设计，模块化状态/API/组件，安全Markdown、真实来源/技术详情、可选浏览器历史、移动抽屉与设置；40项相关测试及构建通过，两次真实模型问答与浏览器保存/恢复核验。状态REVIEW，未提交。[执行](execution_logs/RAG-20261113-005.md) / [交付](../../reports/RAG-20261113-005_assistant_delivery.md)。

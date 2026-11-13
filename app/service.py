@@ -16,6 +16,8 @@ from app.errors import (
     RetrievalError,
 )
 from app.index_status import ensure_index_ready
+from app.langchain_adapters import HybridRAGRetriever, document_to_record, generation_runnable
+from app.workflow import RAGState, build_rag_graph
 from knowledge_config import (
     DEFAULT_CANDIDATE_K,
     DEFAULT_TOP_K,
@@ -94,6 +96,7 @@ class RAGService:
             raise ValueError(f"default_top_k 必须在 1..{MAX_TOP_K} 之间")
         if self.candidate_k < 1:
             raise ValueError("candidate_k 必须为正整数")
+        self.graph = build_rag_graph(self)
 
     def _get_retriever(self) -> RetrieverProtocol:
         if self._retriever is None:
@@ -138,20 +141,38 @@ class RAGService:
             len(question),
         )
 
+        state = self.graph.invoke({
+            "question": question,
+            "top_k": top_k,
+            "candidate_k": candidate_k,
+            "request_id": request_id,
+            "on_retrieval": on_retrieval,
+            "total_start": total_start,
+            "timings": timings,
+        })
+        return state["result"]
+
+    def _check_index(self, state: RAGState) -> dict:
+        timings = dict(state["timings"])
         check_start = time.perf_counter()
         self._index_checker()
         timings["index_check_ms"] = round((time.perf_counter() - check_start) * 1000, 1)
 
+        return {"timings": timings}
+
+    def _retrieve(self, state: RAGState) -> dict:
+        question, request_id = state["question"], state["request_id"]
+        timings = dict(state["timings"])
         retrieval_start = time.perf_counter()
         try:
-            results = list(
-                self._get_retriever()(
-                    question=question,
-                    k=top_k,
-                    candidate_k=candidate_k,
-                )
-                or []
+            retriever = HybridRAGRetriever(
+                backend=self._get_retriever(), k=state["top_k"],
+                candidate_k=state["candidate_k"],
             )
+            documents = retriever.invoke(
+                question, config={"metadata": {"request_id": request_id}}
+            )
+            results = [document_to_record(document) for document in documents]
         except ModuleNotFoundError as exc:
             logger.warning(
                 "retrieval_dependency_missing request_id=%s error_type=%s",
@@ -174,25 +195,33 @@ class RAGService:
             timings["retrieval_ms"],
         )
 
-        if not results:
-            timings["llm_ms"] = 0.0
-            timings["total_ms"] = round((time.perf_counter() - total_start) * 1000, 1)
-            logger.info(
-                "query_done request_id=%s answer=refusal sources=0 total_ms=%s",
-                request_id,
-                timings["total_ms"],
-            )
-            return RAGResult(
-                request_id=request_id,
-                answer=NO_EVIDENCE_ANSWER,
-                sources=[],
-                legacy_sources=[],
-                rerank_score=None,
-                retrieval_count=0,
-                timings_ms=timings,
-                retrieval_results=[],
-            )
+        return {"results": results, "timings": timings}
 
+    def _no_evidence(self, state: RAGState) -> dict:
+        request_id, total_start = state["request_id"], state["total_start"]
+        timings = dict(state["timings"])
+        timings["llm_ms"] = 0.0
+        timings["total_ms"] = round((time.perf_counter() - total_start) * 1000, 1)
+        logger.info(
+            "query_done request_id=%s answer=refusal sources=0 total_ms=%s",
+            request_id,
+            timings["total_ms"],
+        )
+        result = RAGResult(
+            request_id=request_id,
+            answer=NO_EVIDENCE_ANSWER,
+            sources=[],
+            legacy_sources=[],
+            rerank_score=None,
+            retrieval_count=0,
+            timings_ms=timings,
+            retrieval_results=[],
+        )
+
+        return {"result": result, "timings": timings}
+
+    def _build_context(self, state: RAGState) -> dict:
+        results, on_retrieval = state["results"], state["on_retrieval"]
         if on_retrieval is not None:
             on_retrieval(results)
 
@@ -221,9 +250,22 @@ class RAGService:
             )
 
         context = "\n\n".join(contexts)
+        return {
+            "context": context,
+            "source_by_number": source_by_number,
+            "legacy_source_by_number": legacy_source_by_number,
+        }
+
+    def _generate(self, state: RAGState) -> dict:
+        question, context = state["question"], state["context"]
+        request_id = state["request_id"]
+        timings = dict(state["timings"])
         llm_start = time.perf_counter()
         try:
-            answer = self._get_llm()(question=question, context=context)
+            answer = generation_runnable(self._get_llm()).invoke(
+                {"question": question, "context": context},
+                config={"metadata": {"request_id": request_id}},
+            )
         except LLMConfigurationError:
             raise
         except LLMRequestError as exc:
@@ -249,6 +291,14 @@ class RAGService:
         if answer.startswith("LLM API 调用失败："):
             raise LLMRequestError("LLM 请求失败，请稍后重试")
 
+        return {"answer": answer, "timings": timings}
+
+    def _map_citations(self, state: RAGState) -> dict:
+        answer, results = state["answer"], state["results"]
+        source_by_number = state["source_by_number"]
+        legacy_source_by_number = state["legacy_source_by_number"]
+        request_id, total_start = state["request_id"], state["total_start"]
+        timings = dict(state["timings"])
         cited_numbers = [int(n) for n in re.findall(r"\[资料\s*(\d+)\]", answer)]
         sources: list[SourceItem] = []
         legacy_sources: list[str] = []
@@ -272,7 +322,7 @@ class RAGService:
             len(sources),
             timings["total_ms"],
         )
-        return RAGResult(
+        result = RAGResult(
             request_id=request_id,
             answer=answer,
             sources=sources,
@@ -282,3 +332,4 @@ class RAGService:
             timings_ms=timings,
             retrieval_results=results,
         )
+        return {"result": result, "timings": timings}

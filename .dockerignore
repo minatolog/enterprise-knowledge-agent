@@ -1,0 +1,10 @@
+.git
+.env
+.enterprise
+chroma_db
+.index_state
+data
+reports
+__pycache__
+.venv
+*.pdf

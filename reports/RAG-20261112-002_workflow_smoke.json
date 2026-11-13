@@ -1,0 +1,13 @@
+{
+  "question": "员工收受礼品有什么规定？",
+  "http_status": 200,
+  "retrieval_count": 3,
+  "chunk_ids": [
+    "data/cnooc/compliance/employee_compliance.pdf::p0008::c0001",
+    "data/cnooc/compliance/employee_compliance.pdf::p0008::c0002",
+    "data/cnooc/compliance/employee_compliance.pdf::p0012::c0002"
+  ],
+  "direct_and_graph_order_equal": true,
+  "generation": "mock only; no external LLM call",
+  "production_index_unchanged": true
+}

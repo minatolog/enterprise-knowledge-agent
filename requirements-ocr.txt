@@ -1,0 +1,3 @@
+-r requirements-enterprise.txt
+# Optional local document layout/OCR/table parser
+docling==2.150.0

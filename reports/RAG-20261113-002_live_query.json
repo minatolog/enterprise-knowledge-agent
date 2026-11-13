@@ -1,0 +1,53 @@
+{
+  "question": "员工入职时需要签署什么合规文件？",
+  "http_status": 200,
+  "verification": "judge_passed",
+  "retrieval_count": 3,
+  "sources": [
+    {
+      "chunk_id": "5c10ea34e3b560f8766026868a989f12:1:6:0",
+      "source": "employee_compliance.pdf",
+      "relative_path": "documents/5c10ea34e3b560f8766026868a989f12",
+      "page_start": 6,
+      "page_end": 6,
+      "source_url": "/api/v2/documents/5c10ea34e3b560f8766026868a989f12/original?release_id=f47d4711b73c49a9a29f4ad79f9ce146",
+      "section": "",
+      "label": "documents/5c10ea34e3b560f8766026868a989f12，第6页",
+      "rerank_score": 0.9813284873962402
+    },
+    {
+      "chunk_id": "5c10ea34e3b560f8766026868a989f12:1:14:0",
+      "source": "employee_compliance.pdf",
+      "relative_path": "documents/5c10ea34e3b560f8766026868a989f12",
+      "page_start": 14,
+      "page_end": 14,
+      "source_url": "/api/v2/documents/5c10ea34e3b560f8766026868a989f12/original?release_id=f47d4711b73c49a9a29f4ad79f9ce146",
+      "section": "",
+      "label": "documents/5c10ea34e3b560f8766026868a989f12，第14页",
+      "rerank_score": 0.8369457721710205
+    },
+    {
+      "chunk_id": "5c10ea34e3b560f8766026868a989f12:1:10:0",
+      "source": "employee_compliance.pdf",
+      "relative_path": "documents/5c10ea34e3b560f8766026868a989f12",
+      "page_start": 10,
+      "page_end": 10,
+      "source_url": "/api/v2/documents/5c10ea34e3b560f8766026868a989f12/original?release_id=f47d4711b73c49a9a29f4ad79f9ce146",
+      "section": "",
+      "label": "documents/5c10ea34e3b560f8766026868a989f12，第10页",
+      "rerank_score": 0.9660474061965942
+    }
+  ],
+  "cached": false,
+  "generation_calls_expected": 2,
+  "answer_checks": {
+    "mentions_compliance_undertaking": true,
+    "mentions_confidentiality": true
+  },
+  "authenticated_originals_match_whitelist_files": true,
+  "source_pages_checked": [
+    6,
+    10,
+    14
+  ]
+}

@@ -1,0 +1,13 @@
+groups:
+  - name: rag
+    rules:
+      - alert: RAGUnavailable
+        expr: up{job="rag-api"} == 0
+        for: 2m
+        labels: {severity: critical}
+        annotations: {summary: "Enterprise RAG metrics endpoint unavailable"}
+      - alert: RAGQueryErrors
+        expr: sum(rate(rag_query_total{outcome="error"}[5m])) / clamp_min(sum(rate(rag_query_total[5m])), 0.001) > 0.05
+        for: 5m
+        labels: {severity: warning}
+        annotations: {summary: "Query error ratio above illustrative 5 percent threshold"}
