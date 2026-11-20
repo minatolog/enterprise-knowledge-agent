@@ -27,7 +27,23 @@
 
 测试：`python -m unittest discover -s tests -v`（新增 `tests/test_rag_core.py`，并更新了服务、企业链路、评测和迁移测试）；`npm test --prefix frontend`。
 
-> 以上改动需要**重建索引**才生效：`python index_documents.py` 会检测到索引格式变化并全部重建。下文 P0 一节的数字（194 Chunk、检索指标）是 2026-11-09 旧配置下的历史结果，重新运行评测后以新报告为准。
+### 重建索引后的评测结果（2026-11-21）
+
+已在本机执行 `python index_documents.py` 全量重建（索引格式 `v2-structured-normalized-opencc`，309 Chunk，切分 `structured`，繁简转换 `opencc`），再运行 `python eval/run_cnooc_eval.py`。数据集与题目未改动：31 题（26 道有答案、5 道无答案）；相关性按证据原文判定（`quote`）；候选预算 10，Reranker 候选池 20。
+
+| 方法 | Hit@1 | Hit@3 | Hit@5 | Hit@10 | Recall@10 | MRR@10 | 平均耗时 ms |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Dense-only | 84.62% | 96.15% | 96.15% | 100.00% | 98.72% | 0.8974 | 5.5 |
+| BM25-only | 96.15% | 96.15% | 100.00% | 100.00% | 95.83% | 0.9692 | 0.4 |
+| Hybrid/RRF | 88.46% | 100.00% | 100.00% | 100.00% | 98.72% | 0.9423 | 5.8 |
+| Hybrid/RRF+Reranker | 100.00% | 100.00% | 100.00% | 100.00% | 100.00% | 1.0000 | 458.8 |
+
+- 拒答阈值 `RAG_MIN_RERANK_SCORE=0.3`：26 道有答案题无误拒（Top-1 最低 0.878）；5 道无答案题中 U01、U03、U05 在检索阶段直接拒答，U02（0.331）、U04（0.763）交由模型依据证据判断。
+- 剩余失败：E01（Dense、Hybrid/RRF 漏“保密协议”证据）、X03（BM25 漏三份繁体章程的批准日期）；Reranker 路径无失败。
+- 注意：这是 26 题的小规模检索评测，只说明本语料、本题集上的检索效果，不代表答案正确率；相关性口径从 `chunk_id` 改为 `quote`，与下文 2026-11-09 的数字不能直接比较。评测在提交前的工作区上运行（报告中 Git HEAD 为 `ac98717`），对应代码已提交为 `c2a5e4c`。
+- 完整报告：[`reports/eval/cnooc_retrieval_eval_v1.md`](reports/eval/cnooc_retrieval_eval_v1.md)；本机全量测试 104 项通过。
+
+> 下文 P0 一节的数字（194 Chunk、检索指标、失败案例）是 2026-11-09 旧配置下的历史结果，保留作对照。
 
 ## P0 交付与验证状态（2026-11-09）
 
@@ -254,6 +270,8 @@ python eval/run_cnooc_eval.py
 
 ### 真实结果（有答案题，分母 26）
 
+> 2026-11-09 历史结果（按页切分、`chunk_id` 口径、候选 5/10）。当前配置的结果见文首“重建索引后的评测结果（2026-11-21）”。
+
 索引快照 SHA-256：`c45504a26cec0942637c4a3da6c0544699fea32f048af2f86ec97d525dc9d44f`；Collection `cnooc_knowledge`，194 Chunk；Embedding `BAAI/bge-small-zh-v1.5`；Reranker `BAAI/bge-reranker-base`；RRF k=60；BM25 分词 jieba；候选预算 10。
 
 | 方法 | Hit@1 | Hit@3 | Hit@5 | Hit@10 | Recall@5 | Recall@10 | MRR@10 | 平均耗时 ms |
@@ -337,7 +355,7 @@ python -m unittest discover -s tests -p 'test_cnooc_eval.py' -v
    curl http://127.0.0.1:8000/api/v1/documents
    ```
    若尚未启动服务，先运行 `uvicorn app.api:app --host 127.0.0.1 --port 8000`；若没有索引，按上面的数据准备步骤在副本中构建。
-2. 打开 `http://127.0.0.1:8000/`，展示“运行中”、7 份文档、194 个知识片段。
+2. 打开 `http://127.0.0.1:8000/`，展示“运行中”、7 份文档、309 个知识片段（2026-11-21 重建后；旧索引为 194）。
 3. 提问“员工入职时需要签署什么合规文件？”，展示答案、`employee_compliance.pdf` 第 6/10/14 页和请求 ID。
 4. 提问“审核委员会的宗旨是什么？”，展示 `audit_committee.pdf` 第 1 页引用。
 5. 提问“中国海油2025年的营业收入是多少？”，展示无来源时的合理拒答。
@@ -346,6 +364,8 @@ python -m unittest discover -s tests -p 'test_cnooc_eval.py' -v
 每次真实提问会调用 DeepSeek 并消耗额度；演示前请确认 Key、网络和模型缓存。
 
 ## 已知限制
+
+> 2026-11-21 更正：本地入口已支持多轮追问改写（`history`）和检索前拒答阈值；Docker 与企业链路（鉴权、ACL、上传）在 `app.enterprise` 中实现，生产部署尚未验收。以下其余条目仍适用。
 
 - 本地单用户原型；无身份认证、ACL、上传、Docker、Agent/GraphRAG、多轮记忆或企业部署。
 - 检索仍有真实失败：公司名称、部分数字/日期条款和跨文档多证据题未全部召回；见评测失败案例。
