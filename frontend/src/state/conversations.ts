@@ -1,4 +1,5 @@
-import type { Answer } from "../api";
+import { newId } from "../utils/id.ts";
+import type { Answer, Mode } from "../api";
 export interface Turn {
   id: string;
   question: string;
@@ -10,17 +11,20 @@ export interface Turn {
 export interface Conversation {
   id: string;
   title: string;
+  /** Which knowledge service the conversation was held with. */
+  mode?: Mode;
   createdAt: string;
   updatedAt: string;
   turns: Turn[];
 }
 export const HISTORY_KEY = "cnooc-assistant-history-v1";
 export const HISTORY_OPT_IN = "cnooc-assistant-save-history";
-export function createConversation(): Conversation {
+export function createConversation(mode: Mode = "local"): Conversation {
   const now = new Date().toISOString();
   return {
-    id: crypto.randomUUID(),
+    id: newId(),
     title: "新对话",
+    mode,
     createdAt: now,
     updatedAt: now,
     turns: [],
@@ -78,6 +82,7 @@ export function parseHistory(raw: string | null): Conversation[] {
         !c.id ||
         ids.has(c.id) ||
         !text(c.title, 2000) ||
+        (c.mode !== undefined && c.mode !== "local" && c.mode !== "enterprise") ||
         !date(c.createdAt) ||
         !date(c.updatedAt) ||
         !Array.isArray(c.turns) ||
@@ -93,7 +98,8 @@ export function parseHistory(raw: string | null): Conversation[] {
           !text(t.question, 2000) ||
           !date(t.createdAt) ||
           !finite(t.topK) ||
-          ![3, 5, 8].includes(t.topK) ||
+          t.topK < 1 ||
+          t.topK > 10 ||
           (!validAnswer(t.result) && !text(t.error, 10000))
         )
           return false;

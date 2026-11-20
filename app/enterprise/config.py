@@ -22,6 +22,8 @@ class Settings(BaseSettings):
     max_upload_bytes: int = Field(default=20 * 1024 * 1024, ge=1)
     connector_hosts: str = ""
     parser: str = "basic"
+    chunker: str = "structured"
+    keep_releases: int = Field(default=5, ge=1, le=100)
     otlp_endpoint: str = ""
     verify_answers: bool = True
     connectors_file: Path | None = None
@@ -35,6 +37,8 @@ class Settings(BaseSettings):
             raise ValueError("dev mode requires a random secret of at least 32 characters")
         if self.auth_mode == "oidc" and not (self.issuer and self.jwks_url):
             raise ValueError("OIDC issuer and JWKS URL are required")
+        if self.chunker not in {"structured", "page"}:
+            raise ValueError("chunker must be structured or page")
         if self.parser not in {"basic", "docling"}:
             raise ValueError("parser must be basic or docling")
         return self

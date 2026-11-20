@@ -71,7 +71,8 @@ class CnoocDatasetTests(unittest.TestCase):
             pages[document_id] = {
                 page["page_number"]: page["text"] for page in document["pages"]
             }
-            for chunk in chunk_document(document):
+            # Gold chunk IDs of cnooc_eval_v1 refer to the original page splitter.
+            for chunk in chunk_document(document, strategy="page"):
                 chunks[chunk["chunk_id"]] = chunk
 
         for question in self.answerable:
@@ -98,7 +99,25 @@ class CnoocDatasetTests(unittest.TestCase):
                     f"{question['question_id']} 证据不在声明的 Chunk 中：{quote[:40]}",
                 )
 
-    def test_expected_chunk_ids_exist_in_current_index_read_only(self):
+    def test_every_quote_fits_inside_one_structured_chunk(self):
+        from rag_core.textnorm import compact as normalized
+
+        for document_id in INDEXED_DOCUMENTS:
+            document = load_document(ROOT / document_id)
+            texts = [normalized(chunk["text"]) for chunk in chunk_document(document, strategy="structured")]
+            for question in self.answerable:
+                for evidence in question["evidence"]:
+                    if evidence["document_id"] != document_id:
+                        continue
+                    self.assertTrue(
+                        any(normalized(evidence["quote"]) in text for text in texts),
+                        f"{question['question_id']} 证据被结构化切分截断：{evidence['quote'][:40]}",
+                    )
+
+    def test_every_quote_is_retrievable_from_current_index_read_only(self):
+        """Chunking-agnostic: each evidence quote is inside some indexed chunk of its document."""
+        from rag_core.textnorm import compact as normalized
+
         sqlite_path = DB_PATH / "chroma.sqlite3"
         self.assertTrue(sqlite_path.is_file())
         connection = sqlite3.connect(
@@ -106,18 +125,30 @@ class CnoocDatasetTests(unittest.TestCase):
             uri=True,
         )
         try:
-            indexed = {
-                row[0]
-                for row in connection.execute("SELECT embedding_id FROM embeddings")
-            }
+            rows = connection.execute(
+                """
+                SELECT e.embedding_id, m.key, m.string_value
+                FROM embeddings e JOIN embedding_metadata m ON m.id = e.id
+                WHERE m.key IN ('chroma:document', 'relative_path')
+                """
+            ).fetchall()
         finally:
             connection.close()
-        expected = {
-            chunk_id
-            for question in self.answerable
-            for chunk_id in question["expected_chunk_ids"]
-        }
-        self.assertEqual(expected - indexed, set())
+        chunks: dict[str, dict] = {}
+        for chunk_id, key, value in rows:
+            chunks.setdefault(chunk_id, {})[key] = value or ""
+        by_document: dict[str, list[str]] = {}
+        for item in chunks.values():
+            by_document.setdefault(item.get("relative_path", ""), []).append(
+                normalized(item.get("chroma:document", ""))
+            )
+        for question in self.answerable:
+            for evidence in question["evidence"]:
+                quote = normalized(evidence["quote"])
+                self.assertTrue(
+                    any(quote in text for text in by_document.get(evidence["document_id"], [])),
+                    f"{question['question_id']} 证据不在当前索引中：{evidence['quote'][:40]}",
+                )
 
     def test_vector_and_bm25_ids_match_on_isolated_copy(self):
         import hybrid_retrieval
@@ -129,13 +160,12 @@ class CnoocDatasetTests(unittest.TestCase):
                 copied_db = Path(temp_dir) / "chroma_db"
                 shutil.copytree(DB_PATH, copied_db)
                 retrieval.DB_PATH = copied_db
-                retrieval._collection = None
-                hybrid_retrieval._corpus = None
-                hybrid_retrieval._bm25 = None
+                retrieval.reset_cache()
+                hybrid_retrieval.reset_cache()
 
                 collection = retrieval.get_collection()
                 records = collection.get(include=["metadatas"])
-                corpus, _ = hybrid_retrieval.get_bm25_corpus()
+                corpus = hybrid_retrieval.get_bm25_index().records
 
                 self.assertEqual(len(records["ids"]), len(corpus))
                 self.assertEqual(
@@ -152,9 +182,8 @@ class CnoocDatasetTests(unittest.TestCase):
                 ))
         finally:
             retrieval.DB_PATH = original_db_path
-            retrieval._collection = None
-            hybrid_retrieval._corpus = None
-            hybrid_retrieval._bm25 = None
+            retrieval.reset_cache()
+            hybrid_retrieval.reset_cache()
 
 
 class CnoocMetricTests(unittest.TestCase):
@@ -221,7 +250,7 @@ class CnoocMetricTests(unittest.TestCase):
                 "无答案": q3_results,
             }[question]
 
-        result = self.runner.evaluate_method("dense", fake_retrieve, questions)
+        result = self.runner.evaluate_method("dense", fake_retrieve, questions, "chunk_id")
         summary = self.runner.summarize(result, 2)
         q1, q2, q3 = result["records"]
 
@@ -236,7 +265,7 @@ class CnoocMetricTests(unittest.TestCase):
         self.assertFalse(q2["hit_at_3"])
         self.assertEqual(q2["recall_at_5"], 0.0)
         self.assertEqual(q2["recall_at_10"], 0.0)
-        self.assertEqual(q2["failure_reason"], "no_expected_chunk_in_top_10")
+        self.assertEqual(q2["failure_reason"], "no_expected_evidence_in_top_10")
 
         self.assertEqual(q3["group"], "abstention")
         self.assertIsNone(q3["recall_at_5"])
@@ -249,6 +278,43 @@ class CnoocMetricTests(unittest.TestCase):
         self.assertEqual(summary["recall_at_5"], 0.5)
         self.assertEqual(summary["recall_at_10"], 0.5)
         self.assertEqual(summary["mrr_at_10"], 0.25)
+
+
+    def test_quote_relevance_is_independent_of_chunk_ids(self):
+        question = {
+            "question_id": "Q1", "question": "名称", "category": "synonym", "difficulty": "easy",
+            "expected_chunk_ids": ["old::p0006::c0001"], "expected_pages": [6],
+            "expected_document_ids": ["data/cnooc/mock.pdf"], "requires_abstention": False,
+            "evidence": [
+                {"document_id": "data/cnooc/mock.pdf", "page": 6, "quote": "本公司的名称为中国海洋石油有限公司"},
+                {"document_id": "data/cnooc/mock.pdf", "page": 7, "quote": "成员的法律责任是有限的"},
+            ],
+        }
+        results = [
+            {**self.result("new::p0001::s0001"), "text": "无关内容", "rerank_score": 0.9},
+            # Traditional script and stray spaces must still match the simplified quote.
+            {**self.result("new::p0006::s0005"), "text": "3. 本公司的名稱為 中國海洋石油有限公司。", "rerank_score": 0.8},
+        ]
+        result = self.runner.evaluate_method("hybrid_rrf_reranker", lambda q, k: results, [question])
+        record = result["records"][0]
+        self.assertEqual(record["first_relevant_rank"], 2)
+        self.assertEqual(record["recall_at_10"], 0.5)
+        self.assertEqual(record["failure_reason"], "partial_expected_evidence_missing")
+        self.assertEqual(record["missing_expected"], ["成员的法律责任是有限的"])
+        self.assertAlmostEqual(record["top_rerank_score"], 0.9)
+
+    def test_threshold_sweep_counts_kept_and_refused(self):
+        records = [
+            {"group": "answerable", "top_rerank_score": 0.9, "first_relevant_rank": 1},
+            {"group": "answerable", "top_rerank_score": 0.04, "first_relevant_rank": 5},
+            {"group": "abstention", "top_rerank_score": 0.03, "first_relevant_rank": None},
+        ]
+        rows = {row["threshold"]: row for row in self.runner.threshold_sweep({"records": records}, 3)}
+        self.assertEqual(rows[0.0]["answerable_kept"], 1.0)
+        self.assertEqual(rows[0.0]["abstention_refused"], 0.0)
+        self.assertEqual(rows[0.05]["answerable_kept"], 0.5)
+        self.assertEqual(rows[0.05]["answerable_kept_with_hit"], 0.5)
+        self.assertEqual(rows[0.05]["abstention_refused"], 1.0)
 
 
 if __name__ == "__main__":

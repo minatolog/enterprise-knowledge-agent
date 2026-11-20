@@ -9,10 +9,11 @@ from sentence_transformers import SentenceTransformer
 from document_tracker import calculate_file_hash, detect_changes, save_state
 from ingestion import load_document
 from knowledge_config import (
-    COLLECTION_NAME, DATA_DIR, DB_PATH, EMBEDDING_MODEL,
-    INDEXED_DOCUMENTS, KNOWLEDGE_BASE, selected_paths,
+    CHUNKER, COLLECTION_NAME, DATA_DIR, DB_PATH, EMBEDDING_MODEL,
+    INDEX_FORMAT, INDEXED_DOCUMENTS, KNOWLEDGE_BASE, selected_paths,
 )
 from rag import chunk_document
+from rag_core.chunking import search_text
 
 
 def source_rows(paths: dict) -> dict[str, dict]:
@@ -33,16 +34,22 @@ def index_document(relative_path, path, row, model, collection) -> int:
     if len(ids) != len(set(ids)):
         raise ValueError(f"Chunk ID 重复：{relative_path}")
     texts = [chunk["text"] for chunk in chunks]
-    embeddings = model.encode(texts, normalize_embeddings=True, batch_size=32).tolist()
+    title = row.get("document_title") or chunks[0]["source"]
     metadatas = [{
         "source": chunk["source"],
+        "title": title,
         "relative_path": chunk["relative_path"],
         "knowledge_base": KNOWLEDGE_BASE,
         "page_start": chunk["page_start"],
         "page_end": chunk["page_end"],
         "section": chunk["section"],
         "source_url": row["source_url"],
+        "chunker": CHUNKER,
     } for chunk in chunks]
+    # Embed the normalised "title · section + body" form; store the original
+    # text for display and citations.
+    representations = [search_text({**chunk, **meta}) for chunk, meta in zip(chunks, metadatas)]
+    embeddings = model.encode(representations, normalize_embeddings=True, batch_size=32).tolist()
 
     # Prepare all embeddings first. A failed encode leaves existing records intact.
     old_ids = set(collection.get(where={"relative_path": relative_path}, include=[])["ids"])
@@ -88,6 +95,14 @@ def main():
     changes = detect_changes()
     client = chromadb.PersistentClient(path=str(DB_PATH))
     collection = client.get_or_create_collection(name=COLLECTION_NAME)
+    previous_format = (collection.metadata or {}).get("index_format")
+    if previous_format != INDEX_FORMAT:
+        # Chunk text or the embedded representation changed: rebuild everything.
+        print(f"索引格式 {previous_format!r} → {INDEX_FORMAT!r}，全部文档将重新切分与嵌入", flush=True)
+        stale_ids = collection.get(include=[])["ids"]
+        for start in range(0, len(stale_ids), 500):
+            collection.delete(ids=stale_ids[start:start + 500])
+        collection.modify(metadata={"index_format": INDEX_FORMAT})
     existing = collection.get(include=["metadatas"])
     present = {metadata.get("relative_path") for metadata in existing["metadatas"]}
     to_index = set(changes["added"] + changes["modified"]) | (set(paths) - present)

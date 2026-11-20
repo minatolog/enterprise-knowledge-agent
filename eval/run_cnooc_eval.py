@@ -35,11 +35,16 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from knowledge_config import (  # noqa: E402
+    CHUNKER,
     COLLECTION_NAME,
     DB_PATH,
+    DEFAULT_CANDIDATE_K,
+    DEFAULT_TOP_K,
     EMBEDDING_MODEL,
+    MIN_RERANK_SCORE,
     RERANKER_MODEL,
 )
+from rag_core.textnorm import compact, t2s_backend  # noqa: E402
 
 DEFAULT_DATASET = ROOT / "eval" / "cnooc_eval_v1.json"
 DEFAULT_OUTPUT_DIR = ROOT / "reports" / "eval"
@@ -117,40 +122,73 @@ def score_for_method(item: dict, method: str) -> dict:
     return {key: item[key] for key in keys if key in item}
 
 
-def evaluate_method(method: str, retrieve_fn, questions: list[dict]) -> dict:
+def relevance_units(question: dict, mode: str) -> list[str]:
+    """Return the identifiers of what must be retrieved for one question.
+
+    ``quote`` (default) uses the evidence quotes, so the metric does not depend
+    on how documents are chunked; ``chunk_id`` uses the v1 gold chunk IDs and is
+    only meaningful for an index built with ``RAG_CHUNKER=page``.
+    """
+    if mode == "chunk_id":
+        return sorted(set(question.get("expected_chunk_ids", [])))
+    return [f"{index}" for index, _ in enumerate(question.get("evidence", []))]
+
+
+def covered_units(question: dict, item: dict, mode: str) -> set[str]:
+    if mode == "chunk_id":
+        chunk_id = str(item.get("chunk_id", ""))
+        return {chunk_id} if chunk_id in set(question.get("expected_chunk_ids", [])) else set()
+    text = compact(item.get("text", ""))
+    covered = set()
+    for index, evidence in enumerate(question.get("evidence", [])):
+        if evidence.get("document_id") not in {item.get("relative_path"), None}:
+            continue
+        if compact(evidence["quote"]) in text:
+            covered.add(str(index))
+    return covered
+
+
+def evaluate_method(method: str, retrieve_fn, questions: list[dict], mode: str = "quote") -> dict:
     records = []
     for question in questions:
         started = time.perf_counter()
         results = retrieve_fn(question["question"], CANDIDATE_BUDGET)
         elapsed_ms = round((time.perf_counter() - started) * 1000, 1)
-        expected = set(question.get("expected_chunk_ids", []))
+        expected = set(relevance_units(question, mode))
         candidates = []
+        retrieved_expected: set[str] = set()
+        retrieved_at_5: set[str] = set()
         for rank, item in enumerate(results, start=1):
-            chunk_id = str(item.get("chunk_id", ""))
+            covered = covered_units(question, item, mode)
+            retrieved_expected |= covered
+            if rank <= 5:
+                retrieved_at_5 |= covered
             candidates.append({
                 "rank": rank,
-                "chunk_id": chunk_id,
+                "chunk_id": str(item.get("chunk_id", "")),
                 "source": item.get("relative_path", ""),
                 "page_start": item.get("page_start"),
                 "page_end": item.get("page_end"),
-                "is_relevant": chunk_id in expected,
+                "section": item.get("section", ""),
+                "is_relevant": bool(covered),
+                "covers": sorted(covered),
                 "scores": score_for_method(item, method),
             })
 
         relevant_ranks = [item["rank"] for item in candidates if item["is_relevant"]]
         first_rank = min(relevant_ranks) if relevant_ranks else None
-        retrieved_expected = {
-            item["chunk_id"] for item in candidates if item["is_relevant"]
-        }
         missing = sorted(expected - retrieved_expected)
+        if mode == "quote":
+            missing = [question["evidence"][int(index)]["quote"] for index in missing]
         if question["requires_abstention"]:
             failure_reason = None
         elif not relevant_ranks:
-            failure_reason = "no_expected_chunk_in_top_10"
+            failure_reason = "no_expected_evidence_in_top_10"
         elif missing:
-            failure_reason = "partial_expected_chunks_missing"
+            failure_reason = "partial_expected_evidence_missing"
         else:
             failure_reason = None
+        top_score = candidates[0]["scores"].get("rerank_score") if candidates else None
 
         records.append({
             "question_id": question["question_id"],
@@ -158,7 +196,7 @@ def evaluate_method(method: str, retrieve_fn, questions: list[dict]) -> dict:
             "group": "abstention" if question["requires_abstention"] else "answerable",
             "category": question["category"],
             "difficulty": question["difficulty"],
-            "expected_chunk_ids": sorted(expected),
+            "expected_units": sorted(expected),
             "expected_pages": question.get("expected_pages", []),
             "expected_document_ids": question.get("expected_document_ids", []),
             "retrieved_count": len(candidates),
@@ -168,22 +206,39 @@ def evaluate_method(method: str, retrieve_fn, questions: list[dict]) -> dict:
             "hit_at_3": first_rank is not None and first_rank <= 3,
             "hit_at_5": first_rank is not None and first_rank <= 5,
             "hit_at_10": first_rank is not None and first_rank <= 10,
-            "recall_at_5": (
-                len(retrieved_expected & set(
-                    item["chunk_id"] for item in candidates[:5]
-                )) / len(expected)
-                if expected else None
-            ),
-            "recall_at_10": (
-                len(retrieved_expected) / len(expected)
-                if expected else None
-            ),
-            "missing_expected_chunk_ids": missing,
+            "recall_at_5": len(retrieved_at_5) / len(expected) if expected else None,
+            "recall_at_10": len(retrieved_expected) / len(expected) if expected else None,
+            "missing_expected": missing,
             "failure_reason": failure_reason,
+            "top_rerank_score": top_score,
             "elapsed_ms": elapsed_ms,
             "candidates": candidates,
         })
     return {"method": method, "records": records}
+
+
+THRESHOLDS = (0.0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.5, 0.7)
+
+
+def threshold_sweep(method_result: dict, top_k: int) -> list[dict]:
+    """Trade-off of the evidence gate on reranker top-1 scores (no LLM involved)."""
+    answerable = [r for r in method_result["records"] if r["group"] == "answerable"]
+    abstention = [r for r in method_result["records"] if r["group"] == "abstention"]
+    rows = []
+    for threshold in THRESHOLDS:
+        def passes(record):
+            return record["top_rerank_score"] is not None and record["top_rerank_score"] >= threshold
+        kept = [r for r in answerable if passes(r)]
+        rows.append({
+            "threshold": threshold,
+            "answerable_kept": len(kept) / len(answerable) if answerable else 0.0,
+            "answerable_kept_with_hit": sum(
+                1 for r in kept if r["first_relevant_rank"] and r["first_relevant_rank"] <= top_k
+            ) / len(answerable) if answerable else 0.0,
+            "abstention_refused": sum(1 for r in abstention if not passes(r)) / len(abstention)
+            if abstention else 0.0,
+        })
+    return rows
 
 
 def summarize(method_result: dict, answerable_count: int) -> dict:
@@ -239,7 +294,8 @@ def build_markdown(report: dict) -> str:
         f"- Collection：`{meta['collection']}`；Chunk 数：{meta['chunk_count']}",
         f"- Embedding：`{meta['embedding_model']}`",
         f"- Reranker：`{meta['reranker_model']}`",
-        f"- 候选预算：{meta['candidate_budget']}；RRF k：60；BM25 分词：jieba",
+        f"- 候选预算：{meta['candidate_budget']}；Reranker 候选池：{meta.get('rerank_candidate_k')}（与线上 RAG_CANDIDATE_K 一致）；RRF k：60；BM25 分词：jieba",
+        f"- 切分：`{meta.get('chunker')}`；相关性判定：`{meta.get('relevance')}`；繁简转换：`{meta.get('t2s_backend')}`；拒答阈值：{meta.get('min_rerank_score')}",
         f"- 有答案题：{meta['answerable_count']}；无答案题：{meta['abstention_count']}",
         f"- 运行命令：`{meta['command']}`",
         f"- 运行时间：{meta['started_at']}（UTC），耗时 {meta['duration_seconds']} 秒",
@@ -249,8 +305,9 @@ def build_markdown(report: dict) -> str:
         "",
         "## 指标定义",
         "",
-        "- **Hit@K**：Top-K 候选中至少有一个 Chunk ID 属于该题可接受相关集合的题目比例；分母为全部有答案题。",
-        "- **Recall@K**：Top-K 候选中命中的可接受相关 Chunk 数 / 该题可接受相关 Chunk 总数；再对有答案题取平均。多证据题按相关集合计算。",
+        "- **相关性**：`quote` 模式下，候选 Chunk 完整包含该题某条证据原文（繁简、空白归一后）即为相关，与切分方式无关；`chunk_id` 模式沿用 v1 金标 Chunk ID。",
+        "- **Hit@K**：Top-K 候选中至少有一个相关 Chunk 的题目比例；分母为全部有答案题。",
+        "- **Recall@K**：Top-K 候选覆盖的证据条数 / 该题证据总数；再对有答案题取平均。",
         "- **MRR@10**：首个相关 Chunk 排名倒数的平均值；未命中记 0；分母为全部有答案题。",
         "- 所有方法使用相同题目、相同索引快照和 10 个候选预算。实际返回数少于 10 的题目已在逐题记录中标记；本报告不虚构未返回的候选。",
         "- 无答案题不进入上述检索指标分母；本任务没有对全部题目运行 LLM，因此不报告答案准确率或拒答率。",
@@ -279,10 +336,32 @@ def build_markdown(report: dict) -> str:
         )
     lines += [
         "",
+        "## 拒答阈值扫描（Reranker Top-1 分数，不调用 LLM）",
+        "",
+        "| 阈值 | 有答案题保留 | 保留且 Top-{k} 命中 | 无答案题被拒 |".format(k=meta.get("served_top_k")),
+        "|---:|---:|---:|---:|",
+        *[
+            "| {threshold:.2f} | {kept:.2%} | {hit:.2%} | {refused:.2%} |".format(
+                threshold=row["threshold"], kept=row["answerable_kept"],
+                hit=row["answerable_kept_with_hit"], refused=row["abstention_refused"],
+            )
+            for row in report.get("threshold_sweep", [])
+        ],
+        "",
         "## 无答案题",
         "",
-        f"- 共 {meta['abstention_count']} 道；未做 LLM 全量评测，因此不计算拒答准确率。",
-        "- 逐题候选仍保存在 JSON 中，供后续人工检查；无答案题不混入有答案检索指标。",
+        f"- 共 {meta['abstention_count']} 道；下表为 Reranker Top-1 分数及当前阈值下是否在检索阶段直接拒答（未调用 LLM）。",
+        "",
+        "| 题目 | Top-1 分数 | 当前阈值下拒答 |",
+        "|---|---:|---|",
+        *[
+            "| {qid} {question} | {score} | {refused} |".format(
+                qid=item["question_id"], question=item["question"],
+                score="—" if item["top_rerank_score"] is None else f"{item['top_rerank_score']:.4f}",
+                refused="是" if item["refused_at_current_threshold"] else "否",
+            )
+            for item in report.get("abstention", [])
+        ],
         "",
         "## 失败案例（有答案题）",
         "",
@@ -298,7 +377,7 @@ def build_markdown(report: dict) -> str:
     if not failures:
         lines.append("无。")
     else:
-        lines.append("| 方法 | 题目 | 类别 | 首个相关排名 | 失败原因 | 缺失 Chunk |")
+        lines.append("| 方法 | 题目 | 类别 | 首个相关排名 | 失败原因 | 未召回证据 |")
         lines.append("|---|---|---|---:|---|---|")
         for method, record in failures:
             lines.append(
@@ -309,7 +388,7 @@ def build_markdown(report: dict) -> str:
                     category=record["category"],
                     rank=record["first_relevant_rank"] if record["first_relevant_rank"] else "未命中",
                     reason=record["failure_reason"],
-                    missing=", ".join(record["missing_expected_chunk_ids"]) or "—",
+                    missing="；".join(str(item)[:40] for item in record["missing_expected"]).replace("|", "\\|") or "—",
                 )
             )
     lines += [
@@ -326,6 +405,12 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dataset", type=Path, default=DEFAULT_DATASET)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
+    parser.add_argument(
+        "--relevance",
+        choices=("quote", "chunk_id"),
+        default="quote",
+        help="quote：按评测集证据原文判定（与切分方式无关，默认）；chunk_id：按 v1 金标 Chunk ID（仅适用 page 切分）",
+    )
     return parser.parse_args()
 
 
@@ -357,18 +442,19 @@ def main() -> int:
         import hybrid_retrieval
 
         retrieval.DB_PATH = db_copy
-        retrieval._collection = None
-        hybrid_retrieval._corpus = None
-        hybrid_retrieval._bm25 = None
+        retrieval.reset_cache()
+        hybrid_retrieval.reset_cache()
 
         methods = OrderedDict([
             ("dense", lambda question, k: retrieval.retrieve_top_k(question, k=k)),
             ("bm25", lambda question, k: hybrid_retrieval.retrieve_bm25(question, k=k)),
             ("hybrid_rrf", lambda question, k: hybrid_retrieval.retrieve_hybrid(question, k=k)),
+            # Same call and candidate pool as the served pipeline
+            # (RAGService -> retrieve_with_reranker, RAG_CANDIDATE_K).
             (
                 "hybrid_rrf_reranker",
                 lambda question, k: hybrid_retrieval.retrieve_with_reranker(
-                    question, k=k, candidate_k=k
+                    question, k=k, candidate_k=max(DEFAULT_CANDIDATE_K, k)
                 ),
             ),
         ])
@@ -387,7 +473,7 @@ def main() -> int:
                 time.perf_counter() - warmup_started, 1
             )
             print(f"[eval] {method_name} ...", flush=True)
-            result = evaluate_method(method_name, retrieve_fn, questions)
+            result = evaluate_method(method_name, retrieve_fn, questions, args.relevance)
             method_results.append(result)
             summaries.append(summarize(result, len(answerable)))
     finally:
@@ -407,6 +493,12 @@ def main() -> int:
             "embedding_model": EMBEDDING_MODEL,
             "reranker_model": RERANKER_MODEL,
             "candidate_budget": CANDIDATE_BUDGET,
+            "rerank_candidate_k": max(DEFAULT_CANDIDATE_K, CANDIDATE_BUDGET),
+            "served_top_k": DEFAULT_TOP_K,
+            "min_rerank_score": MIN_RERANK_SCORE,
+            "chunker": CHUNKER,
+            "relevance": args.relevance,
+            "t2s_backend": t2s_backend(),
             "rrf_k": 60,
             "bm25_tokenizer": "jieba",
             "answerable_count": len(answerable),
@@ -423,6 +515,20 @@ def main() -> int:
             "production_chroma_written": False,
         },
         "summary": summaries,
+        "threshold_sweep": threshold_sweep(method_results[-1], DEFAULT_TOP_K),
+        "abstention": [
+            {
+                "question_id": record["question_id"],
+                "question": record["question"],
+                "top_rerank_score": record["top_rerank_score"],
+                "refused_at_current_threshold": (
+                    record["top_rerank_score"] is None
+                    or record["top_rerank_score"] < MIN_RERANK_SCORE
+                ),
+            }
+            for record in method_results[-1]["records"]
+            if record["group"] == "abstention"
+        ],
         "methods": method_results,
         "abstention_questions": [
             {

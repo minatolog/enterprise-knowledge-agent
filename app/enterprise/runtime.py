@@ -1,5 +1,6 @@
 import hashlib
 import json
+import re
 import threading
 import time
 import uuid
@@ -12,7 +13,23 @@ from prometheus_client import CollectorRegistry, Counter, Histogram, generate_la
 from sqlalchemy import select
 
 from app.enterprise.db import documents, jobs, turns, versions
-from app.service import RAGService, source_label
+from app.service import RAGService, source_label, to_source_item
+
+WITHHELD_ANSWER = "生成的回答未能通过证据核验，已拦截。请换一种问法，或查看下方检索到的资料原文。"
+
+
+def remove_claims(answer, claims):
+    """Drop unsupported sentences and mark the answer as partially verified."""
+    for claim in claims:
+        answer = answer.replace(claim, "")
+    answer = re.sub(r"\n{3,}", "\n\n", answer).strip()
+    return answer + "\n\n（部分内容未通过证据核验，已删除。）"
+
+
+def cited_chunk_ids(answer, result):
+    numbers = {int(n) for n in re.findall(r"\[资料\s*(\d+)\]", answer)}
+    records = result.retrieval_results
+    return {str(records[n - 1].get("chunk_id")) for n in numbers if 0 < n <= len(records)}
 
 
 def fingerprint(value):
@@ -37,9 +54,9 @@ def select_evidence(records, token_budget):
 
 
 class Runtime:
-    def __init__(self, settings, db, objects, index, model=None, judge=None):
+    def __init__(self, settings, db, objects, index, model=None, judge=None, rewriter=None):
         self.settings, self.db, self.objects, self.index = settings, db, objects, index
-        self.model, self.judge = model, judge
+        self.model, self.judge, self.rewriter = model, judge, rewriter
         if judge is None and settings.verify_answers:
             from app.enterprise.verification import EvidenceJudge
             self.judge = EvidenceJudge()
@@ -207,31 +224,69 @@ class Runtime:
                 answer = self.model(question=combined, context=context) if self.model else generate_from_evidence(combined, context, self.record_usage)
             return answer
 
-        result = RAGService(retriever=retrieve, llm=generate).answer(question, top_k=top_k)
-        # Citation existence is deterministic; entailment needs a separate judge.
-        import re
-        cited = [int(n) for n in re.findall(r"\[资料\s*(\d+)\]", result.answer)]
-        if evidence and (not cited or any(n < 1 or n > len(evidence) for n in cited)):
-            raise HTTPException(502, "answer contains missing or invalid citations")
-        if evidence and self.judge:
-            with self.span("verification.entailment"):
-                if not self.judge(question, result.answer, evidence):
-                    raise HTTPException(502, "answer is not supported by evidence")
-        output = dict(request_id=result.request_id, answer=result.answer,
-            sources=[source.model_dump() for source in result.sources], timings_ms=result.timings_ms,
-            retrieval_count=result.retrieval_count, release_id=release_id, cached=False,
-            verification="judge_passed" if evidence and self.judge else "citation_structure_only")
+        def rewrite(question, turns):
+            if self.rewriter is not None:
+                return self.rewriter(question, turns)
+            if self.model is not None:  # injected test model: no real LLM calls
+                return question
+            from llm import rewrite_question
+            with self.span("query.rewrite"):
+                return rewrite_question(question, turns)
+
+        turns = [item for entry in history[-3:] for item in (
+            {"role": "user", "content": str(entry.get("question", ""))},
+            {"role": "assistant", "content": str(entry.get("answer", ""))[:600]},
+        )]
+        result = RAGService(retriever=retrieve, llm=generate, rewriter=rewrite).answer(
+            question, top_k=top_k, history=turns)
+        answer, sources = result.answer, [source.model_dump() for source in result.sources]
+        unsupported, cacheable = [], True
+        if result.refusal_reason:
+            verification = "refused"
+        else:
+            # Citation existence is deterministic; entailment needs a separate judge.
+            import re
+            cited = [int(n) for n in re.findall(r"\[资料\s*(\d+)\]", answer)]
+            if evidence and (not cited or any(n < 1 or n > len(evidence) for n in cited)):
+                verification, cacheable = "citation_invalid", False
+                answer, sources = WITHHELD_ANSWER, []
+            elif evidence and self.judge:
+                with self.span("verification.entailment"):
+                    if hasattr(self.judge, "assess"):
+                        assessment = self.judge.assess(question, answer, evidence)
+                    else:
+                        assessment = {"status": "passed" if self.judge(question, answer, evidence) else "failed",
+                                      "unsupported": []}
+                status, unsupported = assessment["status"], assessment.get("unsupported", [])
+                if status == "passed":
+                    verification = "judge_passed"
+                elif status == "partial":
+                    verification, cacheable = "judge_partial", False
+                    answer = remove_claims(answer, unsupported)
+                    sources = [item for item in sources if item["chunk_id"] in cited_chunk_ids(answer, result)]
+                else:
+                    verification, cacheable = "judge_failed", False
+                    answer, sources = WITHHELD_ANSWER, []
+            else:
+                verification = "citation_structure_only"
+        output = dict(request_id=result.request_id, answer=answer, sources=sources,
+            timings_ms=result.timings_ms, retrieval_count=result.retrieval_count, release_id=release_id,
+            cached=False, verification=verification, unsupported_claims=unsupported,
+            status="refused" if result.refusal_reason or verification in {"judge_failed", "citation_invalid"} else "answered",
+            refusal_reason=result.refusal_reason, search_query=result.search_query,
+            retrieved=[to_source_item(item).model_dump() for item in result.candidates])
         # Recheck current permissions before publishing evidence after long LLM calls.
         if set(allowed) != set(self.index.allowed(principal, release)):
             raise HTTPException(409, "permissions changed; retry the request")
-        serialized = json.dumps(output, ensure_ascii=False)
-        if self.redis:
-            self.redis.setex(cache_key, 300, serialized)
-        else:
-            with self.cache_lock:
-                if len(self.cache) >= 256:
-                    self.cache.pop(next(iter(self.cache)))
-                self.cache[cache_key] = (time.time() + 300, serialized)
+        if cacheable:
+            serialized = json.dumps(output, ensure_ascii=False)
+            if self.redis:
+                self.redis.setex(cache_key, 300, serialized)
+            else:
+                with self.cache_lock:
+                    if len(self.cache) >= 256:
+                        self.cache.pop(next(iter(self.cache)))
+                    self.cache[cache_key] = (time.time() + 300, serialized)
         self.save_turn(principal, session_id, release_id, acl_key, question, output)
         return output
 

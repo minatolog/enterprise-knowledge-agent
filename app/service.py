@@ -21,10 +21,16 @@ from app.workflow import RAGState, build_rag_graph
 from knowledge_config import (
     DEFAULT_CANDIDATE_K,
     DEFAULT_TOP_K,
+    MAX_HISTORY_TURNS,
     MAX_TOP_K,
+    MIN_RERANK_SCORE,
     NO_EVIDENCE_ANSWER,
 )
+from rag_core.refusal import passes_evidence_gate
 from schemas import SourceItem, normalize_question
+
+REFUSAL_EMPTY = "no_candidates"
+REFUSAL_LOW_SCORE = "below_rerank_threshold"
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +48,10 @@ class LLMProtocol(Protocol):
     def __call__(self, question: str, context: str) -> str: ...
 
 
+class RewriterProtocol(Protocol):
+    def __call__(self, question: str, history: list[dict[str, str]]) -> str: ...
+
+
 @dataclass
 class RAGResult:
     request_id: str
@@ -52,6 +62,10 @@ class RAGResult:
     retrieval_count: int
     timings_ms: dict[str, float]
     retrieval_results: list[dict[str, Any]] = field(default_factory=list, repr=False)
+    search_query: str = ""
+    refusal_reason: str | None = None
+    min_rerank_score: float = 0.0
+    candidates: list[dict[str, Any]] = field(default_factory=list, repr=False)
 
 
 def source_label(result: dict[str, Any]) -> str:
@@ -60,6 +74,22 @@ def source_label(result: dict[str, Any]) -> str:
     end = int(result.get("page_end") or start)
     page = f"第{start}页" if start == end else f"第{start}–{end}页"
     return f'{result.get("relative_path", "")}，{page}'
+
+
+def to_source_item(result: dict[str, Any]) -> SourceItem:
+    return SourceItem(
+        chunk_id=str(result.get("chunk_id", "")),
+        source=str(result.get("source", "")),
+        title=str(result.get("title") or "") or None,
+        relative_path=str(result.get("relative_path", "")),
+        page_start=int(result.get("page_start") or 0),
+        page_end=int(result.get("page_end") or result.get("page_start") or 0),
+        source_url=result.get("source_url"),
+        section=str(result.get("section") or ""),
+        label=source_label(result),
+        rerank_score=_to_float(result.get("rerank_score")),
+        text=str(result.get("text") or "")[:1200],
+    )
 
 
 def _to_float(value: Any) -> float | None:
@@ -81,9 +111,13 @@ class RAGService:
         index_checker: Callable[[], None] | None = None,
         default_top_k: int = DEFAULT_TOP_K,
         candidate_k: int = DEFAULT_CANDIDATE_K,
+        min_rerank_score: float = MIN_RERANK_SCORE,
+        rewriter: RewriterProtocol | None = None,
     ) -> None:
         self._retriever = retriever
         self._llm = llm
+        self._rewriter = rewriter
+        self.min_rerank_score = min_rerank_score
         self._index_checker = index_checker
         self.default_top_k = default_top_k
         self.candidate_k = candidate_k
@@ -112,12 +146,23 @@ class RAGService:
             self._llm = answer_with_context
         return self._llm
 
+    def _get_rewriter(self) -> RewriterProtocol:
+        if self._rewriter is None:
+            # Injected test LLMs must not trigger a real rewrite call.
+            if self._llm is not None:
+                return lambda question, history: question
+            from llm import rewrite_question
+
+            self._rewriter = rewrite_question
+        return self._rewriter
+
     def answer(
         self,
         question: str,
         top_k: int | None = None,
         request_id: str | None = None,
         on_retrieval: Callable[[list[dict[str, Any]]], None] | None = None,
+        history: list[dict[str, str]] | None = None,
     ) -> RAGResult:
         request_id = request_id or uuid.uuid4().hex
         try:
@@ -141,8 +186,16 @@ class RAGService:
             len(question),
         )
 
+        clean_history = [
+            {"role": turn["role"], "content": str(turn.get("content", ""))[:2000]}
+            for turn in (history or [])
+            if turn.get("role") in {"user", "assistant"} and str(turn.get("content", "")).strip()
+        ][-MAX_HISTORY_TURNS * 2:]
+
         state = self.graph.invoke({
             "question": question,
+            "history": clean_history,
+            "search_query": question,
             "top_k": top_k,
             "candidate_k": candidate_k,
             "request_id": request_id,
@@ -160,8 +213,23 @@ class RAGService:
 
         return {"timings": timings}
 
+    def _rewrite(self, state: RAGState) -> dict:
+        history = state.get("history") or []
+        if not history:
+            return {"search_query": state["question"]}
+        timings = dict(state["timings"])
+        started = time.perf_counter()
+        rewritten = self._get_rewriter()(state["question"], history) or state["question"]
+        timings["rewrite_ms"] = round((time.perf_counter() - started) * 1000, 1)
+        logger.info(
+            "query_rewrite request_id=%s changed=%s",
+            state["request_id"],
+            rewritten != state["question"],
+        )
+        return {"search_query": rewritten.strip(), "timings": timings}
+
     def _retrieve(self, state: RAGState) -> dict:
-        question, request_id = state["question"], state["request_id"]
+        question, request_id = state.get("search_query") or state["question"], state["request_id"]
         timings = dict(state["timings"])
         retrieval_start = time.perf_counter()
         try:
@@ -195,7 +263,18 @@ class RAGService:
             timings["retrieval_ms"],
         )
 
-        return {"results": results, "timings": timings}
+        refusal = None
+        if not results:
+            refusal = REFUSAL_EMPTY
+        elif not passes_evidence_gate(results, self.min_rerank_score):
+            refusal = REFUSAL_LOW_SCORE
+            logger.info(
+                "evidence_gate_refused request_id=%s top_score=%s threshold=%s",
+                request_id,
+                results[0].get("rerank_score"),
+                self.min_rerank_score,
+            )
+        return {"results": results, "timings": timings, "refusal_reason": refusal}
 
     def _no_evidence(self, state: RAGState) -> dict:
         request_id, total_start = state["request_id"], state["total_start"]
@@ -207,15 +286,20 @@ class RAGService:
             request_id,
             timings["total_ms"],
         )
+        results = state.get("results") or []
         result = RAGResult(
             request_id=request_id,
             answer=NO_EVIDENCE_ANSWER,
             sources=[],
             legacy_sources=[],
-            rerank_score=None,
+            rerank_score=_to_float(results[0].get("rerank_score")) if results else None,
             retrieval_count=0,
             timings_ms=timings,
             retrieval_results=[],
+            search_query=state.get("search_query") or state["question"],
+            refusal_reason=state.get("refusal_reason") or REFUSAL_EMPTY,
+            min_rerank_score=self.min_rerank_score,
+            candidates=results,
         )
 
         return {"result": result, "timings": timings}
@@ -230,17 +314,7 @@ class RAGService:
         legacy_source_by_number: dict[int, str] = {}
         for index, result in enumerate(results, start=1):
             label = source_label(result)
-            source_item = SourceItem(
-                chunk_id=str(result.get("chunk_id", "")),
-                source=str(result.get("source", "")),
-                relative_path=str(result.get("relative_path", "")),
-                page_start=int(result.get("page_start") or 0),
-                page_end=int(result.get("page_end") or result.get("page_start") or 0),
-                source_url=result.get("source_url"),
-                section=str(result.get("section") or ""),
-                label=label,
-                rerank_score=_to_float(result.get("rerank_score")),
-            )
+            source_item = to_source_item(result)
             source_by_number[index] = source_item
             legacy_source_by_number[index] = label
             contexts.append(
@@ -258,6 +332,9 @@ class RAGService:
 
     def _generate(self, state: RAGState) -> dict:
         question, context = state["question"], state["context"]
+        search_query = state.get("search_query") or question
+        if search_query != question:
+            question = f"{question}\n（结合对话上文，这个问题的完整含义是：{search_query}）"
         request_id = state["request_id"]
         timings = dict(state["timings"])
         llm_start = time.perf_counter()
@@ -331,5 +408,9 @@ class RAGService:
             retrieval_count=len(results),
             timings_ms=timings,
             retrieval_results=results,
+            search_query=state.get("search_query") or state["question"],
+            refusal_reason=None,
+            min_rerank_score=self.min_rerank_score,
+            candidates=results,
         )
         return {"result": result, "timings": timings}

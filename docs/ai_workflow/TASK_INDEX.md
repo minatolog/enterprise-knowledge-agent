@@ -25,3 +25,5 @@ Task ID 全局唯一；状态含义、编号和 Commit 回填方法见 [制度�
 | `RAG-20261113-004` | 统一工作台配色、质感与动效升级 | implementation | Codex / GPT-6（具体变体未知） | REVIEW | 未提交 | [Prompt](prompts/implementation/RAG-20261113-004_visual_motion.md) / [执行](execution_logs/RAG-20261113-004.md) |
 
 | `RAG-20261113-005` | Grok-inspired CNOOC 企业知识助手重设计 | implementation | Codex / GPT-6（具体变体未知） | REVIEW | 未提交 | [实际附件](prompts/implementation/RAG-20261113-005_grok_assistant.md) / [执行](execution_logs/RAG-20261113-005.md) |
+
+| `RAG-20261121-001` | 落地架构审阅问题（繁简归一、条款切分、拒答阈值、统一检索核心、企业增量发布与逐句核验）并重做前端 | implementation | Claude（claude.ai）/ Claude Opus 5.5 | REVIEW（本机完整测试、重建索引、评测、构建待执行） | 未提交 | [用户原文](prompts/implementation/RAG-20261121-001_full_remediation.md) / [执行](execution_logs/RAG-20261121-001.md) / [决策 01](decisions/RAG-20261121-001-DECISION-01.md) / [决策 02](decisions/RAG-20261121-001-DECISION-02.md) / [ISSUE-01](issues/RAG-20261121-001-ISSUE-01.md) |

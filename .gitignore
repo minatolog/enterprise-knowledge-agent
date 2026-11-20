@@ -180,6 +180,7 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 chroma_db/
+chroma_db_*/
 .index_state/
 .enterprise/
 .env

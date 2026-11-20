@@ -1,7 +1,7 @@
 from ingestion import load_all_documents
 from ingestion import load_document
 from pathlib import Path
-from knowledge_config import INDEXED_DOCUMENTS, KNOWLEDGE_BASE, ROOT, selected_paths
+from knowledge_config import CHUNKER, INDEXED_DOCUMENTS, KNOWLEDGE_BASE, ROOT, selected_paths
 
 
 def split_by_markdown_heading(
@@ -110,8 +110,12 @@ def split_plain_text(
 
 
 def chunk_document(
-    document: dict
+    document: dict,
+    strategy: str | None = None,
 ) -> list[dict]:
+    """Chunk one loaded document. PDFs use ``rag_core.chunking`` (structured by default)."""
+    from rag_core.chunking import chunk_pages
+
     file_type = document["file_type"]
     path = document["file_path"]
     try:
@@ -120,40 +124,18 @@ def chunk_document(
         relative_path = str(path)
 
     if file_type == ".pdf":
-        chunks = []
-        for page in document["pages"]:
-            lines = page["text"].splitlines(keepends=True)
-            current = []
-            size = 0
-            pieces = []
-            for line in lines:
-                if current and size + len(line) > 700:
-                    pieces.append("".join(current).strip())
-                    current, size = [], 0
-                if len(line) > 700:
-                    if current:
-                        pieces.append("".join(current).strip())
-                        current, size = [], 0
-                    pieces.extend(part["text"] for part in split_plain_text(
-                        line, document["source"], chunk_size=700, overlap=80
-                    ))
-                else:
-                    current.append(line)
-                    size += len(line)
-            if current:
-                pieces.append("".join(current).strip())
-            for number, text in enumerate((piece for piece in pieces if piece), start=1):
-                chunks.append({
-                    "chunk_id": f"{relative_path}::p{page['page_number']:04d}::c{number:04d}",
-                    "text": text,
-                    "source": document["source"],
-                    "relative_path": relative_path,
-                    "knowledge_base": KNOWLEDGE_BASE,
-                    "page_start": page["page_number"],
-                    "page_end": page["page_number"],
-                    "section": "",
-                })
-        return chunks
+        pieces = chunk_pages(
+            document["pages"], relative_path=relative_path, strategy=strategy or CHUNKER
+        )
+        return [
+            {
+                **piece,
+                "source": document["source"],
+                "relative_path": relative_path,
+                "knowledge_base": KNOWLEDGE_BASE,
+            }
+            for piece in pieces
+        ]
 
     if file_type == ".md":
 
@@ -186,7 +168,8 @@ def _add_metadata(chunks: list[dict], document: dict, relative_path: str) -> lis
 
 
 def build_chunks(
-    data_dir: str | None = None
+    data_dir: str | None = None,
+    strategy: str | None = None,
 ) -> list[dict]:
     if data_dir is None:
         paths = selected_paths()
@@ -199,7 +182,8 @@ def build_chunks(
     for document in documents:
 
         chunks = chunk_document(
-            document
+            document,
+            strategy=strategy,
         )
 
         all_chunks.extend(chunks)

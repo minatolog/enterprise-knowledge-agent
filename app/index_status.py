@@ -112,6 +112,8 @@ def list_indexed_documents(
             relative_path,
             {
                 "source": metadata.get("source") or Path(relative_path).name,
+                "title": metadata.get("title"),
+                "chunker": metadata.get("chunker") or "page",
                 "relative_path": relative_path,
                 "chunk_count": 0,
                 "page_start": 10**9,
@@ -140,6 +142,8 @@ def list_indexed_documents(
         documents.append(
             DocumentInfo(
                 source=item["source"],
+                title=item["title"],
+                chunker=item["chunker"],
                 relative_path=item["relative_path"],
                 chunk_count=item["chunk_count"],
                 page_start=0 if item["page_start"] == 10**9 else item["page_start"],

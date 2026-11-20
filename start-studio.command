@@ -2,7 +2,7 @@
 set -eu
 cd "${0:A:h}"
 if [[ ! -d frontend/node_modules ]]; then
-  npm ci --prefix frontend --no-audit --no-fund
+  npm install --prefix frontend --no-audit --no-fund
 fi
 npm run build --prefix frontend
 rag_studio_python="${RAG_STUDIO_PYTHON:-/opt/anaconda3/envs/agent/bin/python}"

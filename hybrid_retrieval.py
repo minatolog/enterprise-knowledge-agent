@@ -1,74 +1,78 @@
-"""BM25, RRF and reranking over the same indexed CNOOC chunks."""
+"""Local P0 retrieval over the CNOOC collection, built on ``rag_core``.
 
-from collections import defaultdict
+The BM25 index is cached per collection *version*: a re-index (different
+chunk count or index-state file) rebuilds it automatically instead of serving
+stale chunks until the process restarts.
+"""
 
-import jieba
-from rank_bm25 import BM25Okapi
-from sentence_transformers import CrossEncoder
+from __future__ import annotations
 
-from knowledge_config import RERANKER_MODEL
-from retrieval import get_collection, retrieve_top_k
+import threading
 
-_corpus = None
-_bm25 = None
-_reranker = None
+from knowledge_config import DEFAULT_CANDIDATE_K, RERANKER_MODEL, STATE_FILE
+from rag_core.search import BM25Index, Reranker, hybrid_search
+from retrieval import get_collection, record_from, retrieve_top_k
+
+_lock = threading.Lock()
+_bm25: BM25Index | None = None
+_bm25_version: tuple | None = None
+_reranker = Reranker(RERANKER_MODEL)
 
 
-def get_bm25_corpus():
-    global _corpus, _bm25
-    if _corpus is None:
-        records = get_collection().get(include=["documents", "metadatas"])
-        _corpus = []
-        for chunk_id, text, metadata in sorted(zip(
-            records["ids"], records["documents"], records["metadatas"]
-        )):
-            _corpus.append({
-                "chunk_id": chunk_id,
-                "text": text,
-                "source": metadata["source"],
-                "relative_path": metadata["relative_path"],
-                "knowledge_base": metadata["knowledge_base"],
-                "page_start": metadata["page_start"],
-                "page_end": metadata["page_end"],
-                "section": metadata["section"],
-                "source_url": metadata["source_url"],
-            })
-        if not _corpus:
-            raise RuntimeError("CNOOC Collection 为空，请先运行 index_documents.py")
-        _bm25 = BM25Okapi([list(jieba.cut(item["text"])) for item in _corpus])
-    return _corpus, _bm25
+def _collection_version(collection) -> tuple:
+    try:
+        state_mtime = STATE_FILE.stat().st_mtime_ns
+    except OSError:
+        state_mtime = 0
+    return (collection.name, collection.count(), state_mtime)
+
+
+def get_bm25_index() -> BM25Index:
+    global _bm25, _bm25_version
+    collection = get_collection()
+    version = _collection_version(collection)
+    with _lock:
+        if _bm25 is None or _bm25_version != version:
+            records = collection.get(include=["documents", "metadatas"])
+            corpus = [
+                record_from(chunk_id, text, metadata)
+                for chunk_id, text, metadata in sorted(zip(
+                    records["ids"], records["documents"], records["metadatas"]
+                ))
+            ]
+            if not corpus:
+                raise RuntimeError("CNOOC Collection 为空，请先运行 index_documents.py")
+            _bm25, _bm25_version = BM25Index(corpus), version
+        return _bm25
+
+
+def reset_cache() -> None:
+    global _bm25, _bm25_version
+    with _lock:
+        _bm25, _bm25_version = None, None
 
 
 def retrieve_bm25(question: str, k: int = 5) -> list[dict]:
-    corpus, bm25 = get_bm25_corpus()
-    scores = bm25.get_scores(list(jieba.cut(question)))
-    ranked = sorted(range(len(corpus)), key=lambda i: scores[i], reverse=True)
-    return [dict(corpus[i], bm25_score=float(scores[i])) for i in ranked[:k]]
+    return get_bm25_index().search(question, k)
 
 
-def retrieve_hybrid(question: str, k: int = 3) -> list[dict]:
-    candidate_k = max(10, k)
-    vector_results = retrieve_top_k(question, k=candidate_k)
-    keyword_results = retrieve_bm25(question, k=candidate_k)
-    rrf_scores = defaultdict(float)
-    candidates = {}
-    for results in (vector_results, keyword_results):
-        for rank, item in enumerate(results, start=1):
-            chunk_id = item["chunk_id"]
-            rrf_scores[chunk_id] += 1 / (60 + rank)
-            candidates.setdefault(chunk_id, {}).update(item)
-    ranked = sorted(rrf_scores, key=lambda chunk_id: rrf_scores[chunk_id], reverse=True)
-    return [dict(candidates[chunk_id], rrf_score=rrf_scores[chunk_id]) for chunk_id in ranked[:k]]
+def retrieve_hybrid(question: str, k: int = 3, candidate_k: int | None = None) -> list[dict]:
+    return hybrid_search(
+        question,
+        dense=lambda q, n: retrieve_top_k(q, k=n),
+        sparse=retrieve_bm25,
+        reranker=None,
+        k=k,
+        candidate_k=candidate_k or max(DEFAULT_CANDIDATE_K, k),
+    )
 
 
-def retrieve_with_reranker(question: str, k: int = 3, candidate_k: int = 5) -> list[dict]:
-    global _reranker
-    candidates = retrieve_hybrid(question, k=candidate_k)
-    if not candidates:
-        return []
-    if _reranker is None:
-        _reranker = CrossEncoder(RERANKER_MODEL)
-    scores = _reranker.predict([(question, item["text"]) for item in candidates])
-    for item, score in zip(candidates, scores):
-        item["rerank_score"] = float(score)
-    return sorted(candidates, key=lambda item: item["rerank_score"], reverse=True)[:k]
+def retrieve_with_reranker(question: str, k: int = 3, candidate_k: int = DEFAULT_CANDIDATE_K) -> list[dict]:
+    return hybrid_search(
+        question,
+        dense=lambda q, n: retrieve_top_k(q, k=n),
+        sparse=retrieve_bm25,
+        reranker=_reranker,
+        k=k,
+        candidate_k=max(candidate_k, k),
+    )

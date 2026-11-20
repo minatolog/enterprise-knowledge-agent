@@ -1,10 +1,33 @@
 # enterprise-knowledge-agent
 
-基于 CNOOC 官方资料的企业知识库 RAG 本地原型。当前实现 7 份白名单 PDF 的离线入库、Chroma 向量检索、BM25、RRF、Cross-Encoder Reranker、DeepSeek 生成，并提供共享服务层的 CLI、FastAPI 与同源本地问答页面。
+基于 CNOOC 官方公开资料的企业知识库 RAG。离线入库后，用 Chroma 向量检索 + BM25 + RRF 融合 + Cross-Encoder 重排找证据，再由 DeepSeek 依据证据作答，每句话标注可点开的原文引用。
 
-> 当前是本地单用户原型，不是生产系统。没有身份认证、ACL、上传、Docker、GraphRAG、Agent 或企业部署能力；不要把它描述为“生产级”或“已高并发验证”。
+项目有两个入口，共用同一套检索核心 `rag_core/`：
 
-2026-11-13 更新：上述范围描述保留给原 `app.api` 演示入口。新增独立 `app.enterprise.api` 企业扩展，提供鉴权/ACL、上传与版本、索引发布回滚、任务、上下文预算、会话缓存、核验和观测接口；不等于生产部署已经验收。请按 [企业扩展运行说明](docs/enterprise_runtime.md) 启动，实际完成与外部待验收项见 [交付报告](reports/RAG-20261113-002_delivery.md)。
+| 入口 | 用途 | 鉴权 / 权限 | 说明 |
+|---|---|---|---|
+| `app.api`（`/api/v1`，端口 8020） | 本地单用户演示：7 份白名单 PDF | 无 | 不是生产系统，未做高并发验证 |
+| `app.enterprise.api`（`/api/v2`，端口 8030） | 企业扩展：租户、用户组 ACL、上传与版本、发布回滚、任务、核验、观测 | OIDC / 开发令牌 | 本地测试通过，生产部署尚未验收，见[运行说明](docs/enterprise_runtime.md) |
+
+两个入口共用一个前端 `frontend/`（在“设置”里切换本地 / 企业知识库）。
+
+## 2026-11-21 更新（RAG-20261121-001）
+
+针对架构审阅中发现的问题做了以下修改，详细记录见[执行记录](docs/ai_workflow/execution_logs/RAG-20261121-001.md)：
+
+- **繁简归一**：组织章程细则和四个委员会章程是繁体中文，问题和评测集是简体中文，这是 BM25 在治理类文件上大面积漏检、A01 四种方法都失败的主要原因。现在 Embedding、BM25 和 Reranker 都使用归一后的文本（繁转简、修复 PDF 抽取出的汉字间空格），原文仍按原样展示和引用。安装 `opencc-python-reimplemented` 后使用 OpenCC，否则退回内置字表。
+- **条款切分**：默认 `RAG_CHUNKER=structured`，按“5.2.1 / 3. / (a) / 第十条”等编号切分，条款不被拆开、可以跨页，记录所属章节，去掉页眉页脚；嵌入时带上“文件名 · 章节”前缀。`RAG_CHUNKER=page` 保留原来的按页切分。
+- **线上配置与评测一致**：Reranker 候选数从 5 调到 20（`RAG_CANDIDATE_K`），评测脚本直接读取同一配置。
+- **拒答阈值**：Reranker 最高分低于 `RAG_MIN_RERANK_SCORE`（默认 0.3，依据 2026-11-21 评测的阈值扫描；语料或问题类型变化后应重新校准）时，不调用模型直接拒答。
+- **Prompt**：去掉默认的“女仆鲸鱼娘”人设；需要语气时用 `RAG_PERSONA` 配置，默认关闭。
+- **多轮追问**：`/api/v1/query` 接收 `history`，`/api/v2` 使用会话历史；检索前先把“那提名委员会呢？”这类追问改写成完整问题。
+- **评测**：相关性改为按评测集证据原文判定（与切分方式无关，`--relevance chunk_id` 保留旧口径），报告新增拒答阈值扫描和无答案题得分。
+- **企业链路**：统一使用 `rag_core` 的切分与检索；每个发布版本的 BM25 只建一次（原来每次查询现建）；未变化的文档复用上一版的向量；单个文档解析失败只跳过它；旧版本按 `ENTERPRISE_KEEP_RELEASES`（默认 5）回收；核验改为逐句，删掉不被证据支持的句子而不是整体返回 502。
+- **前端**：重做了问答、原文对照、知识库、检索评测、资料管理和设置页面。
+
+测试：`python -m unittest discover -s tests -v`（新增 `tests/test_rag_core.py`，并更新了服务、企业链路、评测和迁移测试）；`npm test --prefix frontend`。
+
+> 以上改动需要**重建索引**才生效：`python index_documents.py` 会检测到索引格式变化并全部重建。下文 P0 一节的数字（194 Chunk、检索指标）是 2026-11-09 旧配置下的历史结果，重新运行评测后以新报告为准。
 
 ## P0 交付与验证状态（2026-11-09）
 
@@ -28,29 +51,33 @@
 flowchart LR
   subgraph ING["离线入库 Ingestion"]
     PDF["7 份白名单 PDF"] --> PARSE["pypdf 逐页解析"]
-    PARSE --> CHUNK["页级 Chunk + 稳定 ID + 页码元数据"]
-    CHUNK --> EMB["BAAI/bge-small-zh-v1.5 Embedding"]
+    PARSE --> CHUNK["条款切分（可跨页）+ 章节 + 稳定 ID"]
+    CHUNK --> NORM["繁转简 / 修复空格 + 文件名·章节前缀"]
+    NORM --> EMB["BAAI/bge-small-zh-v1.5 Embedding"]
     EMB --> CHROMA[("Chroma cnooc_knowledge")]
     STATE[".index_state SHA-256"] -.-> PARSE
   end
 
   subgraph QUERY["在线问答 Query"]
-    WEB["本地网页"] --> API["FastAPI"]
+    WEB["React 前端"] --> API["FastAPI"]
     API --> SVC["RAGService"]
-    SVC --> DENSE["Chroma Dense"]
-    SVC --> SPARSE["BM25"]
+    SVC --> RW["追问改写（有历史时）"]
+    RW --> DENSE["Chroma Dense"]
+    RW --> SPARSE["BM25（按索引版本缓存）"]
     CHROMA --> SPARSE
     DENSE --> RRF["RRF k=60"]
     SPARSE --> RRF
-    RRF --> RERANK["BAAI/bge-reranker-base"]
-    RERANK --> CTX["Context Builder [资料 N]"]
+    RRF --> RERANK["BAAI/bge-reranker-base（20 个候选）"]
+    RERANK --> GATE{"最高分 ≥ 拒答线？"}
+    GATE -->|否| REFUSE["直接拒答，不调用模型"]
+    GATE -->|是| CTX["Context Builder [资料 N]"]
     CTX --> LLM["DeepSeek"]
     LLM --> CITE["程序按检索元数据映射引用"]
     CITE --> RESP["answer + sources + request_id + timings_ms"]
   end
 ```
 
-说明：BM25 不是持久化倒排索引，而是在首次检索时从 Chroma 中的同一批 Chunk 懒加载构建的内存索引；因此它与向量检索共享 Chunk ID 和元数据。Reranker 只重排已召回候选，不能找回第一阶段漏掉的文档。
+说明：BM25 是从 Chroma 中同一批 Chunk 构建的内存索引，与向量检索共享 Chunk ID 和元数据；它按索引版本（Chunk 数 + 索引状态文件时间）缓存，重建索引后自动失效。企业链路每个发布版本建一次 BM25，查询时按 ACL 过滤。Reranker 只重排已召回候选，不能找回第一阶段漏掉的文档。
 
 ### LangChain 与 LangGraph 接入（2026-11-12）
 
@@ -81,18 +108,20 @@ flowchart TD
 |---|---|
 | `knowledge_config.py` | 模型、路径、Collection、白名单、Top-K、候选数、超时、日志级别的集中配置 |
 | `ingestion.py` | PDF 逐页解析、文本/DOCX 读取；保留真实页码和解析失败信息 |
-| `rag.py` | 页级 Chunking、稳定 `chunk_id`、来源/页码/知识库元数据 |
+| `rag_core/` | 本地与企业链路共用的检索核心：`textnorm`（繁简与空格归一）、`chunking`（条款切分 / 按页切分）、`search`（BM25、RRF、Reranker、混合检索）、`refusal`（拒答阈值） |
+| `rag.py` | 调用 `rag_core.chunking` 生成 Chunk、稳定 `chunk_id`、来源/页码/知识库元数据 |
 | `document_tracker.py` | SHA-256 文件状态与增量变更检测 |
 | `index_documents.py` | 仅索引白名单 PDF；写入 `chroma_db/` 与 `.index_state/`，清理失效记录 |
 | `retrieval.py` | BGE 查询向量与 Chroma Dense Retrieval |
-| `hybrid_retrieval.py` | jieba + BM25、RRF 融合、Cross-Encoder Reranker |
+| `hybrid_retrieval.py` | 本地链路的混合检索入口，BM25 按索引版本缓存 |
 | `llm.py` | DeepSeek 客户端延迟创建、超时/重试、企业问答 Prompt |
 | `app/service.py` | CLI/API 共享的 `RAGService`：校验、检索、上下文、生成、引用映射、阶段耗时 |
 | `app/langchain_adapters.py` | LangChain 检索器、Document 转换及生成 Runnable，复用现有算法和模型协议 |
 | `app/workflow.py` | LangGraph 状态与条件分支；每次请求独立执行，不持久化证据 |
 | `app/api.py` | FastAPI 路由、请求/错误封装、`request_id` 和访问日志 |
 | `app/index_status.py` | 用只读 SQLite 检查真实索引与文档清单；不写 Chroma |
-| `app/web/` | 同源本地问答页面，展示答案、来源、页码、索引状态 |
+| `frontend/` | React 前端：问答与原文对照、知识库、检索评测、资料管理（企业）、设置 |
+| `app/web/` | 旧版问答页，保留在 `/legacy` |
 | `schemas.py` | CLI 兼容响应与 API Pydantic 模型 |
 | `main.py` | 旧 CLI 入口，复用同一 `RAGService` |
 | `eval/run_cnooc_eval.py` | 四路检索对照、逐题候选、指标和失败案例报告 |
@@ -102,22 +131,23 @@ flowchart TD
 
 1. `knowledge_config.py` 白名单固定 7 份 PDF；白名单外文件不会被 `index_documents.py` 索引。
 2. `ingestion.py` 逐页提取 PDF 文本，保留页码；空页/解析错误有记录。
-3. `rag.py` 按页切分，生成稳定 ID：`relative_path::pNNNN::cNNNN`，并写入 `source`、`relative_path`、`page_start`、`page_end`、`section`、`knowledge_base`。
-4. `index_documents.py` 校验 `sources.csv` 中的 SHA-256，计算 Embedding，写入 Chroma；根据 `.index_state/cnooc_document_hashes.json` 做增量更新，并清理失效/越界 Chunk。
+3. `rag.py` 调用 `rag_core.chunking`：默认按条款切分，ID 为 `relative_path::p<起始页>::s<序号>`；`RAG_CHUNKER=page` 时沿用 `relative_path::pNNNN::cNNNN`。元数据含 `title`、`section`、`page_start`、`page_end`、`chunker`。
+4. `index_documents.py` 校验 `sources.csv` 中的 SHA-256，对“文件名 · 章节 + 正文”的归一化文本计算 Embedding，原文写入 Chroma；根据 `.index_state/cnooc_document_hashes.json` 做增量更新，并清理失效/越界 Chunk。Collection 记录索引格式，切分或归一方式变化时自动全部重建。`RAG_DB_PATH` 可以把索引建到另一个目录，便于两种切分并排对比。
 5. 入库完成后输出每份文档 Chunk 数，并校验 Collection 中没有白名单外文档。
 
-当前实测：7 份 PDF、106 页、194 Chunk；在隔离副本重建耗时约 7 秒（模型已缓存）。
+按页切分时实测 7 份 PDF、106 页、194 Chunk；按条款切分的 Chunk 数以重建后的输出为准。
 
 ## 在线问答流程
 
 1. 输入问题与 `top_k`（默认 3，最大 10）做长度/类型校验。
 2. `RAGService` 先用只读 SQLite 检查索引存在且非空。
-3. Dense（Chroma）与 BM25（jieba）各取候选，通过 RRF 融合。
-4. Hybrid 候选交给 `BAAI/bge-reranker-base` 重排，取最终 Top-K。
-5. Context Builder 为每条证据加 `[资料 N]`、来源路径和页码。
-6. DeepSeek 依据证据生成回答；缺失 Key 返回 503，不伪造答案。
-7. 程序只把答案中实际出现的 `[资料 N]` 映射为本次检索来源；引用编号存在不等于答案语义一定被支持，二者需分别核验。
-8. 返回 `request_id`、`answer`、结构化 `sources`、`rerank_score`、`retrieval_count`、`timings_ms`。
+3. 请求带 `history` 时，先用模型把追问改写成完整问题（失败则用原问题），改写结果只用于检索。
+4. Dense（Chroma）与 BM25（jieba，繁简归一）各取 `RAG_CANDIDATE_K`（默认 20）个候选，通过 RRF 融合。
+5. 融合后的候选交给 `BAAI/bge-reranker-base` 重排，取最终 Top-K；最高分低于 `RAG_MIN_RERANK_SCORE` 时直接拒答，不调用模型。
+6. Context Builder 为每条证据加 `[资料 N]`、来源路径和页码。
+7. DeepSeek 依据证据生成回答；缺失 Key 返回 503，不伪造答案。
+8. 程序只把答案中实际出现的 `[资料 N]` 映射为本次检索来源；引用编号存在不等于答案语义一定被支持，二者需分别核验（企业链路有逐句核验）。
+9. 返回 `request_id`、`answer`、`sources`（被引用的）、`retrieved`（全部检索结果，含原文片段）、`status`、`refusal_reason`、`search_query`、`rerank_score`、`min_rerank_score`、`timings_ms`。另有 `GET /api/v1/config`（当前检索配置）和 `GET /api/v1/eval/latest`（最新评测摘要）。
 
 ## 环境与依赖
 
@@ -331,6 +361,10 @@ python -m unittest discover -s tests -p 'test_cnooc_eval.py' -v
 - P1：索引版本管理、更完整的增量一致性、失败案例回归、Docker 本地运行、上传安全、日志/追踪增强。
 - P2：ACL/RBAC、Query Rewrite/多查询、更多数据源、Agent/GraphRAG、Long-Context 对比。
 - 在扩展前先保持当前 P0 评测集和真实指标可复现，不为提高分数修改 Ground Truth。
+
+### 前端（RAG-20261121-001）
+
+`frontend/` 已重做，同时对接本地（`/api/v1`）和企业（`/api/v2`）两个服务，详见[前端说明](frontend/README.md)。下面两节是之前版本的记录。
 
 ### 统一 React 工作台（RAG-20261113-003）
 

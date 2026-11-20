@@ -5,7 +5,7 @@ from unittest.mock import patch
 from pathlib import Path
 
 from document_tracker import detect_changes
-from hybrid_retrieval import get_bm25_corpus
+from hybrid_retrieval import get_bm25_index
 from knowledge_config import INDEXED_DOCUMENTS, KNOWLEDGE_BASE, ROOT, selected_paths
 from rag import build_chunks
 from retrieval import get_collection
@@ -23,8 +23,8 @@ class CnoocMigrationTests(unittest.TestCase):
         for name, path in paths.items():
             self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), rows[name]["sha256"])
 
-    def test_chunks_have_stable_page_metadata(self):
-        chunks = build_chunks()
+    def test_page_chunks_keep_the_v1_layout(self):
+        chunks = build_chunks(strategy="page")
         self.assertEqual(len(chunks), 194)
         self.assertEqual(len({chunk["chunk_id"] for chunk in chunks}), len(chunks))
         self.assertEqual({chunk["relative_path"] for chunk in chunks}, set(INDEXED_DOCUMENTS))
@@ -35,11 +35,23 @@ class CnoocMigrationTests(unittest.TestCase):
             self.assertEqual(chunk["page_start"], chunk["page_end"])
             self.assertIn(f"::p{chunk['page_start']:04d}::", chunk["chunk_id"])
 
+    def test_structured_chunks_have_valid_page_ranges_and_sections(self):
+        chunks = build_chunks(strategy="structured")
+        self.assertEqual(len({chunk["chunk_id"] for chunk in chunks}), len(chunks))
+        self.assertEqual({chunk["relative_path"] for chunk in chunks}, set(INDEXED_DOCUMENTS))
+        for chunk in chunks:
+            self.assertTrue(chunk["text"].strip())
+            self.assertGreater(chunk["page_start"], 0)
+            self.assertGreaterEqual(chunk["page_end"], chunk["page_start"])
+            self.assertIn(f"::p{chunk['page_start']:04d}::s", chunk["chunk_id"])
+            self.assertLessEqual(len(chunk["text"]), 1200)
+        self.assertGreater(sum(1 for chunk in chunks if chunk["section"]) / len(chunks), 0.8)
+
     def test_bm25_and_vector_use_identical_ids(self):
         collection = get_collection()
         records = collection.get(include=["metadatas"])
-        corpus, _ = get_bm25_corpus()
-        self.assertEqual(len(records["ids"]), len(corpus), 194)
+        corpus = get_bm25_index().records
+        self.assertEqual(len(records["ids"]), len(corpus))
         self.assertEqual(set(records["ids"]), {item["chunk_id"] for item in corpus})
         self.assertTrue(all(metadata["knowledge_base"] == KNOWLEDGE_BASE for metadata in records["metadatas"]))
         self.assertTrue(all(metadata["relative_path"] in INDEXED_DOCUMENTS for metadata in records["metadatas"]))

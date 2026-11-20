@@ -11,7 +11,7 @@ from sqlalchemy import select
 from app.enterprise.auth import Auth, Principal
 from app.enterprise.config import Settings
 from app.enterprise.db import Database, documents, jobs, releases, versions
-from app.enterprise.index import Index
+from app.enterprise.index import META_KEY, Index, release_documents
 from app.enterprise.runtime import Runtime
 from app.enterprise.storage import ObjectStore
 from schemas import QueryRequest
@@ -36,8 +36,12 @@ def create_app(settings=None, runtime=None):
         database, objects = Database(settings), ObjectStore(settings)
         runtime = Runtime(settings, database, objects, Index(settings, database, objects))
     auth = Auth(settings)
-    app = FastAPI(title="Enterprise RAG", version="0.2.0")
+    app = FastAPI(title="Enterprise RAG", version="0.3.0")
     app.state.runtime = runtime
+    studio = Path(__file__).resolve().parents[2] / "frontend" / "dist"
+    if (studio / "index.html").is_file():
+        from fastapi.staticfiles import StaticFiles
+        app.mount("/studio", StaticFiles(directory=studio, html=True), name="studio")
 
     def principal(authorization: str | None = Header(default=None)):
         return auth.verify(authorization)
@@ -104,11 +108,27 @@ def create_app(settings=None, runtime=None):
         allowed = runtime.index.allowed(user, release)
         return {"turns": runtime.history(user, session_id, release["id"] if release else "none", runtime.acl_key(user, allowed))}
 
+    @app.get("/api/v2/me")
+    def me(user=Depends(principal)):
+        return {"subject": user.subject, "tenant": user.tenant, "groups": list(user.groups), "roles": list(user.roles)}
+
     @app.get("/api/v2/documents")
     def list_documents(user=Depends(principal)):
         rows = runtime.db.rows(select(documents).where(documents.c.tenant == user.tenant, documents.c.deleted == 0))
-        return [{key: row[key] for key in ("id", "title", "version", "groups")} for row in rows
-            if "admin" in user.roles or set(row["groups"]) & set(user.groups)]
+        release = runtime.db.release(user.tenant)
+        published = release_documents(release["manifest"]) if release else {}
+        failed = {item["document_id"]: item for item in ((release or {}).get("manifest") or {}).get(META_KEY, {}).get("failures", [])}
+        result = []
+        for row in rows:
+            if not ("admin" in user.roles or set(row["groups"]) & set(user.groups)):
+                continue
+            item = {key: row[key] for key in ("id", "title", "version", "groups")}
+            live = published.get(row["id"])
+            item["status"] = ("published" if live and live.get("version") == row["version"]
+                              else "failed" if row["id"] in failed else "pending")
+            item["published_version"] = live.get("version") if live else None
+            result.append(item)
+        return result
 
     @app.post("/api/v2/documents", status_code=201)
     def upload(title: str = Form(..., max_length=512), groups: str = Form(...),
@@ -149,9 +169,10 @@ def create_app(settings=None, runtime=None):
         if release_id:
             rows = runtime.db.rows(select(releases).where(releases.c.id == release_id, releases.c.tenant == user.tenant))
             release = rows[0] if rows else None
-        if not release or identity not in release["manifest"]:
+        published = release_documents(release["manifest"]) if release else {}
+        if identity not in published:
             raise HTTPException(404, "published document not found")
-        original_row = release["manifest"][identity]
+        original_row = published[identity]
         return Response(runtime.objects.get(original_row["object_key"]), media_type="application/octet-stream",
             headers={"Content-Disposition": 'attachment; filename="document' + Path(row["object_key"]).suffix + '"'})
 
@@ -189,9 +210,17 @@ def create_app(settings=None, runtime=None):
 
     @app.get("/api/v2/index/releases")
     def release_list(user=Depends(admin)):
-        rows = runtime.db.rows(select(releases.c.id, releases.c.created).where(releases.c.tenant == user.tenant))
+        rows = runtime.db.rows(select(releases).where(releases.c.tenant == user.tenant).order_by(releases.c.created.desc()))
         current = runtime.db.release(user.tenant)
-        return {"active": current["id"] if current else None, "releases": rows}
+        summary = []
+        for row in rows:
+            meta = (row["manifest"] or {}).get(META_KEY, {})
+            summary.append({"id": row["id"], "created": row["created"],
+                            "documents": len(release_documents(row["manifest"])),
+                            "chunks": meta.get("chunks"), "reused": meta.get("reused"),
+                            "embedded": meta.get("embedded"), "format": meta.get("format"),
+                            "failures": meta.get("failures", [])})
+        return {"active": current["id"] if current else None, "releases": summary}
 
     @app.post("/api/v2/index/rollback/{identity}")
     def rollback(identity: str, user=Depends(admin)):

@@ -6,6 +6,7 @@ RUN pip install --no-cache-dir -r requirements-enterprise.txt
 RUN useradd --create-home --uid 1000 rag
 RUN mkdir -p /state /home/rag/.cache/huggingface && chown -R rag:rag /state /home/rag
 COPY --chown=rag:rag app ./app
+COPY --chown=rag:rag rag_core ./rag_core
 COPY --chown=rag:rag *.py ./
 USER rag
 CMD ["uvicorn", "app.enterprise.api:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000"]

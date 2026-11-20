@@ -110,12 +110,46 @@ class EnterpriseTests(unittest.TestCase):
         self.assertEqual(self.client.get(f'/api/v2/documents/{doc["id"]}/original', headers=headers).text, "version one")
 
     def test_failed_publication_keeps_old_release(self):
-        self.upload()
+        doc = self.upload()
         first = self.publish()
+        # A new version that cannot be parsed: nothing new to publish, keep the old release.
+        self.upload("finance confidential v2", identity=doc["id"])
         with patch("app.enterprise.index.parse_bytes", side_effect=ValueError("bad input")):
             with self.assertRaises(ValueError):
                 self.publish()
         self.assertEqual(self.db.release(self.admin.tenant)["id"], first)
+
+    def test_first_publication_with_only_bad_documents_fails(self):
+        self.upload()
+        with patch("app.enterprise.index.parse_bytes", side_effect=ValueError("bad input")):
+            with self.assertRaises(ValueError):
+                self.publish()
+        self.assertIsNone(self.db.release(self.admin.tenant))
+
+    def test_unparseable_new_version_keeps_serving_published_version(self):
+        doc = self.upload("finance reimbursement")
+        other = self.upload("hr leave rules", ["hr"])
+        self.publish()
+        self.upload("finance reimbursement v2", identity=doc["id"])
+        self.upload("hr leave rules v2", ["hr"], identity=other["id"])
+        real_parse = __import__("app.enterprise.index", fromlist=["parse_bytes"]).parse_bytes
+
+        def flaky(data, suffix, mode="basic"):
+            if b"finance" in data:
+                raise ValueError("unreadable")
+            return real_parse(data, suffix, mode)
+
+        with patch("app.enterprise.index.parse_bytes", side_effect=flaky):
+            self.publish()
+        release = self.client.get("/api/v2/index/releases", headers=self.token(roles=["admin"])).json()["releases"][0]
+        self.assertEqual(release["documents"], 2)
+        self.assertEqual(release["failures"][0]["kept_version"], 1)
+        listing = {item["id"]: item for item in self.client.get("/api/v2/documents", headers=self.token(roles=["admin"])).json()}
+        self.assertEqual(listing[doc["id"]]["status"], "failed")
+        self.assertEqual(listing[doc["id"]]["published_version"], 1)
+        self.assertEqual(listing[other["id"]]["status"], "published")
+        body = self.client.post("/api/v2/query", headers=self.token(), json={"question": "finance"}).json()
+        self.assertIn(":1:", body["sources"][0]["chunk_id"])
 
     def test_delete_immediately_revokes_old_snapshot(self):
         doc = self.upload()
@@ -130,14 +164,95 @@ class EnterpriseTests(unittest.TestCase):
         selected = select_evidence([record, record, long], 128)
         self.assertEqual(selected, [record])
 
-    def test_bad_citations_and_judge_failure_are_not_cached(self):
+    def test_bad_citations_and_judge_failure_are_withheld_and_not_cached(self):
         self.upload()
         self.publish()
         self.runtime.model = lambda **kwargs: "invented [资料 99]"
-        self.assertEqual(self.client.post("/api/v2/query", headers=self.token(), json={"question": "policy"}).status_code, 502)
+        for _ in range(2):
+            response = self.client.post("/api/v2/query", headers=self.token(), json={"question": "policy"})
+            self.assertEqual(response.status_code, 200)
+            body = response.json()
+            self.assertEqual(body["verification"], "citation_invalid")
+            self.assertEqual(body["sources"], [])
+            self.assertNotIn("invented", body["answer"])
+            self.assertFalse(body["cached"])
         self.runtime.model = lambda **kwargs: "answer [资料 1]"
         self.runtime.judge = lambda *args: False
-        self.assertEqual(self.client.post("/api/v2/query", headers=self.token(), json={"question": "policy"}).status_code, 502)
+        body = self.client.post("/api/v2/query", headers=self.token(), json={"question": "policy two"}).json()
+        self.assertEqual(body["verification"], "judge_failed")
+        self.assertEqual(body["status"], "refused")
+        self.assertFalse(self.client.post("/api/v2/query", headers=self.token(), json={"question": "policy two"}).json()["cached"])
+
+    def test_partial_verification_drops_only_unsupported_sentences(self):
+        self.upload()
+        self.publish()
+        self.runtime.model = lambda **kwargs: "第一条有依据。[资料 1]\n第二条是编的。"
+
+        class Judge:
+            def assess(self, question, answer, records):
+                return {"status": "partial", "unsupported": ["第二条是编的。"]}
+
+        self.runtime.judge = Judge()
+        body = self.client.post("/api/v2/query", headers=self.token(), json={"question": "policy"}).json()
+        self.assertEqual(body["verification"], "judge_partial")
+        self.assertIn("第一条有依据", body["answer"])
+        self.assertNotIn("第二条是编的", body["answer"])
+        self.assertEqual(body["unsupported_claims"], ["第二条是编的。"])
+        self.assertEqual(len(body["sources"]), 1)
+
+    def test_one_bad_document_does_not_block_publication(self):
+        good = self.upload("finance reimbursement")
+        bad = self.runtime.upload(self.admin, "broken", b"broken", ".txt", ["finance"], None, "broken-doc")
+        real_parse = __import__("app.enterprise.index", fromlist=["parse_bytes"]).parse_bytes
+
+        def flaky(data, suffix, mode="basic"):
+            if data == b"broken":
+                raise ValueError("unreadable")
+            return real_parse(data, suffix, mode)
+
+        with patch("app.enterprise.index.parse_bytes", side_effect=flaky):
+            release_id = self.publish()
+        listing = self.client.get("/api/v2/index/releases", headers=self.token(roles=["admin"])).json()
+        current = listing["releases"][0]
+        self.assertEqual(listing["active"], release_id)
+        self.assertEqual(current["documents"], 1)
+        self.assertEqual([item["document_id"] for item in current["failures"]], [bad["id"]])
+        statuses = {item["id"]: item["status"] for item in self.client.get("/api/v2/documents", headers=self.token(roles=["admin"])).json()}
+        self.assertEqual(statuses, {good["id"]: "published", bad["id"]: "failed"})
+
+    def test_unchanged_documents_reuse_embeddings_and_old_releases_are_collected(self):
+        calls = []
+
+        class CountingEmbedding(Embedding):
+            def encode(self, texts, **kwargs):
+                calls.append(len(texts))
+                return super().encode(texts, **kwargs)
+
+        self.index._embedder = CountingEmbedding()
+        self.settings.keep_releases = 2
+        self.upload("finance reimbursement")
+        self.publish()
+        embedded_once = sum(calls)
+        self.upload("hr leave rules", ["hr"])
+        self.publish()
+        # Only the new document is embedded (plus no re-embedding of the first one).
+        self.assertEqual(sum(calls) - embedded_once, 1)
+        self.publish()
+        listing = self.client.get("/api/v2/index/releases", headers=self.token(roles=["admin"])).json()
+        self.assertEqual(len(listing["releases"]), 2)
+        self.assertEqual(listing["releases"][0]["reused"], 2)
+
+    def test_follow_up_question_is_rewritten_for_retrieval(self):
+        self.upload("finance reimbursement")
+        self.publish()
+        seen = []
+        self.runtime.rewriter = lambda question, turns: seen.append((question, turns)) or "finance reimbursement rules"
+        headers = self.token()
+        self.client.post("/api/v2/query", headers=headers, json={"question": "policy", "session_id": "s1"})
+        body = self.client.post("/api/v2/query", headers=headers, json={"question": "那它呢", "session_id": "s1"}).json()
+        self.assertEqual(body["search_query"], "finance reimbursement rules")
+        self.assertEqual(seen[-1][0], "那它呢")
+        self.assertEqual(seen[-1][1][0], {"role": "user", "content": "policy"})
 
     def test_upload_limits_and_object_path_traversal(self):
         with self.assertRaises(ValueError):
