@@ -187,3 +187,6 @@ chroma_db_*/
 
 # CNOOC originals are for local retrieval experiments; keep metadata tracked.
 data/cnooc/**/*.pdf
+
+# macOS
+.DS_Store
